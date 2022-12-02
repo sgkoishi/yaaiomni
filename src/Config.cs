@@ -2,5 +2,12 @@
 {
     public bool SyncVersion = true;
     public bool TrimMemory = true;
-    public bool SuppressUpdate = false;
+    public UpdateOptions SuppressUpdate = UpdateOptions.Silent;
+}
+
+public enum UpdateOptions
+{
+    Silent,
+    Disabled,
+    Default
 }

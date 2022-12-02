@@ -4,13 +4,22 @@ using TShockAPI;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private readonly IDetour _checkForUpdateDetour;
+    private readonly IDetour _UpdateCheckAsyncDetour;
 
-    internal async Task CheckForUpdatesAsync(object state)
+    public async Task UpdateCheckAsync(object state)
     {
-        if (!this.config.SuppressUpdate)
+        if (this.config.SuppressUpdate == UpdateOptions.Disabled)
         {
-            this._checkForUpdateDetour.GenerateTrampoline().Invoke(TShock.UpdateManager, new object[] { state });
+            return;
+        }
+        try
+        {
+            this._UpdateCheckAsyncDetour.GenerateTrampoline().Invoke(TShock.UpdateManager, new object[] { state });
+        }
+        catch when (this.config.SuppressUpdate == UpdateOptions.Silent)
+        {
+            // silently suppress
+            return;
         }
     }
 }

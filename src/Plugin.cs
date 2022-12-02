@@ -17,11 +17,11 @@ public partial class Plugin : TerrariaPlugin
     public Plugin(Main game) : base(game)
     {
         this.config = new Config();
-        this._checkForUpdateDetour = new Detour(
+        this._UpdateCheckAsyncDetour = new Detour(
             typeof(UpdateManager)
-                .GetMethod("CheckForUpdatesAsync", BindingFlags.NonPublic | BindingFlags.Instance)!,
+                .GetMethod("UpdateCheckAsync", BindingFlags.Public | BindingFlags.Instance)!,
             typeof(Plugin)
-                .GetMethod("CheckForUpdatesAsync", BindingFlags.NonPublic | BindingFlags.Instance)!);
+                .GetMethod("UpdateCheckAsync", BindingFlags.Public | BindingFlags.Instance)!);
     }
 
     public override void Initialize()
@@ -62,7 +62,7 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.MessageBuffer.GetData -= this.PatchVersion;
             On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor -= this.TEDisplayDoll_ctor;
             GeneralHooks.ReloadEvent -= this.OnReload;
-            this._checkForUpdateDetour.Undo();
+            this._UpdateCheckAsyncDetour.Undo();
         }
         base.Dispose(disposing);
     }
