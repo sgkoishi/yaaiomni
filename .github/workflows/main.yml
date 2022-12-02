@@ -23,11 +23,11 @@ jobs:
 
       - name: Build
         run: |
+          cd src
           dotnet build
-          rm ./bin/Debug/net6.0/HttpServer.dll
 
       - name: CI Artifact
         uses: actions/upload-artifact@v2
         with:
           name: Artifact
-          path: ./bin/Debug/net6.0
+          path: ./src/bin/Debug/net6.0
