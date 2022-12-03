@@ -17,11 +17,10 @@ public partial class Plugin : TerrariaPlugin
     public Plugin(Main game) : base(game)
     {
         this.config = new Config();
-        this._UpdateCheckAsyncDetour = new Detour(
+        this._UpdateCheckAsyncDetour = new Hook(
             typeof(UpdateManager)
                 .GetMethod("UpdateCheckAsync", BindingFlags.Public | BindingFlags.Instance)!,
-            typeof(Plugin)
-                .GetMethod("UpdateCheckAsync", BindingFlags.Public | BindingFlags.Instance)!);
+            this.UpdateCheckAsync);
     }
 
     public override void Initialize()

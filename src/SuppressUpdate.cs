@@ -6,7 +6,7 @@ public partial class Plugin : TerrariaPlugin
 {
     private readonly IDetour _UpdateCheckAsyncDetour;
 
-    public async Task UpdateCheckAsync(object state)
+    public async Task UpdateCheckAsync(UpdateManager um, object state)
     {
         if (this.config.SuppressUpdate == UpdateOptions.Disabled)
         {
@@ -14,7 +14,7 @@ public partial class Plugin : TerrariaPlugin
         }
         try
         {
-            this._UpdateCheckAsyncDetour.GenerateTrampoline().Invoke(TShock.UpdateManager, new object[] { state });
+            this._UpdateCheckAsyncDetour.GenerateTrampoline().Invoke(um, new object[] { state });
         }
         catch when (this.config.SuppressUpdate == UpdateOptions.Silent)
         {
