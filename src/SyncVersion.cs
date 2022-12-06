@@ -1,6 +1,8 @@
 ﻿using Terraria;
 using TerrariaApi.Server;
 
+namespace Chireiden.TShock.Omni;
+
 public partial class Plugin : TerrariaPlugin
 {
     private static readonly byte[] _versionPacket = new byte[] { 1, 11, 84, 101, 114, 114, 97, 114, 105, 97 };
