@@ -24,6 +24,7 @@ public partial class Plugin : TerrariaPlugin
                     self.Center.ToTileCoordinates(),
                     3f,
                     WithPermissionCheck(DelegateMethods.SpreadDirt, TShockAPI.TShock.Players[self.owner]));
+                self.active = false;
                 return;
             }
             if (self.type == ProjectileID.WetRocket ||
@@ -36,6 +37,7 @@ public partial class Plugin : TerrariaPlugin
                     self.Center.ToTileCoordinates(),
                     3f,
                     WithPermissionCheck(DelegateMethods.SpreadWater, TShockAPI.TShock.Players[self.owner]));
+                self.active = false;
                 return;
             }
             if (self.type == ProjectileID.LavaRocket ||
@@ -48,6 +50,7 @@ public partial class Plugin : TerrariaPlugin
                     self.Center.ToTileCoordinates(),
                     3f,
                     WithPermissionCheck(DelegateMethods.SpreadLava, TShockAPI.TShock.Players[self.owner]));
+                self.active = false;
                 return;
             }
             if (self.type == ProjectileID.HoneyRocket ||
@@ -60,6 +63,7 @@ public partial class Plugin : TerrariaPlugin
                     self.Center.ToTileCoordinates(),
                     3f,
                     WithPermissionCheck(DelegateMethods.SpreadHoney, TShockAPI.TShock.Players[self.owner]));
+                self.active = false;
                 return;
             }
             if (self.type == ProjectileID.DryRocket ||
@@ -72,6 +76,7 @@ public partial class Plugin : TerrariaPlugin
                     self.Center.ToTileCoordinates(),
                     3.5f,
                     WithPermissionCheck(DelegateMethods.SpreadDry, TShockAPI.TShock.Players[self.owner]));
+                self.active = false;
                 return;
             }
         }
