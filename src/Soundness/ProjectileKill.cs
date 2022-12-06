@@ -22,7 +22,7 @@ public partial class Plugin : TerrariaPlugin
             {
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),
-                    3f,
+                    4.2f,
                     WithPermissionCheck(DelegateMethods.SpreadDirt, TShockAPI.TShock.Players[self.owner]));
                 self.active = false;
                 return;
