@@ -23,8 +23,12 @@ public partial class Plugin : TerrariaPlugin
         this.config = new Config();
         this._UpdateCheckAsyncDetour = new Hook(
             typeof(UpdateManager)
-                .GetMethod("UpdateCheckAsync", BindingFlags.Public | BindingFlags.Instance)!,
+                .GetMethod(nameof(UpdateManager.UpdateCheckAsync), BindingFlags.Public | BindingFlags.Instance)!,
             this.UpdateCheckAsync);
+        this._TSPlayerHasPermissionDetour = new Hook(
+            typeof(TSPlayer)
+                .GetMethod(nameof(TSPlayer.HasPermission), BindingFlags.Public | BindingFlags.Instance)!,
+            this.HasPermission);
     }
 
     private void OnReload(ReloadEventArgs? e)
@@ -62,6 +66,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.Projectile.Kill += this.Soundness_ProjectileKill;
         GeneralHooks.ReloadEvent += this.OnReload;
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
+        Commands.ChatCommands.Add(new Command("chireiden.omni.whynot", this.QueryPermissionCheck, "whynot"));
     }
 
     protected override void Dispose(bool disposing)
