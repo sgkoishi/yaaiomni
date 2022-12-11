@@ -1,4 +1,7 @@
-﻿namespace Chireiden.TShock.Omni;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace Chireiden.TShock.Omni;
 
 public class Config
 {
@@ -7,16 +10,36 @@ public class Config
     public bool ShowConfig = true;
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
     public UpdateOptions SuppressUpdate = UpdateOptions.Silent;
-    public DebugPacket DebugPacket = new ();
-    public SoundnessFix Soundness = new ();
-    public PermissionSettings Permission = new ();
+    public NameCollisionAction NameCollision = NameCollisionAction.Known;
+    public DebugPacket DebugPacket = new();
+    public SoundnessFix Soundness = new();
+    public PermissionSettings Permission = new();
+    public Modes Mode = new();
 }
 
+[JsonConverter(typeof(StringEnumConverter))]
 public enum UpdateOptions
 {
     Silent,
     Disabled,
     Default
+}
+
+[JsonConverter(typeof(StringEnumConverter))]
+public enum NameCollisionAction
+{
+    /// <summary> Kick the first player </summary>
+    First,
+    /// <summary> Kick the second player </summary>
+    Second,
+    /// <summary> Kick both players </summary>
+    Both,
+    /// <summary> Kick neither player </summary>
+    None,
+    /// <summary> Kick whoever does not using a known ip and not logged in, fallback to <see cref="Second"/> </summary>
+    Known,
+    /// <summary> Do nothing </summary>
+    Unhandled
 }
 
 public class DebugPacket
@@ -27,12 +50,13 @@ public class DebugPacket
 
 public class SoundnessFix
 {
+    /// <summary> Permission restrict server-side tile modification projectiles like liquid bombs & rockets, dirt bombs. </summary>
     public bool ProjectileKillMapEditRestriction = true;
 }
 
 public class PermissionSettings
 {
-    public PermissionLogSettings Log = new ();
+    public PermissionLogSettings Log = new();
 }
 
 public class PermissionLogSettings
@@ -42,4 +66,65 @@ public class PermissionLogSettings
     public bool LogDuplicate = false;
     public double LogDistinctTime = 1;
     public bool LogStackTrace = false;
+}
+
+public class Modes
+{
+    public Building Building = new();
+    public PvP PvP = new();
+    public Vanilla Vanilla = new();
+}
+
+public class Building
+{
+    public bool Enabled = false;
+}
+
+public class PvP
+{
+    public bool Enabled = false;
+}
+
+public class Vanilla
+{
+    public bool Enabled = false;
+    public string[] Permissions = new[] {
+        TShockAPI.Permissions.canregister,
+        TShockAPI.Permissions.canlogin,
+        TShockAPI.Permissions.canlogout,
+        TShockAPI.Permissions.canchangepassword,
+        TShockAPI.Permissions.hurttownnpc,
+        TShockAPI.Permissions.spawnpets,
+        TShockAPI.Permissions.summonboss,
+        TShockAPI.Permissions.startinvasion,
+        TShockAPI.Permissions.startdd2,
+        TShockAPI.Permissions.home,
+        TShockAPI.Permissions.spawn,
+        TShockAPI.Permissions.rod,
+        TShockAPI.Permissions.wormhole,
+        TShockAPI.Permissions.pylon,
+        TShockAPI.Permissions.tppotion,
+        TShockAPI.Permissions.magicconch,
+        TShockAPI.Permissions.demonconch,
+        TShockAPI.Permissions.editspawn,
+        TShockAPI.Permissions.usesundial,
+        TShockAPI.Permissions.movenpc,
+        TShockAPI.Permissions.canbuild,
+        TShockAPI.Permissions.canpaint,
+        TShockAPI.Permissions.toggleparty,
+        TShockAPI.Permissions.whisper,
+        TShockAPI.Permissions.canpartychat,
+        TShockAPI.Permissions.cantalkinthird,
+        TShockAPI.Permissions.canchat,
+        TShockAPI.Permissions.synclocalarea,
+        TShockAPI.Permissions.sendemoji,
+    };
+    public bool AllowJourney = false;
+    public bool IgnoreAntiCheat = false;
+    public VanillaAntiCheat AntiCheat = new();
+}
+
+public class VanillaAntiCheat
+{
+    public bool Enabled = false;
 }

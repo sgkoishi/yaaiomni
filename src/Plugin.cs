@@ -20,6 +20,7 @@ public partial class Plugin : TerrariaPlugin
 
     public Plugin(Main game) : base(game)
     {
+        this.Order = int.MinValue;
         this.config = new Config();
         this._UpdateCheckAsyncDetour = new Hook(
             typeof(UpdateManager)
@@ -54,6 +55,7 @@ public partial class Plugin : TerrariaPlugin
         {
             e?.Player?.SendInfoMessage(JsonConvert.SerializeObject(this.config, Formatting.Indented));
         }
+        this.VanillaSetup();
     }
 
     public override void Initialize()
@@ -64,9 +66,15 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.NetMessage.SendData += this.DebugPacket_SendData;
         On.Terraria.MessageBuffer.GetData += this.DebugPacket_GetData;
         On.Terraria.Projectile.Kill += this.Soundness_ProjectileKill;
+        ServerApi.Hooks.NetNameCollision.Register(this, this.NameCollision);
+        ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         GeneralHooks.ReloadEvent += this.OnReload;
-        this.OnReload(new ReloadEventArgs(TSPlayer.Server));
+    }
+
+    private void OnGamePostInitialize(EventArgs args)
+    {
         Commands.ChatCommands.Add(new Command("chireiden.omni.whynot", this.QueryPermissionCheck, "whynot"));
+        this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 
     protected override void Dispose(bool disposing)
@@ -79,6 +87,8 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.NetMessage.SendData -= this.DebugPacket_SendData;
             On.Terraria.MessageBuffer.GetData -= this.DebugPacket_GetData;
             On.Terraria.Projectile.Kill -= this.Soundness_ProjectileKill;
+            ServerApi.Hooks.NetNameCollision.Deregister(this, this.NameCollision);
+            ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
             GeneralHooks.ReloadEvent -= this.OnReload;
             this._UpdateCheckAsyncDetour.Undo();
         }
