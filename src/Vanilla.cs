@@ -13,7 +13,7 @@ public partial class Plugin : TerrariaPlugin
             {
                 TShockAPI.TShock.Groups.AddGroup(vanilla, null, "", "255,255,255");
             }
-            var addperm = TShockAPI.TShock.Groups.AddPermissions(vanilla, this.config.Mode.Vanilla.Permissions.ToList());
+            var addperm = TShockAPI.TShock.Groups.AddPermissions(vanilla, this.config.Mode.Vanilla.Permissions);
             if (this.config.Mode.Vanilla.AllowJourney)
             {
                 addperm += TShockAPI.TShock.Groups.AddPermissions(vanilla, new List<string> { "tshock.journey.*" });

@@ -11,6 +11,7 @@ public class Config
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
     public UpdateOptions SuppressUpdate = UpdateOptions.Silent;
     public NameCollisionAction NameCollision = NameCollisionAction.Known;
+    public List<string> HideCommands = new List<string> { "whynot" };
     public DebugPacket DebugPacket = new();
     public SoundnessFix Soundness = new();
     public PermissionSettings Permission = new();
@@ -88,7 +89,7 @@ public class PvP
 public class Vanilla
 {
     public bool Enabled = false;
-    public string[] Permissions = new[] {
+    public List<string> Permissions = new List<string> {
         TShockAPI.Permissions.canregister,
         TShockAPI.Permissions.canlogin,
         TShockAPI.Permissions.canlogout,

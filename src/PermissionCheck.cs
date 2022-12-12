@@ -1,5 +1,4 @@
-﻿using MonoMod.RuntimeDetour;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -9,12 +8,11 @@ namespace Chireiden.TShock.Omni;
 public partial class Plugin : TerrariaPlugin
 {
     public record PermissionCheckHistory(string Permission, DateTime Time, bool Result, StackTrace? Trace);
-    private readonly IDetour _TSPlayerHasPermissionDetour;
     private readonly ConditionalWeakTable<TSPlayer, Queue<PermissionCheckHistory>> _permissions = new();
 
     public bool HasPermission(TSPlayer player, string permission)
     {
-        var result = (bool) this._TSPlayerHasPermissionDetour.GenerateTrampoline().Invoke(player, new object[] { permission })!;
+        var result = (bool) this.GenerateTrampoline(nameof(HasPermission)).Invoke(player, new object[] { permission })!;
         if (this.config.Permission.Log.DoLog)
         {
             var history = this._permissions.GetOrCreateValue(player);
