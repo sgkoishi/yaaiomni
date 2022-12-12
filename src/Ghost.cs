@@ -1,19 +1,23 @@
-﻿using System.Runtime.CompilerServices;
-using TerrariaApi.Server;
+﻿using TerrariaApi.Server;
 using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    // ConditionalWeakTable<_, TValue> where TValue : class
-    // So we need a wrapper class
-    public class GhostState
+    private bool PlayerActive(TSPlayer player)
     {
-        public bool Ghost;
+        if (player.TPlayer == null)
+        {
+            return false;
+        }
+        var state = player.GetData<bool?>(Consts.DataKey.Ghost);
+        if (state == null)
+        {
+            return player.TPlayer.active;
+        }
+        return !state.Value;
     }
-
-    private readonly ConditionalWeakTable<TSPlayer, GhostState> _ghost = new();
 
     private void Ghost_SendBytes(object? sender, OTAPI.Hooks.NetMessage.SendBytesEventArgs e)
     {
@@ -24,15 +28,17 @@ public partial class Plugin : TerrariaPlugin
         var playerIndex = e.Data[3];
         if (e.RemoteClient != playerIndex)
         {
-            lock (this._ghost)
+            foreach (var player in TShockAPI.TShock.Players)
             {
-                foreach (var players in _ghost)
+                if (player.Index == playerIndex)
                 {
-                    if (players.Key.Index == playerIndex)
+                    var state = player.GetData<bool?>(Consts.DataKey.Ghost);
+                    if (state == null)
                     {
-                        e.Data[4] = (byte) players.Value.Ghost.GetHashCode();
-                        break;
+                        return;
                     }
+                    e.Data[4] = (byte) (!state).GetHashCode();
+                    break;
                 }
             }
         }
@@ -40,10 +46,24 @@ public partial class Plugin : TerrariaPlugin
 
     private void GhostCommand(CommandArgs args)
     {
-        lock (this._ghost)
+        if (args.Parameters.Contains("-v"))
         {
-            var state = this._ghost.GetOrCreateValue(args.Player)!;
-            state.Ghost = !state.Ghost;
+            args.TPlayer.ghost = !args.TPlayer.ghost;
+        }
+        else if (args.Parameters.Contains("-a"))
+        {
+            args.TPlayer.active = !args.TPlayer.active;
+        }
+        else if (args.Parameters.Contains("-u"))
+        {
+            args.TPlayer.active = true;
+            args.TPlayer.ghost = false;
+            args.Player.SetData<bool?>(Consts.DataKey.Ghost, null);
+        }
+        else
+        {
+            var state = args.Player.GetData<bool?>(Consts.DataKey.Ghost) ?? false;
+            args.Player.SetData<bool?>(Consts.DataKey.Ghost, !state);
         }
         Terraria.NetMessage.SendData(14, -1, args.Player.Index, null, args.Player.Index, args.TPlayer.active.GetHashCode());
     }

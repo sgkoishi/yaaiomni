@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using TerrariaApi.Server;
 using TShockAPI;
 
@@ -8,19 +7,22 @@ namespace Chireiden.TShock.Omni;
 public partial class Plugin : TerrariaPlugin
 {
     public record PermissionCheckHistory(string Permission, DateTime Time, bool Result, StackTrace? Trace);
-    private readonly ConditionalWeakTable<TSPlayer, Queue<PermissionCheckHistory>> _permissions = new();
 
     public bool HasPermission(TSPlayer player, string permission)
     {
         var result = (bool) this.GenerateTrampoline(nameof(HasPermission)).Invoke(player, new object[] { permission })!;
         if (this.config.Permission.Log.DoLog)
         {
-            var history = this._permissions.GetOrCreateValue(player);
+            if (player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory) == null)
+            {
+                player.SetData(Consts.DataKey.PermissionHistory, new Queue<PermissionCheckHistory>());
+            }
+            var history = player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);
             var now = DateTime.Now;
             var ll = this.config.Permission.Log.LogCount;
-            lock (this._permissions)
+            if (!this.config.Permission.Log.LogDuplicate)
             {
-                if (!this.config.Permission.Log.LogDuplicate)
+                lock (history)
                 {
                     foreach (var item in history)
                     {
@@ -30,11 +32,14 @@ public partial class Plugin : TerrariaPlugin
                         }
                     }
                 }
+            }
+            var entry = new PermissionCheckHistory(permission, now, result, this.config.Permission.Log.LogStackTrace ? new StackTrace() : null);
+            lock (history)
+            {
                 if (ll > 0 && history.Count == ll)
                 {
                     history.Dequeue();
                 }
-                var entry = new PermissionCheckHistory(permission, now, result, this.config.Permission.Log.LogStackTrace ? new StackTrace() : null);
                 history.Enqueue(entry);
             }
         }
@@ -43,11 +48,14 @@ public partial class Plugin : TerrariaPlugin
 
     private void QueryPermissionCheck(CommandArgs args)
     {
-        var list = new List<PermissionCheckHistory>();
-        lock (this._permissions)
+        var list = args.Player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory) ?? new Queue<PermissionCheckHistory>();
+
+        lock (list)
         {
-            var l = this._permissions.GetOrCreateValue(args.Player);
-            list = l.ToList();
+#pragma warning disable CS0728
+            // We are intentionally lock the previous list and create a new one
+            list = new Queue<PermissionCheckHistory>(list);
+#pragma warning restore CS0728
         }
 
         if (list.Count == 0)

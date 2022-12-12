@@ -31,6 +31,12 @@ public partial class Plugin : TerrariaPlugin
             typeof(TSPlayer)
                 .GetMethod(nameof(TSPlayer.HasPermission), BindingFlags.Public | BindingFlags.Instance)!,
             this.HasPermission);
+        this.Detour(
+            nameof(this.PlayerActive),
+            typeof(TSPlayer)
+                .GetProperty(nameof(TSPlayer.Active), BindingFlags.Public | BindingFlags.Instance)!
+                .GetMethod!,
+            this.PlayerActive);
     }
 
     private void OnReload(ReloadEventArgs? e)
