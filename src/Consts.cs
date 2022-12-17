@@ -10,6 +10,7 @@ public partial class Plugin : TerrariaPlugin
         {
             public const string Ghost = "chireiden.omni.ghost";
             public const string Whynot = "chireiden.omni.whynot";
+            public const string SetLanguage = "chireiden.omni.setlang";
         }
         public static class DataKey
         {

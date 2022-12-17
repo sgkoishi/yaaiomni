@@ -62,6 +62,7 @@ public partial class Plugin : TerrariaPlugin
         {
             e?.Player?.SendInfoMessage(JsonConvert.SerializeObject(this.config, Formatting.Indented));
         }
+        this.PermissionSetup();
         this.VanillaSetup();
     }
 
@@ -107,6 +108,7 @@ public partial class Plugin : TerrariaPlugin
     {
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Whynot, this.QueryPermissionCheck, "whynot"));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Ghost, this.GhostCommand, "ghost"));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.SetLanguage, this.LangCommand, "setlang"));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

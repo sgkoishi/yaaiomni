@@ -35,4 +35,24 @@ public partial class Plugin : TerrariaPlugin
             TShockAPI.TShock.Groups.UpdateGroup(group.Name, Consts.VanillaGroup, group.Permissions, group.ChatColor, group.Suffix, group.Prefix);
         }
     }
+
+    private void PermissionSetup()
+    {
+        var na = TShockAPI.TShock.Groups.GetGroupByName("newadmin");
+        if (!na.HasPermission(Consts.Permissions.Ghost))
+        {
+            na.AddPermission(Consts.Permissions.Ghost);
+        }
+        if (!na.HasPermission(Consts.Permissions.SetLanguage))
+        {
+            na.AddPermission(Consts.Permissions.SetLanguage);
+        }
+        if (this.config.Permission.Preset.DebugForAdmin)
+        {
+            if (!na.HasPermission(Consts.Permissions.Whynot))
+            {
+                na.AddPermission(Consts.Permissions.Whynot);
+            }
+        }
+    }
 }

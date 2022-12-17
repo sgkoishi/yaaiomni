@@ -48,14 +48,18 @@ public partial class Plugin : TerrariaPlugin
 
     private void QueryPermissionCheck(CommandArgs args)
     {
-        var list = args.Player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory) ?? new Queue<PermissionCheckHistory>();
-
-        lock (list)
+        Queue<PermissionCheckHistory> list;
+        var existing = args.Player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);
+        if (existing != null)
         {
-#pragma warning disable CS0728
-            // We are intentionally lock the previous list and create a new one
-            list = new Queue<PermissionCheckHistory>(list);
-#pragma warning restore CS0728
+            lock (existing)
+            {
+                list = new Queue<PermissionCheckHistory>(existing);
+            }
+        }
+        else
+        {
+            list = new();
         }
 
         if (list.Count == 0)

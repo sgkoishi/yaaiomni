@@ -58,6 +58,7 @@ public class SoundnessFix
 public class PermissionSettings
 {
     public PermissionLogSettings Log = new();
+    public Preset Preset = new();
 }
 
 public class PermissionLogSettings
@@ -67,6 +68,11 @@ public class PermissionLogSettings
     public bool LogDuplicate = false;
     public double LogDistinctTime = 1;
     public bool LogStackTrace = false;
+}
+
+public class Preset
+{
+    public bool DebugForAdmin = true;
 }
 
 public class Modes
