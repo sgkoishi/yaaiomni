@@ -11,7 +11,11 @@ public class Config
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
     public UpdateOptions SuppressUpdate = UpdateOptions.Silent;
     public NameCollisionAction NameCollision = NameCollisionAction.Known;
-    public List<string> HideCommands = new List<string> { "whynot" };
+    public List<string> HideCommands = new List<string> {
+        Plugin.Consts.Commands.Whynot,
+        Plugin.Consts.Commands.SetPvp,
+        Plugin.Consts.Commands.SetTeam,
+    };
     public DebugPacket DebugPacket = new();
     public Soundness Soundness = new();
     public PermissionSettings Permission = new();
@@ -81,7 +85,7 @@ public class RestrictSettings
 public class Preset
 {
     public bool Enabled = true;
-    public bool DebugForAdmin = true;
+    public bool DebugForAdminOnly = true;
     public bool Restrict = true;
 }
 

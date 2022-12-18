@@ -49,9 +49,9 @@ public partial class Plugin : TerrariaPlugin
             return;
         }
 
+        var guest = TShockAPI.TShock.Groups.GetGroupByName("guest");
         if (preset.Restrict)
         {
-            var guest = TShockAPI.TShock.Groups.GetGroupByName("guest");
             if (!guest.HasPermission(Consts.Permissions.TogglePvP))
             {
                 guest.AddPermission(Consts.Permissions.TogglePvP);
@@ -63,15 +63,23 @@ public partial class Plugin : TerrariaPlugin
         }
 
         var na = TShockAPI.TShock.Groups.GetGroupByName("newadmin");
-        if (!na.HasPermission(Consts.Permissions.Ghost))
+        if (!na.HasPermission(Consts.Permissions.Admin.Ghost))
         {
-            na.AddPermission(Consts.Permissions.Ghost);
+            na.AddPermission(Consts.Permissions.Admin.Ghost);
         }
-        if (!na.HasPermission(Consts.Permissions.SetLanguage))
+        if (!na.HasPermission(Consts.Permissions.Admin.SetLanguage))
         {
-            na.AddPermission(Consts.Permissions.SetLanguage);
+            na.AddPermission(Consts.Permissions.Admin.SetLanguage);
         }
-        if (preset.DebugForAdmin)
+
+        if (!preset.DebugForAdminOnly)
+        {
+            if (!guest.HasPermission(Consts.Permissions.Whynot))
+            {
+                guest.AddPermission(Consts.Permissions.Whynot);
+            }
+        }
+        else
         {
             if (!na.HasPermission(Consts.Permissions.Whynot))
             {

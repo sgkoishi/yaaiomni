@@ -76,7 +76,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.Projectile.Kill += this.Soundness_ProjectileKill;
         OTAPI.Hooks.NetMessage.SendBytes += this.Ghost_SendBytes;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.NameCollision);
-        TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
+        TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize, int.MaxValue);
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.PlayerCommand;
         TShockAPI.Hooks.GeneralHooks.ReloadEvent += this.OnReload;
         TShockAPI.GetDataHandlers.TogglePvp.Register(this.TogglePvp);
@@ -110,9 +110,11 @@ public partial class Plugin : TerrariaPlugin
 
     private void OnGamePostInitialize(EventArgs args)
     {
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Whynot, this.QueryPermissionCheck, "whynot"));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Ghost, this.GhostCommand, "ghost"));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.SetLanguage, this.LangCommand, "setlang"));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Whynot, this.QueryPermissionCheck, Consts.Commands.Whynot));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.Ghost, this.GhostCommand, Consts.Commands.Ghost));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.SetLanguage, this.LangCommand, Consts.Commands.SetLanguage));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.PvPCommand, this.PvPCommand, Consts.Commands.SetPvp));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.TeamCommand, this.TeamCommand, Consts.Commands.SetTeam));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }
