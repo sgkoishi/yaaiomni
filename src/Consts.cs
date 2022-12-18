@@ -11,6 +11,8 @@ public partial class Plugin : TerrariaPlugin
             public const string Ghost = "chireiden.omni.ghost";
             public const string Whynot = "chireiden.omni.whynot";
             public const string SetLanguage = "chireiden.omni.setlang";
+            public const string TogglePvP = "chireiden.omni.togglepvp";
+            public const string ToggleTeam = "chireiden.omni.toggleteam";
         }
         public static class DataKey
         {

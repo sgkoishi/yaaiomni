@@ -75,10 +75,12 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.MessageBuffer.GetData += this.DebugPacket_GetData;
         On.Terraria.Projectile.Kill += this.Soundness_ProjectileKill;
         OTAPI.Hooks.NetMessage.SendBytes += this.Ghost_SendBytes;
-        ServerApi.Hooks.NetNameCollision.Register(this, this.NameCollision);
-        ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
+        TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.NameCollision);
+        TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.PlayerCommand;
-        GeneralHooks.ReloadEvent += this.OnReload;
+        TShockAPI.Hooks.GeneralHooks.ReloadEvent += this.OnReload;
+        TShockAPI.GetDataHandlers.TogglePvp.Register(this.TogglePvp);
+        TShockAPI.GetDataHandlers.PlayerTeam.Register(this.PlayerTeam);
     }
 
     protected override void Dispose(bool disposing)
@@ -92,10 +94,12 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.MessageBuffer.GetData -= this.DebugPacket_GetData;
             On.Terraria.Projectile.Kill -= this.Soundness_ProjectileKill;
             OTAPI.Hooks.NetMessage.SendBytes -= this.Ghost_SendBytes;
-            ServerApi.Hooks.NetNameCollision.Deregister(this, this.NameCollision);
-            ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
+            TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.NameCollision);
+            TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
             TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.PlayerCommand;
-            GeneralHooks.ReloadEvent -= this.OnReload;
+            TShockAPI.Hooks.GeneralHooks.ReloadEvent -= this.OnReload;
+            TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.TogglePvp);
+            TShockAPI.GetDataHandlers.PlayerTeam.UnRegister(this.PlayerTeam);
             foreach (var detour in this._detours.Values)
             {
                 detour.Dispose();

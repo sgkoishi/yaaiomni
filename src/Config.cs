@@ -13,7 +13,7 @@ public class Config
     public NameCollisionAction NameCollision = NameCollisionAction.Known;
     public List<string> HideCommands = new List<string> { "whynot" };
     public DebugPacket DebugPacket = new();
-    public SoundnessFix Soundness = new();
+    public Soundness Soundness = new();
     public PermissionSettings Permission = new();
     public Modes Mode = new();
 }
@@ -49,7 +49,7 @@ public class DebugPacket
     public bool Out = false;
 }
 
-public class SoundnessFix
+public class Soundness
 {
     /// <summary> Permission restrict server-side tile modification projectiles like liquid bombs & rockets, dirt bombs. </summary>
     public bool ProjectileKillMapEditRestriction = true;
@@ -58,6 +58,7 @@ public class SoundnessFix
 public class PermissionSettings
 {
     public PermissionLogSettings Log = new();
+    public RestrictSettings Restrict = new();
     public Preset Preset = new();
 }
 
@@ -70,9 +71,18 @@ public class PermissionLogSettings
     public bool LogStackTrace = false;
 }
 
+public class RestrictSettings
+{
+    public bool Enabled = true;
+    public bool ToggleTeam = true;
+    public bool TogglePvP = true;
+}
+
 public class Preset
 {
+    public bool Enabled = true;
     public bool DebugForAdmin = true;
+    public bool Restrict = true;
 }
 
 public class Modes
@@ -125,6 +135,8 @@ public class Vanilla
         TShockAPI.Permissions.canchat,
         TShockAPI.Permissions.synclocalarea,
         TShockAPI.Permissions.sendemoji,
+        Plugin.Consts.Permissions.TogglePvP,
+        Plugin.Consts.Permissions.ToggleTeam,
     };
     public bool AllowJourney = false;
     public bool IgnoreAntiCheat = false;
