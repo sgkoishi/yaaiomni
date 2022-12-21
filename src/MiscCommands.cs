@@ -114,4 +114,16 @@ public partial class Plugin : TerrariaPlugin
             Terraria.NetMessage.SendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.Player.Index);
         }
     }
+    private void GCCommand(CommandArgs args)
+    {
+        if (args.Parameters.Contains("-f"))
+        {
+            GC.Collect();
+        }
+        else
+        {
+            GC.Collect(3, GCCollectionMode.Optimized, false);
+        }
+        args.Player.SendSuccessMessage("GC Triggered.");
+    }
 }

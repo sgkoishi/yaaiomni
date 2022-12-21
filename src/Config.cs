@@ -10,11 +10,13 @@ public class Config
     public bool ShowConfig = true;
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
     public UpdateOptions SuppressUpdate = UpdateOptions.Silent;
+    public SocketType Socket = SocketType.TShock;
     public NameCollisionAction NameCollision = NameCollisionAction.Known;
     public List<string> HideCommands = new List<string> {
         Plugin.Consts.Commands.Whynot,
         Plugin.Consts.Commands.SetPvp,
         Plugin.Consts.Commands.SetTeam,
+        Plugin.Consts.Commands.TriggerGarbageCollection,
     };
     public DebugPacket DebugPacket = new();
     public Soundness Soundness = new();
@@ -28,6 +30,18 @@ public enum UpdateOptions
     Silent,
     Disabled,
     Default
+}
+
+[JsonConverter(typeof(StringEnumConverter))]
+public enum SocketType
+{
+    Vanilla,
+    TShock,
+    AsIs,
+    Unset,
+    HackyBlocked,
+    HackyAsync,
+    AnotherAsyncSocket
 }
 
 [JsonConverter(typeof(StringEnumConverter))]

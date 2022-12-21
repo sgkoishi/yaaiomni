@@ -19,6 +19,7 @@ public partial class Plugin : TerrariaPlugin
                 public const string SetLanguage = "chireiden.omni.setlang";
                 public const string SetPvp = "chireiden.omni.admin.setpvp";
                 public const string SetTeam = "chireiden.omni.admin.setteam";
+                public const string TriggerGarbageCollection = "chireiden.omni.admin.gc";
             }
         }
         public static class Commands
@@ -28,6 +29,7 @@ public partial class Plugin : TerrariaPlugin
             public const string SetLanguage = "setlang";
             public const string SetPvp = "_pvp";
             public const string SetTeam = "_team";
+            public const string TriggerGarbageCollection = "_gc";
         }
         public static class DataKey
         {

@@ -10,7 +10,7 @@ public partial class Plugin : TerrariaPlugin
 
     private void PlayerCommand(PlayerCommandEventArgs e)
     {
-        var hc = _hiddenCommands.FindAll(c => c.HasAlias(e.CommandName));
+        var hc = _hiddenCommands.FindAll(c => c.HasAlias(e.CommandName) && c.CanRun(e.Player));
         if (hc.Count > 0)
         {
             var ecl = (List<Command>) e.CommandList;
