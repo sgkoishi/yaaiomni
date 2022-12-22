@@ -5,7 +5,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    public Task UpdateCheckAsync(UpdateManager um, object state)
+    public Task UpdateCheckAsync(Func<UpdateManager, object, Task> orig, UpdateManager um, object state)
     {
         return Task.Run(() =>
         {
@@ -15,7 +15,7 @@ public partial class Plugin : TerrariaPlugin
             }
             try
             {
-                this.GenerateTrampoline(nameof(UpdateCheckAsync)).Invoke(um, new object[] { state });
+                orig(um, state);
             }
             catch when (this.config.SuppressUpdate == UpdateOptions.Silent)
             {

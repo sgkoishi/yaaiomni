@@ -8,9 +8,9 @@ public partial class Plugin : TerrariaPlugin
 {
     public record PermissionCheckHistory(string Permission, DateTime Time, bool Result, StackTrace? Trace);
 
-    public bool HasPermission(TSPlayer player, string permission)
+    public bool HasPermission(Func<TSPlayer, string, bool> orig, TSPlayer player, string permission)
     {
-        var result = (bool) this.GenerateTrampoline(nameof(HasPermission)).Invoke(player, new object[] { permission })!;
+        var result = orig(player, permission);
         if (this.config.Permission.Log.DoLog)
         {
             if (player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory) == null)

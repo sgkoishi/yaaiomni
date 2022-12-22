@@ -10,7 +10,7 @@ public class Config
     public bool ShowConfig = true;
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
     public UpdateOptions SuppressUpdate = UpdateOptions.Silent;
-    public SocketType Socket = SocketType.TShock;
+    public SocketType Socket = SocketType.AsIs;
     public NameCollisionAction NameCollision = NameCollisionAction.Known;
     public List<string> HideCommands = new List<string> {
         Plugin.Consts.Commands.Whynot,

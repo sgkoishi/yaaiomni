@@ -11,8 +11,4 @@ public partial class Plugin : TerrariaPlugin
     {
         this._detours.Add(name, new Hook(from, to));
     }
-    internal MethodBase GenerateTrampoline(string name)
-    {
-        return this._detours[name].GenerateTrampoline();
-    }
 }
