@@ -27,40 +27,60 @@ public partial class Plugin : TerrariaPlugin
             }
 
             var slot = BitConverter.ToInt16(data.Slice(1, 2));
-
-            // Don't handle if we don't care
-            if (slot < Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0)
-            {
-                return false;
-            }
-            // For future compatibility
-            if (slot > Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0 + 10)
-            {
-                return false;
-            }
-
-            slot -= (short) Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0;
-            var loadoutIndex = slot / 30;
-            if (loadoutIndex == Terraria.Main.player[player].CurrentLoadoutIndex)
-            {
-                return false;
-            }
-
-            slot %= 30;
             var stack = BitConverter.ToInt16(data.Slice(3, 2));
             var prefix = data[5];
             var type = BitConverter.ToInt16(data.Slice(6, 2));
-            const short ArmorLength = 20;
-            var array = slot >= ArmorLength
-                ? Terraria.Main.player[player].Loadouts[loadoutIndex].Dye
-                : Terraria.Main.player[player].Loadouts[loadoutIndex].Armor;
-            var index = slot % ArmorLength;
-            array[index] = new Terraria.Item();
-            array[index].netDefaults(type);
-            array[index].stack = stack;
-            array[index].Prefix(prefix);
-            // Handled, stop broadcasting
-            return true;
+
+            var p = Terraria.Main.player[player];
+            var existingItem = slot switch
+            {
+                short when Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0 + 10 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0
+                    => p.Loadouts[2].Dye[slot - Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0],
+                short when Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout3_Armor_0
+                    => p.Loadouts[2].Armor[slot - Terraria.ID.PlayerItemSlotID.Loadout3_Armor_0],
+                short when Terraria.ID.PlayerItemSlotID.Loadout3_Armor_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout2_Dye_0
+                    => p.Loadouts[1].Dye[slot - Terraria.ID.PlayerItemSlotID.Loadout2_Dye_0],
+                short when Terraria.ID.PlayerItemSlotID.Loadout2_Dye_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout2_Armor_0
+                    => p.Loadouts[1].Armor[slot - Terraria.ID.PlayerItemSlotID.Loadout2_Armor_0],
+                short when Terraria.ID.PlayerItemSlotID.Loadout2_Armor_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout1_Dye_0
+                    => p.Loadouts[0].Dye[slot - Terraria.ID.PlayerItemSlotID.Loadout1_Dye_0],
+                short when Terraria.ID.PlayerItemSlotID.Loadout1_Dye_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0
+                    => p.Loadouts[0].Armor[slot - Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0],
+                short when Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank4_0
+                    => p.bank4.item[slot - Terraria.ID.PlayerItemSlotID.Bank4_0],
+                short when Terraria.ID.PlayerItemSlotID.Bank4_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank3_0
+                    => p.bank3.item[slot - Terraria.ID.PlayerItemSlotID.Bank3_0],
+                short when Terraria.ID.PlayerItemSlotID.Bank3_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.TrashItem
+                    => p.trashItem,
+                short when Terraria.ID.PlayerItemSlotID.TrashItem > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank2_0
+                    => p.bank2.item[slot - Terraria.ID.PlayerItemSlotID.Bank2_0],
+                short when Terraria.ID.PlayerItemSlotID.Bank2_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank1_0
+                    => p.bank.item[slot - Terraria.ID.PlayerItemSlotID.Bank1_0],
+                short when Terraria.ID.PlayerItemSlotID.Bank1_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.MiscDye0
+                    => p.miscDyes[slot - Terraria.ID.PlayerItemSlotID.MiscDye0],
+                short when Terraria.ID.PlayerItemSlotID.MiscDye0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Misc0
+                    => p.miscEquips[slot - Terraria.ID.PlayerItemSlotID.Misc0],
+                short when Terraria.ID.PlayerItemSlotID.Misc0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Dye0
+                    => p.dye[slot - Terraria.ID.PlayerItemSlotID.Dye0],
+                short when Terraria.ID.PlayerItemSlotID.Dye0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Armor0
+                    => p.armor[slot - Terraria.ID.PlayerItemSlotID.Armor0],
+                short when Terraria.ID.PlayerItemSlotID.Armor0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Inventory0
+                    => p.inventory[slot - Terraria.ID.PlayerItemSlotID.Inventory0],
+                _ => throw new System.Runtime.CompilerServices.SwitchExpressionException($"Unexpected slot: {slot}")
+            };
+
+            if (existingItem != null)
+            {
+                if ((existingItem.netID == 0 || existingItem.stack == 0) && (type == 0 || stack == 0))
+                {
+                    return true;
+                }
+                if (existingItem.netID == type && existingItem.stack == stack && existingItem.prefix == prefix)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

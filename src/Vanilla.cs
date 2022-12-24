@@ -35,24 +35,13 @@ public partial class Plugin : TerrariaPlugin
         var vg = TShockAPI.TShock.Groups.GetGroupByName(Consts.VanillaGroup);
         TShockAPI.TShock.Groups.UpdateGroup(Consts.VanillaGroup, null, vg.Permissions, vg.ChatColor, vg.Suffix, vg.Prefix);
         var group = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultRegistrationGroupName);
-        while (group.Parent != null)
-        {
-            group = group.Parent;
-        }
-        TShockAPI.TShock.Groups.UpdateGroup(group.Name, Consts.VanillaGroup, group.Permissions, group.ChatColor, group.Suffix, group.Prefix);
-    }
-
-    private void EnsurePermission(Group? group, string permission)
-    {
+        group = Parent(group, _ => true);
         if (group == null)
         {
+            TShockAPI.TSPlayer.Server.SendErrorMessage($"Failed to find group {TShockAPI.TShock.Config.Settings.DefaultRegistrationGroupName}.");
             return;
         }
-
-        if (!group.HasPermission(permission))
-        {
-            group.AddPermission(permission);
-        }
+        TShockAPI.TShock.Groups.UpdateGroup(group.Name, Consts.VanillaGroup, group.Permissions, group.ChatColor, group.Suffix, group.Prefix);
     }
 
     private void PermissionSetup()
@@ -66,19 +55,39 @@ public partial class Plugin : TerrariaPlugin
         var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
         if (preset.Restrict)
         {
-            EnsurePermission(guest, Consts.Permissions.TogglePvP);
-            EnsurePermission(guest, Consts.Permissions.ToggleTeam);
+            guest?.AddPermission(Consts.Permissions.TogglePvP);
+            guest?.AddPermission(Consts.Permissions.ToggleTeam);
         }
 
         var na = TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("newadmin");
-        while (na.Parent?.HasPermission(TShockAPI.Permissions.kick) ?? false)
-        {
-            na = na.Parent;
-        }
+        na = Parent(na, g => g.HasPermission(TShockAPI.Permissions.kick));
 
-        EnsurePermission(na, Consts.Permissions.Admin.Ghost);
-        EnsurePermission(na, Consts.Permissions.Admin.SetLanguage);
-        EnsurePermission(na, Consts.Permissions.Admin.DebugStat);
-        EnsurePermission(preset.DebugForAdminOnly ? na : guest, Consts.Permissions.Whynot);
+        na?.AddPermission(Consts.Permissions.Admin.Ghost);
+        na?.AddPermission(Consts.Permissions.Admin.SetLanguage);
+        na?.AddPermission(Consts.Permissions.Admin.DebugStat);
+        (preset.DebugForAdminOnly ? na : guest)?.AddPermission(Consts.Permissions.Whynot);
+    }
+
+    private static Group? Parent(Group? group, Func<Group, bool> predicate)
+    {
+        var hashset = new HashSet<string>();
+        if (group == null || !predicate(group))
+        {
+            return null;
+        }
+        while (true)
+        {
+            if (!hashset.Add(group.Name))
+            {
+                return null;
+            }
+
+            var parent = group.Parent;
+            if (parent == null || !predicate(parent))
+            {
+                return group;
+            }
+            group = parent;
+        }
     }
 }
