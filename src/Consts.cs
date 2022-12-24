@@ -20,6 +20,7 @@ public partial class Plugin : TerrariaPlugin
                 public const string SetPvp = "chireiden.omni.admin.setpvp";
                 public const string SetTeam = "chireiden.omni.admin.setteam";
                 public const string TriggerGarbageCollection = "chireiden.omni.admin.gc";
+                public const string DebugStat = "chireiden.omni.admin.debugstat";
             }
         }
         public static class Commands
@@ -30,6 +31,7 @@ public partial class Plugin : TerrariaPlugin
             public const string SetPvp = "_pvp";
             public const string SetTeam = "_team";
             public const string TriggerGarbageCollection = "_gc";
+            public const string DebugStat = "_debugstat";
         }
         public static class DataKey
         {

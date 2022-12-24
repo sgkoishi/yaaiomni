@@ -1,4 +1,5 @@
 ﻿using TerrariaApi.Server;
+using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
@@ -41,6 +42,19 @@ public partial class Plugin : TerrariaPlugin
         TShockAPI.TShock.Groups.UpdateGroup(group.Name, Consts.VanillaGroup, group.Permissions, group.ChatColor, group.Suffix, group.Prefix);
     }
 
+    private void EnsurePermission(Group? group, string permission)
+    {
+        if (group == null)
+        {
+            return;
+        }
+
+        if (!group.HasPermission(permission))
+        {
+            group.AddPermission(permission);
+        }
+    }
+
     private void PermissionSetup()
     {
         var preset = this.config.Permission.Preset;
@@ -49,42 +63,22 @@ public partial class Plugin : TerrariaPlugin
             return;
         }
 
-        var guest = TShockAPI.TShock.Groups.GetGroupByName("guest");
+        var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
         if (preset.Restrict)
         {
-            if (!guest.HasPermission(Consts.Permissions.TogglePvP))
-            {
-                guest.AddPermission(Consts.Permissions.TogglePvP);
-            }
-            if (!guest.HasPermission(Consts.Permissions.ToggleTeam))
-            {
-                guest.AddPermission(Consts.Permissions.ToggleTeam);
-            }
+            EnsurePermission(guest, Consts.Permissions.TogglePvP);
+            EnsurePermission(guest, Consts.Permissions.ToggleTeam);
         }
 
-        var na = TShockAPI.TShock.Groups.GetGroupByName("newadmin");
-        if (!na.HasPermission(Consts.Permissions.Admin.Ghost))
+        var na = TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("newadmin");
+        while (na.Parent?.HasPermission(TShockAPI.Permissions.kick) ?? false)
         {
-            na.AddPermission(Consts.Permissions.Admin.Ghost);
-        }
-        if (!na.HasPermission(Consts.Permissions.Admin.SetLanguage))
-        {
-            na.AddPermission(Consts.Permissions.Admin.SetLanguage);
+            na = na.Parent;
         }
 
-        if (!preset.DebugForAdminOnly)
-        {
-            if (!guest.HasPermission(Consts.Permissions.Whynot))
-            {
-                guest.AddPermission(Consts.Permissions.Whynot);
-            }
-        }
-        else
-        {
-            if (!na.HasPermission(Consts.Permissions.Whynot))
-            {
-                na.AddPermission(Consts.Permissions.Whynot);
-            }
-        }
+        EnsurePermission(na, Consts.Permissions.Admin.Ghost);
+        EnsurePermission(na, Consts.Permissions.Admin.SetLanguage);
+        EnsurePermission(na, Consts.Permissions.Admin.DebugStat);
+        EnsurePermission(preset.DebugForAdminOnly ? na : guest, Consts.Permissions.Whynot);
     }
 }

@@ -151,6 +151,7 @@ public partial class Plugin : TerrariaPlugin
         Commands.ChatCommands.Add(new Command(Consts.Permissions.PvPCommand, this.PvPCommand, Consts.Commands.SetPvp));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.TeamCommand, this.TeamCommand, Consts.Commands.SetTeam));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.TriggerGarbageCollection, this.GCCommand, Consts.Commands.TriggerGarbageCollection));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DebugStat, this.DebugStatCommand, Consts.Commands.DebugStat));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

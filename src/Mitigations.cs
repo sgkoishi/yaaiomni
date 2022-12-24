@@ -84,7 +84,12 @@ public partial class Plugin : TerrariaPlugin
                 {
                     if (Mitigations.HandleInventorySlotPE((byte) e.Instance.whoAmI, e.Instance.readBuffer.AsSpan(e.ReadOffset, e.Length - 1)))
                     {
+                        this.Statistics.MitigationSlotPE++;
                         e.Result = OTAPI.HookResult.Cancel;
+                    }
+                    else
+                    {
+                        this.Statistics.MitigationSlotPEAllowed++;
                     }
                 }
                 break;

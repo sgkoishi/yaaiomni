@@ -17,6 +17,7 @@ public class Config
         Plugin.Consts.Commands.SetPvp,
         Plugin.Consts.Commands.SetTeam,
         Plugin.Consts.Commands.TriggerGarbageCollection,
+        Plugin.Consts.Commands.DebugStat,
     };
     public DebugPacket DebugPacket = new();
     public Soundness Soundness = new();
