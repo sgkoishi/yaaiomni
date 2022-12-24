@@ -30,7 +30,7 @@ public partial class Plugin : TerrariaPlugin
         this.Detour(
             nameof(this.HasPermission),
             typeof(TSPlayer)
-                .GetMethod(nameof(TSPlayer.HasPermission), BindingFlags.Public | BindingFlags.Instance)!,
+                .GetMethod(nameof(TSPlayer.HasPermission), BindingFlags.Public | BindingFlags.Instance, new[] { typeof(string) })!,
             this.HasPermission);
         this.Detour(
             nameof(this.PlayerActive),
@@ -77,9 +77,10 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.Projectile.Kill += this.Soundness_ProjectileKill;
         OTAPI.Hooks.NetMessage.SendBytes += this.Ghost_SendBytes;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.NameCollision);
+        TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.PlayerCommand;
         TShockAPI.Hooks.GeneralHooks.ReloadEvent += this.OnReload;
-        TShockAPI.TShock.Initialized += this.OnGamePostInitialize;
+        TShockAPI.TShock.Initialized += this.PostTShockInitialize;
         TShockAPI.GetDataHandlers.TogglePvp.Register(this.TogglePvp);
         TShockAPI.GetDataHandlers.PlayerTeam.Register(this.PlayerTeam);
     }
@@ -95,10 +96,12 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.MessageBuffer.GetData -= this.DebugPacket_GetData;
             On.Terraria.Projectile.Kill -= this.Soundness_ProjectileKill;
             OTAPI.Hooks.NetMessage.SendBytes -= this.Ghost_SendBytes;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.Mitigation_GetData;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.NameCollision);
+            TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
             TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.PlayerCommand;
             TShockAPI.Hooks.GeneralHooks.ReloadEvent -= this.OnReload;
-            TShockAPI.TShock.Initialized -= this.OnGamePostInitialize;
+            TShockAPI.TShock.Initialized -= this.PostTShockInitialize;
             TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.TogglePvp);
             TShockAPI.GetDataHandlers.PlayerTeam.UnRegister(this.PlayerTeam);
             foreach (var detour in this._detours.Values)
@@ -109,7 +112,12 @@ public partial class Plugin : TerrariaPlugin
         base.Dispose(disposing);
     }
 
-    private void OnGamePostInitialize()
+    private void OnGamePostInitialize(EventArgs args)
+    {
+        OTAPI.Hooks.MessageBuffer.GetData += this.Mitigation_GetData;
+    }
+
+    private void PostTShockInitialize()
     {
         OTAPI.Hooks.Netplay.CreateTcpListener += (sender, args) =>
         {

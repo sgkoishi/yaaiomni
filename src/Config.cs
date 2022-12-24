@@ -7,7 +7,7 @@ public class Config
 {
     public bool SyncVersion = true;
     public bool TrimMemory = true;
-    public bool ShowConfig = true;
+    public bool ShowConfig = false;
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
     public UpdateOptions SuppressUpdate = UpdateOptions.Silent;
     public SocketType Socket = SocketType.AsIs;
@@ -22,6 +22,7 @@ public class Config
     public Soundness Soundness = new();
     public PermissionSettings Permission = new();
     public Modes Mode = new();
+    public Mitigation Mitigation = new();
 }
 
 [JsonConverter(typeof(StringEnumConverter))]
@@ -164,4 +165,10 @@ public class Vanilla
 public class VanillaAntiCheat
 {
     public bool Enabled = false;
+}
+
+public class Mitigation
+{
+    public bool Enabled = true;
+    public bool InventorySlotPE = true;
 }
