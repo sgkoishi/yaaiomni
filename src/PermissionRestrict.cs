@@ -30,7 +30,7 @@ public partial class Plugin : TerrariaPlugin
         }
 
         args.Handled = true;
-        Terraria.NetMessage.SendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, args.PlayerId);
+        Terraria.NetMessage.TrySendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, args.PlayerId);
     }
 
     private void PlayerTeam(object? sender, PlayerTeamEventArgs args)
@@ -57,6 +57,6 @@ public partial class Plugin : TerrariaPlugin
         }
 
         args.Handled = true;
-        Terraria.NetMessage.SendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.PlayerId);
+        Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.PlayerId);
     }
 }

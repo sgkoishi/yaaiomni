@@ -41,7 +41,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             player[0].TPlayer.hostile = pvp;
-            Terraria.NetMessage.SendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, player[0].Index);
+            Terraria.NetMessage.TrySendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, player[0].Index);
         }
         else
         {
@@ -52,7 +52,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             args.Player.TPlayer.hostile = pvp;
-            Terraria.NetMessage.SendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, args.Player.Index);
+            Terraria.NetMessage.TrySendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, args.Player.Index);
         }
     }
 
@@ -100,7 +100,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             player[0].TPlayer.team = team;
-            Terraria.NetMessage.SendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, player[0].Index);
+            Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, player[0].Index);
         }
         else
         {
@@ -111,7 +111,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             args.Player.TPlayer.team = team;
-            Terraria.NetMessage.SendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.Player.Index);
+            Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.Player.Index);
         }
     }
     private void GCCommand(CommandArgs args)
