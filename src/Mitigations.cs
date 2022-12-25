@@ -112,6 +112,7 @@ public partial class Plugin : TerrariaPlugin
                             TShockAPI.TShock.Players[index].SetData<int>(Consts.DataKey.DetectPE, value + 1);
                             if (value == 500)
                             {
+                                Terraria.NetMessage.SendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, Terraria.Main.player[index].CurrentLoadoutIndex);
                                 TShockAPI.TShock.Players[index].SetData<bool>(Consts.DataKey.IsPE, true);
                             }
                         }
