@@ -37,6 +37,8 @@ public partial class Plugin : TerrariaPlugin
         {
             public const string Ghost = "chireiden.data.ghost";
             public const string PermissionHistory = "chireiden.data.permissionhistory";
+            public const string DetectPE = "chireiden.data.ped";
+            public const string IsPE = "chireiden.data.ispe";
         }
         public const string ConfigFile = "chireiden.omni.json";
         public const string VanillaGroup = "chireiden_vanilla";

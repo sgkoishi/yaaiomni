@@ -102,9 +102,19 @@ public partial class Plugin : TerrariaPlugin
             case (int) PacketTypes.PlayerSlot:
                 if (mitigation.InventorySlotPE)
                 {
-                    if (Mitigations.HandleInventorySlotPE((byte) e.Instance.whoAmI, e.Instance.readBuffer.AsSpan(e.ReadOffset, e.Length - 1)))
+                    var index = e.Instance.whoAmI;
+                    if (Mitigations.HandleInventorySlotPE((byte) index, e.Instance.readBuffer.AsSpan(e.ReadOffset, e.Length - 1)))
                     {
                         this.Statistics.MitigationSlotPE++;
+                        var value = TShockAPI.TShock.Players[index].GetData<int>(Consts.DataKey.DetectPE);
+                        if (value <= 500)
+                        {
+                            TShockAPI.TShock.Players[index].SetData<int>(Consts.DataKey.DetectPE, value + 1);
+                            if (value == 500)
+                            {
+                                TShockAPI.TShock.Players[index].SetData<bool>(Consts.DataKey.IsPE, true);
+                            }
+                        }
                         e.Result = OTAPI.HookResult.Cancel;
                     }
                     else
