@@ -3,11 +3,39 @@ using System.Net.Sockets;
 using Terraria.Net;
 using Terraria.Net.Sockets;
 using TerrariaApi.Server;
+using TShockAPI.Sockets;
 
 namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
+    private void OnCreateSocket(object? sender, OTAPI.Hooks.Netplay.CreateTcpListenerEventArgs args)
+    {
+        switch (this.config.Socket)
+        {
+            case Config.SocketType.Vanilla:
+                args.Result = new Terraria.Net.Sockets.TcpSocket();
+                return;
+            case Config.SocketType.TShock:
+                args.Result = new LinuxTcpSocket();
+                return;
+            case Config.SocketType.AsIs:
+                return;
+            case Config.SocketType.Unset:
+                args.Result = null;
+                return;
+            case Config.SocketType.HackyBlocked:
+                args.Result = new HackyBlockedSocket();
+                return;
+            case Config.SocketType.HackyAsync:
+                args.Result = new HackyAsyncSocket();
+                return;
+            case Config.SocketType.AnotherAsyncSocket:
+                args.Result = new AnotherAsyncSocket();
+                return;
+        }
+    }
+
     /// <summary>
     /// We found memory leak, from the memory dump it seems that the async networking is using much more memory than expected.
     /// <code>

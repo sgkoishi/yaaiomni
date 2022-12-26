@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
 using Terraria;
 using Terraria.Localization;
 using TerrariaApi.Server;
@@ -17,23 +18,23 @@ public partial class Plugin : TerrariaPlugin
         var second = false;
         switch (this.config.NameCollision)
         {
-            case NameCollisionAction.First:
+            case Config.NameCollisionAction.First:
                 first = true;
                 args.Handled = true;
                 break;
-            case NameCollisionAction.Second:
+            case Config.NameCollisionAction.Second:
                 second = true;
                 args.Handled = true;
                 break;
-            case NameCollisionAction.Both:
+            case Config.NameCollisionAction.Both:
                 first = true;
                 second = true;
                 args.Handled = true;
                 break;
-            case NameCollisionAction.None:
+            case Config.NameCollisionAction.None:
                 args.Handled = true;
                 break;
-            case NameCollisionAction.Known:
+            case Config.NameCollisionAction.Known:
                 if (!knownIPs.Contains(ip))
                 {
                     second = true;
@@ -48,10 +49,10 @@ public partial class Plugin : TerrariaPlugin
                 }
                 args.Handled = true;
                 break;
-            case NameCollisionAction.Unhandled:
+            case Config.NameCollisionAction.Unhandled:
                 return;
             default:
-                throw new Unreachable();
+                throw new SwitchExpressionException($"Unexpected option {this.config.NameCollision}");
         }
         if (first)
         {

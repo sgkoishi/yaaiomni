@@ -4,7 +4,6 @@ using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.Hooks;
-using TShockAPI.Sockets;
 
 namespace Chireiden.TShock.Omni;
 
@@ -97,6 +96,7 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.Projectile.Kill -= this.Soundness_ProjectileKill;
             OTAPI.Hooks.NetMessage.SendBytes -= this.Ghost_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Mitigation_GetData;
+            OTAPI.Hooks.Netplay.CreateTcpListener -= this.OnCreateSocket;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
             TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.PlayerCommand;
@@ -119,38 +119,14 @@ public partial class Plugin : TerrariaPlugin
 
     private void PostTShockInitialize()
     {
-        OTAPI.Hooks.Netplay.CreateTcpListener += (sender, args) =>
-        {
-            switch (this.config.Socket)
-            {
-                case SocketType.Vanilla:
-                    args.Result = new Terraria.Net.Sockets.TcpSocket();
-                    return;
-                case SocketType.TShock:
-                    args.Result = new LinuxTcpSocket();
-                    return;
-                case SocketType.AsIs:
-                    return;
-                case SocketType.Unset:
-                    args.Result = null;
-                    return;
-                case SocketType.HackyBlocked:
-                    args.Result = new HackyBlockedSocket();
-                    return;
-                case SocketType.HackyAsync:
-                    args.Result = new HackyAsyncSocket();
-                    return;
-                case SocketType.AnotherAsyncSocket:
-                    args.Result = new AnotherAsyncSocket();
-                    return;
-            }
-        };
+        OTAPI.Hooks.Netplay.CreateTcpListener += this.OnCreateSocket;
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Whynot, this.QueryPermissionCheck, Consts.Commands.Whynot));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.Ghost, this.GhostCommand, Consts.Commands.Ghost));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.SetLanguage, this.LangCommand, Consts.Commands.SetLanguage));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.PvPCommand, this.PvPCommand, Consts.Commands.SetPvp));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.TeamCommand, this.TeamCommand, Consts.Commands.SetTeam));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.TriggerGarbageCollection, this.GCCommand, Consts.Commands.TriggerGarbageCollection));
+        Commands.ChatCommands.Add(new Command(new List<string> { Consts.Permissions.Admin.TriggerGarbageCollection, Permissions.maintenance },
+            this.GCCommand, Consts.Commands.TriggerGarbageCollection));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DebugStat, this.DebugStatCommand, Consts.Commands.DebugStat));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }

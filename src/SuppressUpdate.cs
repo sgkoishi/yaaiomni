@@ -9,7 +9,7 @@ public partial class Plugin : TerrariaPlugin
     {
         return Task.Run(() =>
         {
-            if (this.config.SuppressUpdate == UpdateOptions.Disabled)
+            if (this.config.SuppressUpdate == Config.UpdateOptions.Disabled)
             {
                 return;
             }
@@ -17,7 +17,7 @@ public partial class Plugin : TerrariaPlugin
             {
                 orig(um, state);
             }
-            catch when (this.config.SuppressUpdate == UpdateOptions.Silent)
+            catch when (this.config.SuppressUpdate == Config.UpdateOptions.Silent)
             {
                 // silently suppress
             }
