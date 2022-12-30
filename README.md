@@ -8,10 +8,11 @@ Yet another misc plugin for TShock
 | `/whynot` | Show recent permission queries related to your player. | Hidden by default. | `chireiden.omni.whynot` | |
 | `/ghost` | Hide yourself from viewing, `/playing`, etc. | | `chireiden.omni.ghost` | |
 | `/setlang` | Set language. | | `chireiden.omni.setlang` | For admin. |
-| `/_pvp` | Toggle PvP. | Hidden by default. | `chireiden.omni.pvp`, `chireiden.omni.admin.setpvp` | |
-| `/_team` | Toggle team. | Hidden by default. | `chireiden.omni.team`, `chireiden.omni.admin.setteam` | |
+| `/_pvp` | Toggle PvP. | Hidden by default. | `chireiden.omni.pvp` <br> `chireiden.omni.admin.setpvp` | |
+| `/_team` | Toggle team. | Hidden by default. | `chireiden.omni.team` <br> `chireiden.omni.admin.setteam` | |
 | `/_debugstat` | Show debug stats. | Hidden by default. | `chireiden.omni.admin.debugstat` | |
 | `/_gc` | Trigger garbage collection. | Hidden by default. | `chireiden.omni.admin.gc`,  | For admin. |
+| `/maxplayers` | Set max players. | | `chireiden.omni.admin.maxplayers` | Might cause unexpected behaviour if lower than current max. |
 
 #### Defaults
 * The permission of `/ghost`, `/setlang`, `/_debugstat` is granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.

@@ -66,6 +66,7 @@ public class Config
     {
         public bool In = false;
         public bool Out = false;
+        public bool BytesOut = false;
     }
 
     public class SoundnessSettings

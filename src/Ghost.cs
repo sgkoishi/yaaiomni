@@ -5,18 +5,14 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private bool PlayerActive(TSPlayer player)
+    private bool PlayerActive(Func<TSPlayer, bool> orig, TSPlayer player)
     {
-        if (player.TPlayer == null)
+        if (player?.TPlayer == null)
         {
             return false;
         }
         var state = player.GetData<bool?>(Consts.DataKey.Ghost);
-        if (state == null)
-        {
-            return player.TPlayer.active;
-        }
-        return !state.Value;
+        return state == null ? orig(player) : !state.Value;
     }
 
     private void Ghost_SendBytes(object? sender, OTAPI.Hooks.NetMessage.SendBytesEventArgs e)
@@ -25,22 +21,16 @@ public partial class Plugin : TerrariaPlugin
         {
             return;
         }
+
         var playerIndex = e.Data[3];
         if (e.RemoteClient != playerIndex)
         {
-            foreach (var player in TShockAPI.TShock.Players)
+            var state = TShockAPI.TShock.Players[playerIndex]?.GetData<bool?>(Consts.DataKey.Ghost);
+            if (state == null)
             {
-                if (player.Index == playerIndex)
-                {
-                    var state = player.GetData<bool?>(Consts.DataKey.Ghost);
-                    if (state == null)
-                    {
-                        return;
-                    }
-                    e.Data[4] = (byte) (!state).GetHashCode();
-                    break;
-                }
+                return;
             }
+            e.Data[4] = (byte) (!state).GetHashCode();
         }
     }
 

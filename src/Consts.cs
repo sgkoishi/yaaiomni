@@ -21,6 +21,7 @@ public partial class Plugin : TerrariaPlugin
                 public const string SetTeam = "chireiden.omni.admin.setteam";
                 public const string TriggerGarbageCollection = "chireiden.omni.admin.gc";
                 public const string DebugStat = "chireiden.omni.admin.debugstat";
+                public const string MaxPlayers = "chireiden.omni.admin.maxplayers";
             }
         }
         public static class Commands
@@ -32,6 +33,7 @@ public partial class Plugin : TerrariaPlugin
             public const string SetTeam = "_team";
             public const string TriggerGarbageCollection = "_gc";
             public const string DebugStat = "_debugstat";
+            public const string MaxPlayers = "maxplayers";
         }
         public static class DataKey
         {

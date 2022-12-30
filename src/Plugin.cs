@@ -75,6 +75,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.MessageBuffer.GetData += this.DebugPacket_GetData;
         On.Terraria.Projectile.Kill += this.Soundness_ProjectileKill;
         OTAPI.Hooks.NetMessage.SendBytes += this.Ghost_SendBytes;
+        OTAPI.Hooks.NetMessage.SendBytes += this.DebugPacket_SendBytes;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.PlayerCommand;
@@ -95,6 +96,7 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.MessageBuffer.GetData -= this.DebugPacket_GetData;
             On.Terraria.Projectile.Kill -= this.Soundness_ProjectileKill;
             OTAPI.Hooks.NetMessage.SendBytes -= this.Ghost_SendBytes;
+            OTAPI.Hooks.NetMessage.SendBytes -= this.DebugPacket_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Mitigation_GetData;
             OTAPI.Hooks.Netplay.CreateTcpListener -= this.OnCreateSocket;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.NameCollision);
@@ -128,6 +130,7 @@ public partial class Plugin : TerrariaPlugin
         Commands.ChatCommands.Add(new Command(new List<string> { Consts.Permissions.Admin.TriggerGarbageCollection, Permissions.maintenance },
             this.GCCommand, Consts.Commands.TriggerGarbageCollection));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DebugStat, this.DebugStatCommand, Consts.Commands.DebugStat));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.MaxPlayers, this.MaxPlayersCommand, Consts.Commands.MaxPlayers));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

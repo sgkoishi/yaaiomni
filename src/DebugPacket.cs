@@ -18,8 +18,16 @@ public partial class Plugin : TerrariaPlugin
     {
         if (this.config.DebugPacket.Out)
         {
-            TShockAPI.TShock.Log.ConsoleInfo($"[DbgPkt] O ->{remoteClient} {(PacketTypes) msgType} {text} ({number}, {number2}, {number3}, {number4}, {number5}, {number6}, {number7})");
+            TShockAPI.TShock.Log.ConsoleInfo($"[DbgPkt] O ->{remoteClient} except {ignoreClient} {(PacketTypes) msgType} {text} ({number}, {number2}, {number3}, {number4}, {number5}, {number6}, {number7})");
         }
         orig(msgType, remoteClient, ignoreClient, text, number, number2, number3, number4, number5, number6, number7);
+    }
+
+    private void DebugPacket_SendBytes(object? sender, OTAPI.Hooks.NetMessage.SendBytesEventArgs e)
+    {
+        if (this.config.DebugPacket.BytesOut)
+        {
+            TShockAPI.TShock.Log.ConsoleInfo($"[DbgPkt] O ->{e.RemoteClient} {(PacketTypes) e.Data[e.Offset + 2]} {e.Result != OTAPI.HookResult.Cancel} {BitConverter.ToString(e.Data, e.Offset, e.Size)}");
+        }
     }
 }

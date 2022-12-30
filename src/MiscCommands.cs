@@ -126,4 +126,23 @@ public partial class Plugin : TerrariaPlugin
         }
         args.Player.SendSuccessMessage("GC Triggered.");
     }
+
+    private void MaxPlayersCommand(CommandArgs args)
+    {
+        if (args.Parameters.Count == 0)
+        {
+            args.Player.SendInfoMessage($"Max players: {Terraria.Main.maxNetPlayers}");
+            return;
+        }
+
+        if (byte.TryParse(args.Parameters[0], out var maxPlayers))
+        {
+            Terraria.Main.maxNetPlayers = maxPlayers;
+            args.Player.SendSuccessMessage($"Max players set to {maxPlayers}.");
+        }
+        else
+        {
+            args.Player.SendErrorMessage("Invalid max players.");
+        }
+    }
 }
