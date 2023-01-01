@@ -20,12 +20,12 @@
     <Exec Command="git log -1 --pretty=&quot;format:%25H&quot;" ContinueOnError="true" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="CommitHashValue" />
     </Exec>
-  </Target>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="Chireiden.CommitHashAttribute">
-      <_Parameter1>$(CommitHashValue)</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
+    <ItemGroup>
+      <AssemblyAttribute Include="Chireiden.CommitHashAttribute">
+        <_Parameter1>$(CommitHashValue)</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
 
 </Project>
