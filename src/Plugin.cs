@@ -62,6 +62,17 @@ public partial class Plugin : TerrariaPlugin
         {
             e?.Player?.SendInfoMessage(JsonConvert.SerializeObject(this.config, Formatting.Indented));
         }
+        switch (this.config.TileProvider)
+        {
+            case Config.TileProviderOptions.CheckedGenericCollection:
+                Terraria.Main.tile = new CheckedGenericCollection();
+                break;
+            case Config.TileProviderOptions.CheckedTypedCollection:
+                Terraria.Main.tile = new CheckedTypedCollection();
+                break;
+            case Config.TileProviderOptions.AsIs:
+                break;
+        }
         this.PermissionSetup();
         this.VanillaSetup();
     }
@@ -74,6 +85,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.NetMessage.SendData += this.DebugPacket_SendData;
         On.Terraria.MessageBuffer.GetData += this.DebugPacket_GetData;
         On.Terraria.Projectile.Kill += this.Soundness_ProjectileKill;
+        On.Terraria.WorldGen.clearWorld += this.TileProvider_ClearWorld;
         OTAPI.Hooks.NetMessage.SendBytes += this.Ghost_SendBytes;
         OTAPI.Hooks.NetMessage.SendBytes += this.DebugPacket_SendBytes;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.NameCollision);
@@ -97,6 +109,7 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.NetMessage.SendData -= this.DebugPacket_CatchSend;
             On.Terraria.MessageBuffer.GetData -= this.DebugPacket_CatchGet;
             On.Terraria.Projectile.Kill -= this.Soundness_ProjectileKill;
+            On.Terraria.WorldGen.clearWorld -= this.TileProvider_ClearWorld;
             OTAPI.Hooks.NetMessage.SendBytes -= this.Ghost_SendBytes;
             OTAPI.Hooks.NetMessage.SendBytes -= this.DebugPacket_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Mitigation_GetData;

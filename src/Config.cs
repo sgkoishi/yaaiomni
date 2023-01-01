@@ -12,6 +12,7 @@ public class Config
     public UpdateOptions SuppressUpdate = UpdateOptions.Silent;
     public SocketType Socket = SocketType.AsIs;
     public NameCollisionAction NameCollision = NameCollisionAction.Known;
+    public TileProviderOptions TileProvider = TileProviderOptions.AsIs;
     public List<string> HideCommands = new List<string> {
         Plugin.Consts.Commands.Whynot,
         Plugin.Consts.Commands.SetPvp,
@@ -60,6 +61,14 @@ public class Config
         Known,
         /// <summary> Do nothing </summary>
         Unhandled
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum TileProviderOptions
+    {
+        AsIs,
+        CheckedTypedCollection,
+        CheckedGenericCollection,
     }
 
     public class DebugPacketSettings
