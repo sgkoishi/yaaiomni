@@ -11,13 +11,13 @@
   <ItemGroup>
     <PackageReference Include="OTAPI.Upcoming" Version="3.1.20" />
     <PackageReference Include="TSAPI" Version="5.1.3" />
-    <PackageReference Include="TShock" Version="5.1.3" >
+    <PackageReference Include="TShock" Version="5.1.3">
       <ExcludeAssets>ContentFiles</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
 
-  <Target Name="githash">
-    <Exec Command="git log -1 --pretty=format" ContinueOnError="true" ConsoleToMSBuild="true">
+  <Target Name="githash" BeforeTargets="PreBuildEvent">
+    <Exec Command="git log -1 --pretty=&quot;format:%25H&quot;" ContinueOnError="true" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="CommitHashValue" />
     </Exec>
   </Target>
