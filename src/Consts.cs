@@ -8,41 +8,41 @@ public partial class Plugin : TerrariaPlugin
     {
         public static class Permissions
         {
-            public const string Whynot = "chireiden.omni.whynot";
-            public const string TogglePvP = "chireiden.omni.togglepvp";
-            public const string ToggleTeam = "chireiden.omni.toggleteam";
-            public const string PvPCommand = "chireiden.omni.setpvp";
-            public const string TeamCommand = "chireiden.omni.setteam";
+            public readonly static string Whynot = "chireiden.omni.whynot";
+            public readonly static string TogglePvP = "chireiden.omni.togglepvp";
+            public readonly static string ToggleTeam = "chireiden.omni.toggleteam";
+            public readonly static string PvPCommand = "chireiden.omni.setpvp";
+            public readonly static string TeamCommand = "chireiden.omni.setteam";
             public static class Admin
             {
-                public const string Ghost = "chireiden.omni.ghost";
-                public const string SetLanguage = "chireiden.omni.setlang";
-                public const string SetPvp = "chireiden.omni.admin.setpvp";
-                public const string SetTeam = "chireiden.omni.admin.setteam";
-                public const string TriggerGarbageCollection = "chireiden.omni.admin.gc";
-                public const string DebugStat = "chireiden.omni.admin.debugstat";
-                public const string MaxPlayers = "chireiden.omni.admin.maxplayers";
+                public readonly static string Ghost = "chireiden.omni.ghost";
+                public readonly static string SetLanguage = "chireiden.omni.setlang";
+                public readonly static string SetPvp = "chireiden.omni.admin.setpvp";
+                public readonly static string SetTeam = "chireiden.omni.admin.setteam";
+                public readonly static string TriggerGarbageCollection = "chireiden.omni.admin.gc";
+                public readonly static string DebugStat = "chireiden.omni.admin.debugstat";
+                public readonly static string MaxPlayers = "chireiden.omni.admin.maxplayers";
             }
         }
         public static class Commands
         {
-            public const string Whynot = "whynot";
-            public const string Ghost = "ghost";
-            public const string SetLanguage = "setlang";
-            public const string SetPvp = "_pvp";
-            public const string SetTeam = "_team";
-            public const string TriggerGarbageCollection = "_gc";
-            public const string DebugStat = "_debugstat";
-            public const string MaxPlayers = "maxplayers";
+            public readonly static string Whynot = "whynot";
+            public readonly static string Ghost = "ghost";
+            public readonly static string SetLanguage = "setlang";
+            public readonly static string SetPvp = "_pvp";
+            public readonly static string SetTeam = "_team";
+            public readonly static string TriggerGarbageCollection = "_gc";
+            public readonly static string DebugStat = "_debugstat";
+            public readonly static string MaxPlayers = "maxplayers";
         }
         public static class DataKey
         {
-            public const string Ghost = "chireiden.data.ghost";
-            public const string PermissionHistory = "chireiden.data.permissionhistory";
-            public const string DetectPE = "chireiden.data.ped";
-            public const string IsPE = "chireiden.data.ispe";
+            public readonly static string Ghost = "chireiden.data.ghost";
+            public readonly static string PermissionHistory = "chireiden.data.permissionhistory";
+            public readonly static string DetectPE = "chireiden.data.ped";
+            public readonly static string IsPE = "chireiden.data.ispe";
         }
-        public const string ConfigFile = "chireiden.omni.json";
-        public const string VanillaGroup = "chireiden_vanilla";
+        public readonly static string ConfigFile = "chireiden.omni.json";
+        public readonly static string VanillaGroup = "chireiden_vanilla";
     }
 }

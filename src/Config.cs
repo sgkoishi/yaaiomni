@@ -67,6 +67,15 @@ public class Config
         public bool In = false;
         public bool Out = false;
         public bool BytesOut = false;
+        public CatchedException ShowCatchedException = CatchedException.None;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum CatchedException
+        {
+            None,
+            Uncommon,
+            All,
+        }
     }
 
     public class SoundnessSettings

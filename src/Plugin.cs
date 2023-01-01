@@ -94,6 +94,8 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor -= this.MemoryTrim_HatRack;
             On.Terraria.NetMessage.SendData -= this.DebugPacket_SendData;
             On.Terraria.MessageBuffer.GetData -= this.DebugPacket_GetData;
+            On.Terraria.NetMessage.SendData -= this.DebugPacket_CatchSend;
+            On.Terraria.MessageBuffer.GetData -= this.DebugPacket_CatchGet;
             On.Terraria.Projectile.Kill -= this.Soundness_ProjectileKill;
             OTAPI.Hooks.NetMessage.SendBytes -= this.Ghost_SendBytes;
             OTAPI.Hooks.NetMessage.SendBytes -= this.DebugPacket_SendBytes;
@@ -117,6 +119,8 @@ public partial class Plugin : TerrariaPlugin
     private void OnGamePostInitialize(EventArgs args)
     {
         OTAPI.Hooks.MessageBuffer.GetData += this.Mitigation_GetData;
+        On.Terraria.NetMessage.SendData += this.DebugPacket_CatchSend;
+        On.Terraria.MessageBuffer.GetData += this.DebugPacket_CatchGet;
     }
 
     private void PostTShockInitialize()
