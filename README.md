@@ -29,7 +29,7 @@ Yet another misc plugin for TShock
   * Will allow common actions that are restricted by default.
   * Will create a group `chireiden_vanilla` as the parent of the topmost parent of the registered group.
 
-#### Only do this if you know what you are doing
+#### Don't touch unless you know what you are doing
 * `.Soundness` in config enforce some soundness permission checks.
   * Keep it enabled unless you know what you are doing.
 * `.Mitigation` in config can fix some issues that exist but not blame to TShock.
@@ -39,3 +39,6 @@ Yet another misc plugin for TShock
   * Don't use `Hacky*` unless if you know what you are doing.
 * `/_gc` triggers garbage collection.
   * Only do this if you know what you are doing.
+* `.TileProvider` in config can switch to a different tile provider.
+  * `CheckedTypedCollection` and `CheckedGenericCollection` might slightly improve performance but potentially NRE.
+  * Keep it `AsIs` unless if you know what you are doing.

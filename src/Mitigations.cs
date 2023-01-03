@@ -14,7 +14,7 @@ public partial class Plugin : TerrariaPlugin
         ///
         /// This will silently proceed the packet without boardcasting it.
         /// </summary>
-        public static bool HandleInventorySlotPE(byte player, Span<byte> data)
+        internal static bool HandleInventorySlotPE(byte player, Span<byte> data)
         {
             if (data.Length != 8)
             {
@@ -84,7 +84,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
-    private void Mitigation_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs e)
+    private void Hook_Mitigation_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs e)
     {
         if (e.Result == OTAPI.HookResult.Cancel)
         {

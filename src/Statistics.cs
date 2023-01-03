@@ -14,7 +14,7 @@ public partial class Plugin : TerrariaPlugin
         public int MitigationSlotPEAllowed { get; set; }
     }
 
-    private void DebugStatCommand(CommandArgs args)
+    private void Command_DebugStat(CommandArgs args)
     {
         args.Player.SendInfoMessage(JsonConvert.SerializeObject(this.Statistics, Formatting.Indented));
     }

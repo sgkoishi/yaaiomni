@@ -8,7 +8,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void NameCollision(NameCollisionEventArgs args)
+    private void Hook_NameCollision(NameCollisionEventArgs args)
     {
         var ip = TShockAPI.TShock.Utils.GetRealIP(Netplay.Clients[args.Who].Socket.GetRemoteAddress().ToString());
         var player = TShockAPI.TShock.Players.First(p => p != null && p.Name == args.Name && p.Index != args.Who);

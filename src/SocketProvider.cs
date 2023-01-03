@@ -9,7 +9,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void OnCreateSocket(object? sender, OTAPI.Hooks.Netplay.CreateTcpListenerEventArgs args)
+    private void Hook_Socket_OnCreate(object? sender, OTAPI.Hooks.Netplay.CreateTcpListenerEventArgs args)
     {
         switch (this.config.Socket)
         {
@@ -63,8 +63,8 @@ public partial class Plugin : TerrariaPlugin
 
         public SelfSocket()
         {
-            _connection = new TcpClient();
-            _connection.NoDelay = true;
+            this._connection = new TcpClient();
+            this._connection.NoDelay = true;
         }
 
         public SelfSocket(TcpClient tcpClient)

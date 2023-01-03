@@ -35,7 +35,7 @@ public partial class Plugin : TerrariaPlugin
         var vg = TShockAPI.TShock.Groups.GetGroupByName(Consts.VanillaGroup);
         TShockAPI.TShock.Groups.UpdateGroup(Consts.VanillaGroup, null, vg.Permissions, vg.ChatColor, vg.Suffix, vg.Prefix);
         var group = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultRegistrationGroupName);
-        group = Parent(group, _ => true);
+        group = Utils.ParentGroup(group, _ => true);
         if (group == null)
         {
             TShockAPI.TSPlayer.Server.SendErrorMessage($"Failed to find group {TShockAPI.TShock.Config.Settings.DefaultRegistrationGroupName}.");
@@ -60,34 +60,11 @@ public partial class Plugin : TerrariaPlugin
         }
 
         var na = TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("newadmin");
-        na = Parent(na, g => g.HasPermission(TShockAPI.Permissions.kick));
+        na = Utils.ParentGroup(na, g => g.HasPermission(TShockAPI.Permissions.kick));
 
         na?.AddPermission(Consts.Permissions.Admin.Ghost);
         na?.AddPermission(Consts.Permissions.Admin.SetLanguage);
         na?.AddPermission(Consts.Permissions.Admin.DebugStat);
         (preset.DebugForAdminOnly ? na : guest)?.AddPermission(Consts.Permissions.Whynot);
-    }
-
-    private static Group? Parent(Group? group, Func<Group, bool> predicate)
-    {
-        var hashset = new HashSet<string>();
-        if (group == null || !predicate(group))
-        {
-            return null;
-        }
-        while (true)
-        {
-            if (!hashset.Add(group.Name))
-            {
-                return null;
-            }
-
-            var parent = group.Parent;
-            if (parent == null || !predicate(parent))
-            {
-                return group;
-            }
-            group = parent;
-        }
     }
 }

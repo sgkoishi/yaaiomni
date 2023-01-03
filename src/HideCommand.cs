@@ -8,9 +8,9 @@ public partial class Plugin : TerrariaPlugin
 {
     private List<Command> _hiddenCommands = new();
 
-    private void PlayerCommand(PlayerCommandEventArgs e)
+    private void Hook_HideCommand_PlayerCommand(PlayerCommandEventArgs e)
     {
-        var hc = _hiddenCommands.FindAll(c => c.HasAlias(e.CommandName) && c.CanRun(e.Player));
+        var hc = this._hiddenCommands.FindAll(c => c.HasAlias(e.CommandName) && c.CanRun(e.Player));
         if (hc.Count > 0)
         {
             var ecl = (List<Command>) e.CommandList;
@@ -20,7 +20,7 @@ public partial class Plugin : TerrariaPlugin
         if (hidden.Count > 0)
         {
             Commands.ChatCommands = Commands.ChatCommands.Except(hidden).ToList();
-            _hiddenCommands = _hiddenCommands.Concat(hidden).ToList();
+            this._hiddenCommands = this._hiddenCommands.Concat(hidden).ToList();
         }
     }
 }

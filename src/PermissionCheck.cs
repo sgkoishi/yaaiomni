@@ -8,7 +8,7 @@ public partial class Plugin : TerrariaPlugin
 {
     public record PermissionCheckHistory(string Permission, DateTime Time, bool Result, StackTrace? Trace);
 
-    public bool HasPermission(Func<TSPlayer, string, bool> orig, TSPlayer player, string permission)
+    private bool Hook_HasPermission(Func<TSPlayer, string, bool> orig, TSPlayer player, string permission)
     {
         var result = orig(player, permission);
         if (this.config.Permission.Log.DoLog)
@@ -46,7 +46,7 @@ public partial class Plugin : TerrariaPlugin
         return result;
     }
 
-    private void QueryPermissionCheck(CommandArgs args)
+    private void Command_PermissionCheck(CommandArgs args)
     {
         Queue<PermissionCheckHistory> list;
         var existing = args.Player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);

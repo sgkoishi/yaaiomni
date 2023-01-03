@@ -22,6 +22,7 @@ public partial class Plugin : TerrariaPlugin
                 public readonly static string TriggerGarbageCollection = "chireiden.omni.admin.gc";
                 public readonly static string DebugStat = "chireiden.omni.admin.debugstat";
                 public readonly static string MaxPlayers = "chireiden.omni.admin.maxplayers";
+                public readonly static string TileProvider = "chireiden.omni.admin.tileprovider";
             }
         }
         public static class Commands
@@ -34,6 +35,7 @@ public partial class Plugin : TerrariaPlugin
             public readonly static string TriggerGarbageCollection = "_gc";
             public readonly static string DebugStat = "_debugstat";
             public readonly static string MaxPlayers = "maxplayers";
+            public readonly static string TileProvider = "tileprovider";
         }
         public static class DataKey
         {

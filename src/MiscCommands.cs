@@ -6,7 +6,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void PvPCommand(CommandArgs args)
+    private void Command_PvP(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
         {
@@ -56,7 +56,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
-    private void TeamCommand(CommandArgs args)
+    private void Command_Team(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
         {
@@ -114,7 +114,7 @@ public partial class Plugin : TerrariaPlugin
             Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.Player.Index);
         }
     }
-    private void GCCommand(CommandArgs args)
+    private void Command_GC(CommandArgs args)
     {
         if (args.Parameters.Contains("-f"))
         {
@@ -127,7 +127,7 @@ public partial class Plugin : TerrariaPlugin
         args.Player.SendSuccessMessage("GC Triggered.");
     }
 
-    private void MaxPlayersCommand(CommandArgs args)
+    private void Command_MaxPlayers(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
         {

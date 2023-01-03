@@ -12,10 +12,8 @@ public partial class Plugin : TerrariaPlugin
 {
     private CultureInfo? _targetCulture = null;
     private Type _tshockI18n = typeof(TShockAPI.TShock).Module.GetTypes().Single(t => t.Name == "I18n")!;
-    private void LangCommand(CommandArgs args)
+    private void Command_Lang(CommandArgs args)
     {
-        static CultureInfo Redirect(CultureInfo cultureInfo)
-            => cultureInfo.Name == "zh-Hans" ? new CultureInfo("zh-CN") : cultureInfo;
 
         var tscinfo = this._tshockI18n
             .GetProperty("TranslationCultureInfo", BindingFlags.NonPublic | BindingFlags.Static)!
@@ -41,13 +39,13 @@ public partial class Plugin : TerrariaPlugin
         GameCulture? culture = null;
         if (remaining.Count != 0)
         {
-            if (this.TryParseGameCulture(remaining[0], out culture))
+            if (Utils.TryParseGameCulture(remaining[0], out culture))
             {
-                this._targetCulture = Redirect(culture.CultureInfo);
+                this._targetCulture = Utils.CultureRedirect(culture.CultureInfo);
             }
             else
             {
-                this._targetCulture = Redirect(CultureInfo.GetCultureInfo(remaining[0]));
+                this._targetCulture = Utils.CultureRedirect(CultureInfo.GetCultureInfo(remaining[0]));
             }
         }
 
@@ -61,40 +59,9 @@ public partial class Plugin : TerrariaPlugin
             var tscdir = this._tshockI18n
                 .GetProperty("TranslationsDirectory", BindingFlags.NonPublic | BindingFlags.Static)!
                 .GetGetMethod(true)!;
-            _tshockI18n.GetField("C")!.SetValue(null, new Catalog("TShockAPI",
+            this._tshockI18n.GetField("C")!.SetValue(null, new Catalog("TShockAPI",
                 (string) tscdir.Invoke(null, new object[0])!,
                 this._targetCulture ?? (CultureInfo) tscinfo.Invoke(null, new object[0])!));
         }
-    }
-
-    bool TryParseGameCulture(string s, [NotNullWhen(returnValue: true)] out GameCulture? culture)
-    {
-        if (int.TryParse(s, out var number))
-        {
-            if (GameCulture._legacyCultures.TryGetValue(number, out culture))
-            {
-                return true;
-            }
-        }
-
-        culture = GameCulture._legacyCultures.Values.SingleOrDefault(c => c.Name == s);
-        if (culture != null)
-        {
-            return true;
-        }
-
-        culture = GameCulture._legacyCultures.Values.SingleOrDefault(c => c.CultureInfo.NativeName == s);
-        if (culture != null)
-        {
-            return true;
-        }
-
-        culture = GameCulture._legacyCultures.Values.SingleOrDefault(c => c.CultureInfo.NativeName.Contains(s));
-        if (culture != null)
-        {
-            return true;
-        }
-
-        return false;
     }
 }

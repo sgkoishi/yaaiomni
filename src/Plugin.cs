@@ -22,21 +22,21 @@ public partial class Plugin : TerrariaPlugin
         this.Order = int.MinValue;
         this.config = new Config();
         this.Detour(
-            nameof(this.UpdateCheckAsync),
+            nameof(this.Hook_UpdateCheckAsync),
             typeof(UpdateManager)
                 .GetMethod(nameof(UpdateManager.UpdateCheckAsync), BindingFlags.Public | BindingFlags.Instance)!,
-            this.UpdateCheckAsync);
+            this.Hook_UpdateCheckAsync);
         this.Detour(
-            nameof(this.HasPermission),
+            nameof(this.Hook_HasPermission),
             typeof(TSPlayer)
                 .GetMethod(nameof(TSPlayer.HasPermission), BindingFlags.Public | BindingFlags.Instance, new[] { typeof(string) })!,
-            this.HasPermission);
+            this.Hook_HasPermission);
         this.Detour(
-            nameof(this.PlayerActive),
+            nameof(this.Hook_PlayerActive),
             typeof(TSPlayer)
                 .GetProperty(nameof(TSPlayer.Active), BindingFlags.Public | BindingFlags.Instance)!
                 .GetMethod!,
-            this.PlayerActive);
+            this.Hook_PlayerActive);
     }
 
     private void OnReload(ReloadEventArgs? e)
@@ -79,48 +79,50 @@ public partial class Plugin : TerrariaPlugin
 
     public override void Initialize()
     {
-        On.Terraria.MessageBuffer.GetData += this.PatchVersion;
-        On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor += this.MemoryTrim_DisplayDoll;
-        On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor += this.MemoryTrim_HatRack;
-        On.Terraria.NetMessage.SendData += this.DebugPacket_SendData;
-        On.Terraria.MessageBuffer.GetData += this.DebugPacket_GetData;
-        On.Terraria.Projectile.Kill += this.Soundness_ProjectileKill;
-        On.Terraria.WorldGen.clearWorld += this.TileProvider_ClearWorld;
-        OTAPI.Hooks.NetMessage.SendBytes += this.Ghost_SendBytes;
-        OTAPI.Hooks.NetMessage.SendBytes += this.DebugPacket_SendBytes;
-        TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.NameCollision);
+        On.Terraria.MessageBuffer.GetData += this.Hook_PatchVersion_GetData;
+        On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor += this.Hook_MemoryTrim_DisplayDoll;
+        On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor += this.Hook_MemoryTrim_HatRack;
+        On.Terraria.NetMessage.SendData += this.Hook_DebugPacket_SendData;
+        On.Terraria.MessageBuffer.GetData += this.Hook_DebugPacket_GetData;
+        On.Terraria.Projectile.Kill += this.Hook_Soundness_ProjectileKill;
+        On.Terraria.WorldGen.clearWorld += this.Hook_TileProvider_ClearWorld;
+        OTAPI.Hooks.NetMessage.SendBytes += this.Hook_Ghost_SendBytes;
+        OTAPI.Hooks.NetMessage.SendBytes += this.Hook_DebugPacket_SendBytes;
+        TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.Hook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
-        TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.PlayerCommand;
+        TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.Hook_HideCommand_PlayerCommand;
         TShockAPI.Hooks.GeneralHooks.ReloadEvent += this.OnReload;
         TShockAPI.TShock.Initialized += this.PostTShockInitialize;
-        TShockAPI.GetDataHandlers.TogglePvp.Register(this.TogglePvp);
-        TShockAPI.GetDataHandlers.PlayerTeam.Register(this.PlayerTeam);
+        TShockAPI.GetDataHandlers.TogglePvp.Register(this.Hook_Permission_TogglePvp);
+        TShockAPI.GetDataHandlers.PlayerTeam.Register(this.Hook_Permission_PlayerTeam);
     }
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            On.Terraria.MessageBuffer.GetData -= this.PatchVersion;
-            On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor -= this.MemoryTrim_DisplayDoll;
-            On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor -= this.MemoryTrim_HatRack;
-            On.Terraria.NetMessage.SendData -= this.DebugPacket_SendData;
-            On.Terraria.MessageBuffer.GetData -= this.DebugPacket_GetData;
-            On.Terraria.NetMessage.SendData -= this.DebugPacket_CatchSend;
-            On.Terraria.MessageBuffer.GetData -= this.DebugPacket_CatchGet;
-            On.Terraria.Projectile.Kill -= this.Soundness_ProjectileKill;
-            On.Terraria.WorldGen.clearWorld -= this.TileProvider_ClearWorld;
-            OTAPI.Hooks.NetMessage.SendBytes -= this.Ghost_SendBytes;
-            OTAPI.Hooks.NetMessage.SendBytes -= this.DebugPacket_SendBytes;
-            OTAPI.Hooks.MessageBuffer.GetData -= this.Mitigation_GetData;
-            OTAPI.Hooks.Netplay.CreateTcpListener -= this.OnCreateSocket;
-            TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.NameCollision);
+            On.Terraria.MessageBuffer.GetData -= this.Hook_PatchVersion_GetData;
+            On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor -= this.Hook_MemoryTrim_DisplayDoll;
+            On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor -= this.Hook_MemoryTrim_HatRack;
+            On.Terraria.NetMessage.SendData -= this.Hook_DebugPacket_SendData;
+            On.Terraria.MessageBuffer.GetData -= this.Hook_DebugPacket_GetData;
+            On.Terraria.NetMessage.SendData -= this.Hook_DebugPacket_CatchSend;
+            On.Terraria.MessageBuffer.GetData -= this.Hook_DebugPacket_CatchGet;
+            On.Terraria.Projectile.Kill -= this.Hook_Soundness_ProjectileKill;
+            On.Terraria.WorldGen.clearWorld -= this.Hook_TileProvider_ClearWorld;
+            OTAPI.Hooks.NetMessage.SendBytes -= this.Hook_Ghost_SendBytes;
+            OTAPI.Hooks.NetMessage.SendBytes -= this.Hook_DebugPacket_SendBytes;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Mitigation_GetData;
+            OTAPI.Hooks.Netplay.CreateTcpListener -= this.Hook_Socket_OnCreate;
+            TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.Hook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
-            TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.PlayerCommand;
+            TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.Hook_HideCommand_PlayerCommand;
             TShockAPI.Hooks.GeneralHooks.ReloadEvent -= this.OnReload;
             TShockAPI.TShock.Initialized -= this.PostTShockInitialize;
-            TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.TogglePvp);
-            TShockAPI.GetDataHandlers.PlayerTeam.UnRegister(this.PlayerTeam);
+            TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.Hook_Permission_TogglePvp);
+            TShockAPI.GetDataHandlers.PlayerTeam.UnRegister(this.Hook_Permission_PlayerTeam);
+            var asm = Assembly.GetExecutingAssembly();
+            Commands.ChatCommands.RemoveAll(c => c.CommandDelegate.Method?.DeclaringType?.Assembly == asm);
             foreach (var detour in this._detours.Values)
             {
                 detour.Dispose();
@@ -131,23 +133,24 @@ public partial class Plugin : TerrariaPlugin
 
     private void OnGamePostInitialize(EventArgs args)
     {
-        OTAPI.Hooks.MessageBuffer.GetData += this.Mitigation_GetData;
-        On.Terraria.NetMessage.SendData += this.DebugPacket_CatchSend;
-        On.Terraria.MessageBuffer.GetData += this.DebugPacket_CatchGet;
+        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Mitigation_GetData;
+        On.Terraria.NetMessage.SendData += this.Hook_DebugPacket_CatchSend;
+        On.Terraria.MessageBuffer.GetData += this.Hook_DebugPacket_CatchGet;
     }
 
     private void PostTShockInitialize()
     {
-        OTAPI.Hooks.Netplay.CreateTcpListener += this.OnCreateSocket;
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Whynot, this.QueryPermissionCheck, Consts.Commands.Whynot));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.Ghost, this.GhostCommand, Consts.Commands.Ghost));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.SetLanguage, this.LangCommand, Consts.Commands.SetLanguage));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.PvPCommand, this.PvPCommand, Consts.Commands.SetPvp));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.TeamCommand, this.TeamCommand, Consts.Commands.SetTeam));
+        OTAPI.Hooks.Netplay.CreateTcpListener += this.Hook_Socket_OnCreate;
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Whynot, this.Command_PermissionCheck, Consts.Commands.Whynot));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.Ghost, this.Command_Ghost, Consts.Commands.Ghost));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.SetLanguage, this.Command_Lang, Consts.Commands.SetLanguage));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.PvPCommand, this.Command_PvP, Consts.Commands.SetPvp));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.TeamCommand, this.Command_Team, Consts.Commands.SetTeam));
         Commands.ChatCommands.Add(new Command(new List<string> { Consts.Permissions.Admin.TriggerGarbageCollection, Permissions.maintenance },
-            this.GCCommand, Consts.Commands.TriggerGarbageCollection));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DebugStat, this.DebugStatCommand, Consts.Commands.DebugStat));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.MaxPlayers, this.MaxPlayersCommand, Consts.Commands.MaxPlayers));
+            this.Command_GC, Consts.Commands.TriggerGarbageCollection));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DebugStat, this.Command_DebugStat, Consts.Commands.DebugStat));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.MaxPlayers, this.Command_MaxPlayers, Consts.Commands.MaxPlayers));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.TileProvider, this.Command_TileProvider, Consts.Commands.TileProvider));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

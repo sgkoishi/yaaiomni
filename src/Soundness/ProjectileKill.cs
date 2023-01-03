@@ -2,18 +2,12 @@
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
-using static Terraria.Utils;
 
 namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private static TileActionAttempt WithPermissionCheck(TileActionAttempt action, TSPlayer player)
-    {
-        return (x, y) => player.HasBuildPermission(x, y) && action(x, y);
-    }
-
-    private void Soundness_ProjectileKill(On.Terraria.Projectile.orig_Kill orig, Projectile self)
+    private void Hook_Soundness_ProjectileKill(On.Terraria.Projectile.orig_Kill orig, Projectile self)
     {
         if (this.config.Soundness.ProjectileKillMapEditRestriction)
         {
@@ -23,7 +17,7 @@ public partial class Plugin : TerrariaPlugin
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),
                     4.2f,
-                    WithPermissionCheck(DelegateMethods.SpreadDirt, TShockAPI.TShock.Players[self.owner]));
+                    Utils.WithPermissionCheck(DelegateMethods.SpreadDirt, TShockAPI.TShock.Players[self.owner]));
                 self.active = false;
                 return;
             }
@@ -36,7 +30,7 @@ public partial class Plugin : TerrariaPlugin
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),
                     3f,
-                    WithPermissionCheck(DelegateMethods.SpreadWater, TShockAPI.TShock.Players[self.owner]));
+                    Utils.WithPermissionCheck(DelegateMethods.SpreadWater, TShockAPI.TShock.Players[self.owner]));
                 self.active = false;
                 return;
             }
@@ -49,7 +43,7 @@ public partial class Plugin : TerrariaPlugin
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),
                     3f,
-                    WithPermissionCheck(DelegateMethods.SpreadLava, TShockAPI.TShock.Players[self.owner]));
+                    Utils.WithPermissionCheck(DelegateMethods.SpreadLava, TShockAPI.TShock.Players[self.owner]));
                 self.active = false;
                 return;
             }
@@ -62,7 +56,7 @@ public partial class Plugin : TerrariaPlugin
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),
                     3f,
-                    WithPermissionCheck(DelegateMethods.SpreadHoney, TShockAPI.TShock.Players[self.owner]));
+                    Utils.WithPermissionCheck(DelegateMethods.SpreadHoney, TShockAPI.TShock.Players[self.owner]));
                 self.active = false;
                 return;
             }
@@ -75,7 +69,7 @@ public partial class Plugin : TerrariaPlugin
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),
                     3.5f,
-                    WithPermissionCheck(DelegateMethods.SpreadDry, TShockAPI.TShock.Players[self.owner]));
+                    Utils.WithPermissionCheck(DelegateMethods.SpreadDry, TShockAPI.TShock.Players[self.owner]));
                 self.active = false;
                 return;
             }

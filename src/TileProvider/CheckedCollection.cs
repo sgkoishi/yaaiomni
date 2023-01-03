@@ -13,12 +13,12 @@ public partial class Plugin : TerrariaPlugin
         public int Height { get; private set; }
         public void Resize(int width, int height)
         {
-            _items = new Terraria.Tile[width, height];
+            this._items = new Terraria.Tile[width, height];
             for (var x = 0; x < width; x++)
             {
                 for (var y = 0; y < height; y++)
                 {
-                    _items[x, y] = new Tile();
+                    this._items[x, y] = new Tile();
                 }
             }
         }
@@ -26,9 +26,9 @@ public partial class Plugin : TerrariaPlugin
         public Terraria.ITile this[int x, int y]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get => _items[x, y];
+            get => this._items[x, y];
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set => _items[x, y] = (Tile) value;
+            set => this._items[x, y] = (Tile) value;
         }
     }
 
@@ -39,12 +39,12 @@ public partial class Plugin : TerrariaPlugin
         public int Height { get; private set; }
         public void Resize(int width, int height)
         {
-            _items = new Terraria.ITile[width, height];
+            this._items = new Terraria.ITile[width, height];
             for (var x = 0; x < width; x++)
             {
                 for (var y = 0; y < height; y++)
                 {
-                    _items[x, y] = new Tile();
+                    this._items[x, y] = new Tile();
                 }
             }
         }
@@ -52,9 +52,9 @@ public partial class Plugin : TerrariaPlugin
         public Terraria.ITile this[int x, int y]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get => _items[x, y];
+            get => this._items[x, y];
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set => _items[x, y] = value;
+            set => this._items[x, y] = value;
         }
     }
 }

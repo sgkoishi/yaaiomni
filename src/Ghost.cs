@@ -5,7 +5,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private bool PlayerActive(Func<TSPlayer, bool> orig, TSPlayer player)
+    private bool Hook_PlayerActive(Func<TSPlayer, bool> orig, TSPlayer player)
     {
         if (player?.TPlayer == null)
         {
@@ -15,7 +15,7 @@ public partial class Plugin : TerrariaPlugin
         return state == null ? orig(player) : !state.Value;
     }
 
-    private void Ghost_SendBytes(object? sender, OTAPI.Hooks.NetMessage.SendBytesEventArgs e)
+    private void Hook_Ghost_SendBytes(object? sender, OTAPI.Hooks.NetMessage.SendBytesEventArgs e)
     {
         if (e.Data[2] != (int) PacketTypes.PlayerActive)
         {
@@ -34,7 +34,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
-    private void GhostCommand(CommandArgs args)
+    private void Command_Ghost(CommandArgs args)
     {
         if (args.Parameters.Contains("-v"))
         {

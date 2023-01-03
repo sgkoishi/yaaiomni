@@ -27,7 +27,7 @@ jobs:
           dotnet build
 
       - name: CI Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Artifact
           path: ./src/bin/Debug/net6.0

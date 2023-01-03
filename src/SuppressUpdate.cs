@@ -5,7 +5,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    public Task UpdateCheckAsync(Func<UpdateManager, object, Task> orig, UpdateManager um, object state)
+    private Task Hook_UpdateCheckAsync(Func<UpdateManager, object, Task> orig, UpdateManager um, object state)
     {
         return Task.Run(() =>
         {

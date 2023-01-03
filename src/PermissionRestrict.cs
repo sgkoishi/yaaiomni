@@ -6,7 +6,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void TogglePvp(object? sender, TogglePvpEventArgs args)
+    private void Hook_Permission_TogglePvp(object? sender, TogglePvpEventArgs args)
     {
         var restrict = this.config.Permission.Restrict;
         if (!restrict.Enabled)
@@ -33,7 +33,7 @@ public partial class Plugin : TerrariaPlugin
         Terraria.NetMessage.TrySendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, args.PlayerId);
     }
 
-    private void PlayerTeam(object? sender, PlayerTeamEventArgs args)
+    private void Hook_Permission_PlayerTeam(object? sender, PlayerTeamEventArgs args)
     {
         var restrict = this.config.Permission.Restrict;
         if (!restrict.Enabled)
