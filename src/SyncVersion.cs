@@ -23,3 +23,4 @@ public partial class Plugin : TerrariaPlugin
         orig(self, start, length, out messageType);
     }
 }
+

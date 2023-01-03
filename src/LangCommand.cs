@@ -1,5 +1,4 @@
 ﻿using GetText;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using Terraria.Localization;
@@ -14,7 +13,6 @@ public partial class Plugin : TerrariaPlugin
     private Type _tshockI18n = typeof(TShockAPI.TShock).Module.GetTypes().Single(t => t.Name == "I18n")!;
     private void Command_Lang(CommandArgs args)
     {
-
         var tscinfo = this._tshockI18n
             .GetProperty("TranslationCultureInfo", BindingFlags.NonPublic | BindingFlags.Static)!
             .GetGetMethod(true)!;

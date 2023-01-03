@@ -1,5 +1,4 @@
 ﻿using TerrariaApi.Server;
-using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 

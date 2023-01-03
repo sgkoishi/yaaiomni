@@ -1,4 +1,5 @@
 # yaaiomni
+[![Latest](https://img.shields.io/github/downloads/sgkoishi/yaaiomni/latest/total.svg) | ![Total](https://img.shields.io/github/downloads/sgkoishi/yaaiomni/total.svg)](https://github.com/sgkoishi/yaaiomni/releases)
 Yet another misc plugin for TShock
 
 #### Commands

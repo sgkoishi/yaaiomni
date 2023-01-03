@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Terraria.Localization;
-using TerrariaApi.Server;
 using TShockAPI;
 using static Terraria.Utils;
 using TileCollection = ModFramework.ICollection<Terraria.ITile>;
