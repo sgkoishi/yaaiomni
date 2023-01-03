@@ -26,21 +26,18 @@ jobs:
           cd src
           dotnet build
 
-      - name: CI Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: Artifact
-          path: |
-            ./src/bin/Debug/net6.0
-            LICENSE
-            README.md
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: Artifact
+      - name: Tag
+        id: tagcount
+        run: |
+          echo "TAG_NAME=v$(git rev-list --count HEAD)" >> $GITHUB_OUTPUT
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
-          files: Artifact.zip
+          tag_name: ${{ steps.tagcount.outputs.TAG_NAME }}
+          name: Release ${{ steps.tagcount.outputs.TAG_NAME }}
+          files: |
+            ./src/bin/Debug/net6.0/*
+            LICENSE
+            README.md
