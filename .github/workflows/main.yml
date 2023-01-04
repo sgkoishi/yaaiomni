@@ -27,7 +27,7 @@ jobs:
         run: |
           cd src
           dotnet build
-          Compress-Archive -Path src/bin/Debug/net6.0/*,LICENSE,README.md Artifact.zip
+          Compress-Archive -Path bin/Debug/net6.0/*,../LICENSE,../README.md ../Artifact.zip
           echo "TAG_NAME=v$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
 
       - name: Release
