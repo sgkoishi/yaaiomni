@@ -13,6 +13,7 @@ public partial class Plugin : TerrariaPlugin
             public readonly static string ToggleTeam = "chireiden.omni.toggleteam";
             public readonly static string PvPCommand = "chireiden.omni.setpvp";
             public readonly static string TeamCommand = "chireiden.omni.setteam";
+            public readonly static string SyncLoadout = "chireiden.omni.syncloadout";
             public static class Admin
             {
                 public readonly static string Ghost = "chireiden.omni.ghost";

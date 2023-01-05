@@ -1,5 +1,6 @@
 # yaaiomni
-[![Latest](https://img.shields.io/github/downloads/sgkoishi/yaaiomni/latest/total.svg) | ![Total](https://img.shields.io/github/downloads/sgkoishi/yaaiomni/total.svg)](https://github.com/sgkoishi/yaaiomni/releases)
+[![Total Downloads](https://img.shields.io/github/downloads/sgkoishi/yaaiomni/total?label=Downloads%40Total&style=for-the-badge) ![Latest Downloads](https://img.shields.io/github/downloads/sgkoishi/yaaiomni/latest/total?label=Downloads%40Latest&style=for-the-badge)](https://github.com/sgkoishi/yaaiomni/releases)
+
 Yet another misc plugin for TShock
 
 #### Commands
@@ -12,14 +13,16 @@ Yet another misc plugin for TShock
 | `/_pvp` | Toggle PvP. | Hidden by default. | `chireiden.omni.pvp` <br> `chireiden.omni.admin.setpvp` | |
 | `/_team` | Toggle team. | Hidden by default. | `chireiden.omni.team` <br> `chireiden.omni.admin.setteam` | |
 | `/_debugstat` | Show debug stats. | Hidden by default. | `chireiden.omni.admin.debugstat` | |
-| `/_gc` | Trigger garbage collection. | Hidden by default. | `chireiden.omni.admin.gc`,  | For admin. |
+| `/_gc` | Trigger garbage collection. | Hidden by default. | `chireiden.omni.admin.gc`, `tshock.cfg.maintenance` | For admin. |
 | `/maxplayers` | Set max players. | | `chireiden.omni.admin.maxplayers` | Might cause unexpected behaviour if lower than current max. |
+| `/tileprovider` | Set tile provider. | | `chireiden.omni.admin.tileprovider` | For admin. |
 
 #### Defaults
 * The permission of `/ghost`, `/setlang`, `/_debugstat` is granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
-* The permission of toggle pvp and team is granted to the guest group as TShock's config.
-  * Unable to toggle pvp and team without these permissions by default. (`.Permission.Restrict` in config)
-* Version check is disabled. (`.SyncVersion` in config)
+* The permission of `/_gc`, `/tileprovider` is granted to the topmost parent of `owner` with maintainence permission, or `trustedadmin`'s parent if `owner` is not found.
+* The permission of switch loadout, pvp and team is granted to the guest group as TShock's config.
+  * Unable to switch without these permissions. (`.Permission.Restrict` in config)
+* Vanilla version check is disabled. (`.SyncVersion` in config)
 * Errors thrown from TShock's update check will be silently ignored. (`.SuppressUpdate` in config)
 
 #### More options

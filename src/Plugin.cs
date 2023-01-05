@@ -88,6 +88,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.WorldGen.clearWorld += this.Hook_TileProvider_ClearWorld;
         OTAPI.Hooks.NetMessage.SendBytes += this.Hook_Ghost_SendBytes;
         OTAPI.Hooks.NetMessage.SendBytes += this.Hook_DebugPacket_SendBytes;
+        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Permission_SyncLoadout;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.Hook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.Hook_HideCommand_PlayerCommand;
@@ -113,6 +114,7 @@ public partial class Plugin : TerrariaPlugin
             OTAPI.Hooks.NetMessage.SendBytes -= this.Hook_Ghost_SendBytes;
             OTAPI.Hooks.NetMessage.SendBytes -= this.Hook_DebugPacket_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Mitigation_GetData;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Permission_SyncLoadout;
             OTAPI.Hooks.Netplay.CreateTcpListener -= this.Hook_Socket_OnCreate;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.Hook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);

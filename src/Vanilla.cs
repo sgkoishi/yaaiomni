@@ -46,24 +46,37 @@ public partial class Plugin : TerrariaPlugin
     private void PermissionSetup()
     {
         var preset = this.config.Permission.Preset;
-        if (!preset.Enabled)
+        var vanillaMode = this.config.Mode.Vanilla.Enabled;
+        if (!preset.Enabled && !vanillaMode)
         {
             return;
         }
 
         var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
-        if (preset.Restrict)
+        if (preset.Restrict || vanillaMode)
         {
             guest?.AddPermission(Consts.Permissions.TogglePvP);
             guest?.AddPermission(Consts.Permissions.ToggleTeam);
+            guest?.AddPermission(Consts.Permissions.SyncLoadout);
         }
 
-        var na = TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("newadmin");
-        na = Utils.ParentGroup(na, g => g.HasPermission(TShockAPI.Permissions.kick));
+        var na = Utils.ParentGroup(
+            TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("newadmin"),
+            g => g.HasPermission(TShockAPI.Permissions.kick));
 
         na?.AddPermission(Consts.Permissions.Admin.Ghost);
         na?.AddPermission(Consts.Permissions.Admin.SetLanguage);
         na?.AddPermission(Consts.Permissions.Admin.DebugStat);
+        na?.AddPermission(Consts.Permissions.Admin.MaxPlayers);
+        na?.AddPermission(Consts.Permissions.Admin.SetPvp);
+        na?.AddPermission(Consts.Permissions.Admin.SetTeam);
         (preset.DebugForAdminOnly ? na : guest)?.AddPermission(Consts.Permissions.Whynot);
+
+        var ta = Utils.ParentGroup(
+            TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("trustedadmin"),
+            g => g.HasPermission(TShockAPI.Permissions.maintenance));
+
+        ta?.AddPermission(Consts.Permissions.Admin.TileProvider);
+        ta?.AddPermission(Consts.Permissions.Admin.TriggerGarbageCollection);
     }
 }

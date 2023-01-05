@@ -113,6 +113,7 @@ public class Config
             public bool Enabled = true;
             public bool ToggleTeam = true;
             public bool TogglePvP = true;
+            public bool SyncLoadout = true;
         }
 
         public class PresetSettings
@@ -174,6 +175,7 @@ public class Config
                 TShockAPI.Permissions.sendemoji,
                 Plugin.Consts.Permissions.TogglePvP,
                 Plugin.Consts.Permissions.ToggleTeam,
+                Plugin.Consts.Permissions.SyncLoadout,
             };
             public bool AllowJourney = false;
             public bool IgnoreAntiCheat = false;
