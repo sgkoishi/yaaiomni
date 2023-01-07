@@ -34,6 +34,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
+          prerelease: true
           tag_name: ${{ steps.build.outputs.TAG_NAME }}
           name: Release ${{ steps.build.outputs.TAG_NAME }}
           files: Artifact.zip

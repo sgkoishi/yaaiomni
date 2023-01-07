@@ -19,7 +19,7 @@ Yet another misc plugin for TShock
 
 #### Defaults
 * The permission of `/ghost`, `/setlang`, `/_debugstat` is granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
-* The permission of `/_gc`, `/tileprovider` is granted to the topmost parent of `owner` with maintainence permission, or `trustedadmin`'s parent if `owner` is not found.
+* The permission of `/_gc`, `/tileprovider` is granted to the topmost parent of `owner` with maintenance permission, or `trustedadmin`'s parent if `owner` is not found.
 * The permission of switch loadout, pvp and team is granted to the guest group as TShock's config.
   * Unable to switch without these permissions. (`.Permission.Restrict` in config)
 * Vanilla version check is disabled. (`.SyncVersion` in config)
@@ -32,6 +32,12 @@ Yet another misc plugin for TShock
 * `.Mode.Vanilla` in config can switch to vanilla mode.
   * Will allow common actions that are restricted by default.
   * Will create a group `chireiden_vanilla` as the parent of the topmost parent of the registered group.
+* `.CommandRenames` in config can rename commands.
+  * It's a `Dictionary<sigOfCommandDelegate: string, newalias: List<string>>`.
+  * e.g. `{"Chireiden.TShock.Omni.Plugin.Command_PermissionCheck": ["whynot123", "whynot456"]}`
+* `.LavaHandler` in config can stop lava spam.
+  * It does not prevent lava from spawning, but rather vacuums it after it *might* spawns.
+  * If you have a lava pool and spawn lots of lava slimes (or similar) and butcher, the total amount of lava will be reduced instead of unchanged.
 
 #### Don't touch unless you know what you are doing
 * `.Soundness` in config enforce some soundness permission checks.
@@ -40,9 +46,9 @@ Yet another misc plugin for TShock
   * Keep it enabled unless you know what you are doing.
 * `.Socket` in config can switch to a different socket implementation. 
   * `AnotherAsyncSocket` might help with 'memory leak'. 
-  * Don't use `Hacky*` unless if you know what you are doing.
+  * Don't use `Hacky*` unless you know what you are doing.
 * `/_gc` triggers garbage collection.
   * Only do this if you know what you are doing.
 * `.TileProvider` in config can switch to a different tile provider.
   * `CheckedTypedCollection` and `CheckedGenericCollection` might slightly improve performance but potentially NRE.
-  * Keep it `AsIs` unless if you know what you are doing.
+  * Keep it `AsIs` unless you know what you are doing.

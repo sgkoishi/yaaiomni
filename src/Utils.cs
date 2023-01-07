@@ -82,4 +82,15 @@ public static class Utils
         }
         return newstorage;
     }
+
+    internal static void TryRenameCommand(Command command, Dictionary<string, List<string>> newnames)
+    {
+        var method = command.CommandDelegate.Method;
+        var sig = $"{method.DeclaringType?.FullName}.{method.Name}";
+        if (newnames.TryGetValue(sig, out var names))
+        {
+            command.Names.Clear();
+            command.Names.AddRange(names);
+        }
+    }
 }

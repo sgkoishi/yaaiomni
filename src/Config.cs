@@ -10,7 +10,7 @@ public class Config
     public bool ShowConfig = false;
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
     public UpdateOptions SuppressUpdate = UpdateOptions.Silent;
-    public SocketType Socket = SocketType.AsIs;
+    public SocketType Socket = SocketType.AnotherAsyncSocket;
     public NameCollisionAction NameCollision = NameCollisionAction.Known;
     public TileProviderOptions TileProvider = TileProviderOptions.AsIs;
     public List<string> HideCommands = new List<string> {
@@ -20,6 +20,8 @@ public class Config
         Plugin.Consts.Commands.TriggerGarbageCollection,
         Plugin.Consts.Commands.DebugStat,
     };
+    public Dictionary<string, List<string>> CommandRenames = new();
+    public LavaSettings LavaHandler = new();
     public DebugPacketSettings DebugPacket = new();
     public SoundnessSettings Soundness = new();
     public PermissionSettings Permission = new();
@@ -71,6 +73,15 @@ public class Config
         CheckedGenericCollection,
     }
 
+    public class LavaSettings
+    {
+        public bool Enabled = false;
+        public bool AllowHellstone = false;
+        public bool AllowCrispyHoneyBlock = false;
+        public bool AllowHellbat = false;
+        public bool AllowLavaSlime = false;
+        public bool AllowLavabat = false;
+    }
     public class DebugPacketSettings
     {
         public bool In = false;

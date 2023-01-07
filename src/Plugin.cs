@@ -21,22 +21,33 @@ public partial class Plugin : TerrariaPlugin
     {
         this.Order = int.MinValue;
         this.config = new Config();
+        var bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
         this.Detour(
             nameof(this.Hook_UpdateCheckAsync),
             typeof(UpdateManager)
-                .GetMethod(nameof(UpdateManager.UpdateCheckAsync), BindingFlags.Public | BindingFlags.Instance)!,
+                .GetMethod(nameof(UpdateManager.UpdateCheckAsync), bfany)!,
             this.Hook_UpdateCheckAsync);
         this.Detour(
             nameof(this.Hook_HasPermission),
             typeof(TSPlayer)
-                .GetMethod(nameof(TSPlayer.HasPermission), BindingFlags.Public | BindingFlags.Instance, new[] { typeof(string) })!,
+                .GetMethod(nameof(TSPlayer.HasPermission), bfany, new[] { typeof(string) })!,
             this.Hook_HasPermission);
         this.Detour(
             nameof(this.Hook_PlayerActive),
             typeof(TSPlayer)
-                .GetProperty(nameof(TSPlayer.Active), BindingFlags.Public | BindingFlags.Instance)!
+                .GetProperty(nameof(TSPlayer.Active), bfany)!
                 .GetMethod!,
             this.Hook_PlayerActive);
+        this.Detour(
+            nameof(this.Hook_Lava_HitEffect),
+            typeof(NPC)
+                .GetMethod(nameof(NPC.HitEffect), bfany)!,
+            this.Hook_Lava_HitEffect);
+        this.Detour(
+            nameof(this.Hook_Lava_KillTile),
+            typeof(WorldGen)
+                .GetMethod(nameof(WorldGen.KillTile), bfany)!,
+            this.Hook_Lava_KillTile);
     }
 
     private void OnReload(ReloadEventArgs? e)
@@ -75,6 +86,18 @@ public partial class Plugin : TerrariaPlugin
         }
         this.PermissionSetup();
         this.VanillaSetup();
+        foreach (var command in Commands.ChatCommands)
+        {
+            Utils.TryRenameCommand(command, this.config.CommandRenames);
+        }
+        foreach (var command in Commands.TShockCommands)
+        {
+            Utils.TryRenameCommand(command, this.config.CommandRenames);
+        }
+        foreach (var command in this._hiddenCommands)
+        {
+            Utils.TryRenameCommand(command, this.config.CommandRenames);
+        }
     }
 
     public override void Initialize()
