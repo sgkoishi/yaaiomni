@@ -105,20 +105,22 @@ public partial class Plugin : TerrariaPlugin
                     var index = e.Instance.whoAmI;
                     if (Mitigations.HandleInventorySlotPE((byte) index, e.Instance.readBuffer.AsSpan(e.ReadOffset, e.Length - 1)))
                     {
-                        this.Statistics.MitigationSlotPE++;
-                        var value = TShockAPI.TShock.Players[index].GetData<int>(Consts.DataKey.DetectPE);
-                        if (value <= 500)
-                        {
-                            TShockAPI.TShock.Players[index].SetData<int>(Consts.DataKey.DetectPE, value + 1);
-                            if (value == 500)
-                            {
-                                var currentLoadoutIndex = Terraria.Main.player[index].CurrentLoadoutIndex;
-                                Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, (currentLoadoutIndex + 1) % 3);
-                                Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, currentLoadoutIndex);
-                                TShockAPI.TShock.Players[index].SetData<bool>(Consts.DataKey.IsPE, true);
-                            }
-                        }
                         e.Result = OTAPI.HookResult.Cancel;
+                        this.Statistics.MitigationSlotPE++;
+                        var player = TShockAPI.TShock.Players[index];
+                        if (player == null)
+                        {
+                            return;
+                        }
+                        var value = player.GetData<int>(Consts.DataKey.DetectPE);
+                        player.SetData<int>(Consts.DataKey.DetectPE, value + 1);
+                        if (value % 500 == 0)
+                        {
+                            var currentLoadoutIndex = Terraria.Main.player[index].CurrentLoadoutIndex;
+                            Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, (currentLoadoutIndex + 1) % 3);
+                            Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, currentLoadoutIndex);
+                            player.SetData<bool>(Consts.DataKey.IsPE, true);
+                        }
                     }
                     else
                     {

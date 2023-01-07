@@ -24,8 +24,8 @@ public partial class Plugin : TerrariaPlugin
         {
             if (Terraria.Main.tile[i, j].liquid == 128 && Terraria.Main.tile[i, j].lava())
             {
-                Terraria.Main.tile[i, j].lava(false);
                 Terraria.Main.tile[i, j].liquid = 0;
+                Terraria.Main.tile[i, j].lava(false);
             }
         }
     }
@@ -56,8 +56,8 @@ public partial class Plugin : TerrariaPlugin
             var j = (int) self.Center.Y / 16;
             if (Terraria.Main.tile[i, j].liquid >= 50 && Terraria.Main.tile[i, j].lava())
             {
-                Terraria.Main.tile[i, j].lava(false);
                 Terraria.Main.tile[i, j].liquid = 0;
+                Terraria.Main.tile[i, j].lava(false);
             }
         }
     }
