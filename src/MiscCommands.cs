@@ -1,4 +1,5 @@
-﻿using Terraria.Localization;
+﻿using System.Reflection;
+using Terraria.Localization;
 using TerrariaApi.Server;
 using TShockAPI;
 
@@ -41,7 +42,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             player[0].TPlayer.hostile = pvp;
-            Terraria.NetMessage.TrySendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, player[0].Index);
+            Terraria.NetMessage.TrySendData((int)PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, player[0].Index);
         }
         else
         {
@@ -52,7 +53,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             args.Player.TPlayer.hostile = pvp;
-            Terraria.NetMessage.TrySendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, args.Player.Index);
+            Terraria.NetMessage.TrySendData((int)PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, args.Player.Index);
         }
     }
 
@@ -100,7 +101,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             player[0].TPlayer.team = team;
-            Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, player[0].Index);
+            Terraria.NetMessage.TrySendData((int)PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, player[0].Index);
         }
         else
         {
@@ -111,7 +112,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             args.Player.TPlayer.team = team;
-            Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.Player.Index);
+            Terraria.NetMessage.TrySendData((int)PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.Player.Index);
         }
     }
     private void Command_GC(CommandArgs args)
@@ -143,6 +144,112 @@ public partial class Plugin : TerrariaPlugin
         else
         {
             args.Player.SendErrorMessage("Invalid max players.");
+        }
+    }
+
+    private void Command_RawBroadcast(CommandArgs args)
+    {
+        if (args.Parameters.Count == 0)
+        {
+            args.Player.SendErrorMessage("Invalid broadcast message.");
+            return;
+        }
+
+        // No need to log because TShock log every command already.
+        TSPlayer.All.SendMessage(args.Parameters[0], 0, 0, 0);
+    }
+
+    private void Command_Sudo(CommandArgs args)
+    {
+        if (args.Parameters.Count == 0)
+        {
+            args.Player.SendErrorMessage("Invalid player.");
+            return;
+        }
+
+        if (args.Parameters.Count == 1)
+        {
+            args.Player.SendErrorMessage("Invalid command.");
+            return;
+        }
+
+        var player = TSPlayer.FindByNameOrID(args.Parameters[0]);
+        if (player.Count == 1)
+        {
+            // Right one
+        }
+        else if (args.Parameters[0] == "*" || this.config.PlayerWildcardFormat.Contains(args.Parameters[0]))
+        {
+            player = TShockAPI.TShock.Players.Where(p => p != null && p.Active).ToList();
+        }
+        else
+        {
+            if (player.Count == 0)
+            {
+                args.Player.SendErrorMessage("Invalid player.");
+                return;
+            }
+            if (player.Count > 1)
+            {
+                args.Player.SendMultipleMatchError(player.Select(p => p.Name));
+                return;
+            }
+        }
+
+        var withoutcheck = args.Parameters.Count > 2 && args.Parameters[2] == "-f";
+
+        if (withoutcheck)
+        {
+            var cmdargs = (List<string>)typeof(TShockAPI.Command)
+                .GetMethod("ParseParameters", BindingFlags.NonPublic | BindingFlags.Static)!
+                .Invoke(null, new object[] { args.Parameters[1] })!;
+            if (cmdargs.Count == 0)
+            {
+                args.Player.SendErrorMessage("Invalid command.");
+                return;
+            }
+
+            var cmdname = cmdargs[0];
+            if (!cmdname.StartsWith(Commands.Specifier) && !cmdname.StartsWith(Commands.SilentSpecifier))
+            {
+                args.Player.SendErrorMessage("Invalid command.");
+                return;
+            }
+
+            var silent = cmdname.StartsWith(Commands.SilentSpecifier);
+            var specifier = silent ? Commands.SilentSpecifier : Commands.Specifier;
+            cmdname = cmdname.Substring(specifier.Length);
+            var cmds = Commands.ChatCommands.Where(c => c.HasAlias(cmdname)).ToList();
+            var cmdtext = args.Parameters[1].Substring(specifier.Length);
+            foreach (var p in player)
+            {
+                var cmds_clone = cmds.ToList().AsEnumerable();
+                if (TShockAPI.Hooks.PlayerHooks.OnPlayerCommand(p, cmdname, cmdtext, cmdargs, ref cmds_clone, specifier))
+                {
+                    continue;
+                }
+
+                foreach (var cmd in cmds_clone)
+                {
+                    if (cmd.DoLog)
+                    {
+                        TShockAPI.TShock.Log.ConsoleInfo($"{args.Player.Name} force {p.Name} executed: {specifier}{cmdtext}");
+                    }
+                    else
+                    {
+                        TShockAPI.TShock.Log.ConsoleInfo($"{args.Player.Name} force {p.Name} executed (args omitted): {specifier}{cmdname}");
+                    }
+
+                    cmd.CommandDelegate(new CommandArgs(cmdtext, silent, p, cmdargs));
+                }
+            }
+        }
+        else
+        {
+            foreach (var p in player)
+            {
+                TShockAPI.Commands.HandleCommand(p, args.Parameters[1]);
+            }
         }
     }
 }

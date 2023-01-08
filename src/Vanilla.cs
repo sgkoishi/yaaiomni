@@ -67,16 +67,27 @@ public partial class Plugin : TerrariaPlugin
         na?.AddPermission(Consts.Permissions.Admin.Ghost);
         na?.AddPermission(Consts.Permissions.Admin.SetLanguage);
         na?.AddPermission(Consts.Permissions.Admin.DebugStat);
-        na?.AddPermission(Consts.Permissions.Admin.MaxPlayers);
         na?.AddPermission(Consts.Permissions.Admin.SetPvp);
         na?.AddPermission(Consts.Permissions.Admin.SetTeam);
+        na?.AddPermission(Consts.Permissions.TimeoutCommand);
+        na?.AddPermission(Consts.Permissions.IntervalCommand);
+        na?.AddPermission(Consts.Permissions.ClearInterval);
+        na?.AddPermission(Consts.Permissions.ShowTimeout);
         (preset.DebugForAdminOnly ? na : guest)?.AddPermission(Consts.Permissions.Whynot);
 
         var ta = Utils.ParentGroup(
             TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("trustedadmin"),
             g => g.HasPermission(TShockAPI.Permissions.maintenance));
 
+        ta?.AddPermission(Consts.Permissions.Admin.MaxPlayers);
         ta?.AddPermission(Consts.Permissions.Admin.TileProvider);
         ta?.AddPermission(Consts.Permissions.Admin.TriggerGarbageCollection);
+        ta?.AddPermission(Consts.Permissions.Admin.RawBroadcast);
+
+        var owner = Utils.ParentGroup(
+            TShockAPI.TShock.Groups.GetGroupByName("owner"),
+            g => g.HasPermission(TShockAPI.Permissions.su));
+
+        owner?.AddPermission(Consts.Permissions.Admin.Sudo);
     }
 }

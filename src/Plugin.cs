@@ -181,6 +181,12 @@ public partial class Plugin : TerrariaPlugin
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DebugStat, this.Command_DebugStat, Consts.Commands.DebugStat));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.MaxPlayers, this.Command_MaxPlayers, Consts.Commands.MaxPlayers));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.TileProvider, this.Command_TileProvider, Consts.Commands.TileProvider));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.TimeoutCommand, this.Command_SetTimeout, Consts.Commands.Timeout));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.IntervalCommand, this.Command_SetInterval, Consts.Commands.Interval));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.ClearInterval, this.Command_ClearInterval, Consts.Commands.ClearInterval));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.ShowTimeout, this.Command_ListDelay, Consts.Commands.ShowTimeout));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.RawBroadcast, this.Command_RawBroadcast, Consts.Commands.RawBroadcast));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.Sudo, this.Command_Sudo, Consts.Commands.Sudo));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

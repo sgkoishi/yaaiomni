@@ -14,6 +14,10 @@ public partial class Plugin : TerrariaPlugin
             public readonly static string PvPCommand = "chireiden.omni.setpvp";
             public readonly static string TeamCommand = "chireiden.omni.setteam";
             public readonly static string SyncLoadout = "chireiden.omni.syncloadout";
+            public readonly static string TimeoutCommand = "chireiden.omni.timeout";
+            public readonly static string IntervalCommand = "chireiden.omni.interval";
+            public readonly static string ClearInterval = "chireiden.omni.cleartimeout";
+            public readonly static string ShowTimeout = "chireiden.omni.showtimeout";
             public static class Admin
             {
                 public readonly static string Ghost = "chireiden.omni.ghost";
@@ -24,6 +28,8 @@ public partial class Plugin : TerrariaPlugin
                 public readonly static string DebugStat = "chireiden.omni.admin.debugstat";
                 public readonly static string MaxPlayers = "chireiden.omni.admin.maxplayers";
                 public readonly static string TileProvider = "chireiden.omni.admin.tileprovider";
+                public readonly static string RawBroadcast = "chireiden.omni.admin.rawbroadcast";
+                public readonly static string Sudo = "chireiden.omni.admin.sudo";
             }
         }
         public static class Commands
@@ -37,6 +43,12 @@ public partial class Plugin : TerrariaPlugin
             public readonly static string DebugStat = "_debugstat";
             public readonly static string MaxPlayers = "maxplayers";
             public readonly static string TileProvider = "tileprovider";
+            public readonly static string Timeout = "settimeout";
+            public readonly static string Interval = "setinterval";
+            public readonly static string ClearInterval = "clearinterval";
+            public readonly static string ShowTimeout = "showdelay";
+            public readonly static string RawBroadcast = "rbc";
+            public readonly static string Sudo = "runas";
         }
         public static class DataKey
         {
