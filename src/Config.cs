@@ -13,6 +13,9 @@ public class Config
     public SocketType Socket = SocketType.Preset;
     public NameCollisionAction NameCollision = NameCollisionAction.Preset;
     public TileProviderOptions TileProvider = TileProviderOptions.Preset;
+    public List<string> PlayerWildcardFormat = new List<string> {
+        "*all*"
+    };
     public List<string> HideCommands = new List<string> {
         Plugin.Consts.Commands.Whynot,
         Plugin.Consts.Commands.SetPvp,

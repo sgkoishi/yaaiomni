@@ -93,4 +93,27 @@ public static class Utils
             command.Names.AddRange(names);
         }
     }
+
+    /// <summary>
+    /// Converts a list of arguments back to a command.
+    /// This is a rough inverse of <see cref="TShockAPI.Commands.ParseParameters(string)"/>.
+    /// </summary>
+    public static string ToCommand(string specifier, string command, List<string> args)
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.Append(specifier).Append(command).Append(' ');
+        foreach (var arg in args)
+        {
+            var parg = arg.Replace("\\", "\\\\").Replace("\"", "\\\"");
+            if (parg.Contains(' '))
+            {
+                sb.Append('"').Append(parg).Append('"');
+            }
+            else
+            {
+                sb.Append(parg);
+            }
+        }
+        return sb.ToString();
+    }
 }

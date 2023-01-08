@@ -115,7 +115,9 @@ public partial class Plugin : TerrariaPlugin
         OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Permission_SyncLoadout;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.Hook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
+        TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.Hook_TimeoutInterval);
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.Hook_HideCommand_PlayerCommand;
+        TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.Hook_Wildcard_PlayerCommand;
         TShockAPI.Hooks.GeneralHooks.ReloadEvent += this.OnReload;
         TShockAPI.TShock.Initialized += this.PostTShockInitialize;
         TShockAPI.GetDataHandlers.TogglePvp.Register(this.Hook_Permission_TogglePvp);
@@ -142,7 +144,9 @@ public partial class Plugin : TerrariaPlugin
             OTAPI.Hooks.Netplay.CreateTcpListener -= this.Hook_Socket_OnCreate;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.Hook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
+            TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.Hook_TimeoutInterval);
             TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.Hook_HideCommand_PlayerCommand;
+            TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.Hook_Wildcard_PlayerCommand;
             TShockAPI.Hooks.GeneralHooks.ReloadEvent -= this.OnReload;
             TShockAPI.TShock.Initialized -= this.PostTShockInitialize;
             TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.Hook_Permission_TogglePvp);
