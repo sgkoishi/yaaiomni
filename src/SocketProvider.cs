@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Buffers;
+using System.Net;
 using System.Net.Sockets;
 using Terraria.Net;
 using Terraria.Net.Sockets;
@@ -25,16 +26,21 @@ public partial class Plugin : TerrariaPlugin
                 args.Result = null;
                 return;
             case Config.SocketType.HackyBlocked:
-                args.Result = new HackyBlockedSocket();
+                args.Result = new Socket.HackyBlockedSocket();
                 return;
             case Config.SocketType.HackyAsync:
-                args.Result = new HackyAsyncSocket();
+                args.Result = new Socket.HackyAsyncSocket();
                 return;
             case Config.SocketType.AnotherAsyncSocket:
-                args.Result = new AnotherAsyncSocket();
+            case Config.SocketType.Preset:
+                args.Result = new Socket.AnotherAsyncSocket();
                 return;
         }
     }
+}
+
+internal static class Socket
+{
 
     /// <summary>
     /// We found memory leak, from the memory dump it seems that the async networking is using much more memory than expected.
@@ -250,8 +256,13 @@ public partial class Plugin : TerrariaPlugin
         {
             try
             {
-                await this._connection.GetStream().WriteAsync(data.AsMemory(offset, size));
+                // Netplay.KickClient use a static shared buffer, might be better to copy it before use
+                // ArrayPool sounds smarter than vanilla's Net.LegacyNetBufferPool
+                var buffer = ArrayPool<byte>.Shared.Rent(size);
+                Buffer.BlockCopy(data, offset, buffer, 0, size);
+                await this._connection.GetStream().WriteAsync(buffer.AsMemory(0, size));
                 callback(state);
+                ArrayPool<byte>.Shared.Return(buffer);
             }
             catch
             {

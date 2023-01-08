@@ -17,7 +17,7 @@ public partial class Plugin : TerrariaPlugin
             {
                 orig(um, state);
             }
-            catch when (this.config.SuppressUpdate == Config.UpdateOptions.Silent)
+            catch when (this.config.SuppressUpdate == Config.UpdateOptions.Silent || this.config.SuppressUpdate == Config.UpdateOptions.Preset)
             {
                 // silently suppress
             }

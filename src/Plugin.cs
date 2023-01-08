@@ -82,6 +82,7 @@ public partial class Plugin : TerrariaPlugin
                 Terraria.Main.tile = new CheckedTypedCollection();
                 break;
             case Config.TileProviderOptions.AsIs:
+            case Config.TileProviderOptions.Preset:
                 break;
         }
         this.PermissionSetup();

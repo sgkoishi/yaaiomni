@@ -9,10 +9,10 @@ public class Config
     public bool TrimMemory = true;
     public bool ShowConfig = false;
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
-    public UpdateOptions SuppressUpdate = UpdateOptions.Silent;
-    public SocketType Socket = SocketType.AnotherAsyncSocket;
-    public NameCollisionAction NameCollision = NameCollisionAction.Known;
-    public TileProviderOptions TileProvider = TileProviderOptions.AsIs;
+    public UpdateOptions SuppressUpdate = UpdateOptions.Preset;
+    public SocketType Socket = SocketType.Preset;
+    public NameCollisionAction NameCollision = NameCollisionAction.Preset;
+    public TileProviderOptions TileProvider = TileProviderOptions.Preset;
     public List<string> HideCommands = new List<string> {
         Plugin.Consts.Commands.Whynot,
         Plugin.Consts.Commands.SetPvp,
@@ -33,7 +33,8 @@ public class Config
     {
         Silent,
         Disabled,
-        Default
+        AsIs,
+        Preset,
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -45,7 +46,8 @@ public class Config
         Unset,
         HackyBlocked,
         HackyAsync,
-        AnotherAsyncSocket
+        AnotherAsyncSocket,
+        Preset
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -62,7 +64,8 @@ public class Config
         /// <summary> Kick whoever does not using a known ip and not logged in, fallback to <see cref="Second"/> </summary>
         Known,
         /// <summary> Do nothing </summary>
-        Unhandled
+        Unhandled,
+        Preset,
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -71,6 +74,7 @@ public class Config
         AsIs,
         CheckedTypedCollection,
         CheckedGenericCollection,
+        Preset,
     }
 
     public class LavaSettings
@@ -87,14 +91,15 @@ public class Config
         public bool In = false;
         public bool Out = false;
         public bool BytesOut = false;
-        public CatchedException ShowCatchedException = CatchedException.None;
+        public CatchedException ShowCatchedException = CatchedException.Preset;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public enum CatchedException
         {
-            None,
+            None = 1,
             Uncommon,
             All,
+            Preset = 0
         }
     }
 
