@@ -76,10 +76,10 @@ public partial class Plugin : TerrariaPlugin
         switch (this.config.TileProvider)
         {
             case Config.TileProviderOptions.CheckedGenericCollection:
-                Terraria.Main.tile = new CheckedGenericCollection();
+                Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile, new CheckedGenericCollection());
                 break;
             case Config.TileProviderOptions.CheckedTypedCollection:
-                Terraria.Main.tile = new CheckedTypedCollection();
+                Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile, new CheckedTypedCollection());
                 break;
             case Config.TileProviderOptions.AsIs:
             case Config.TileProviderOptions.Preset:

@@ -86,7 +86,7 @@ public partial class Plugin : TerrariaPlugin
         }
         var cmd = new DelayCommand(args.Parameters[0], args.Player, start: this._updateCounter, timeout: timeout);
         commands.Add(cmd);
-        args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed once in the future (id: {(uint)cmd.GetHashCode()}).");
+        args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed once in the future (id: {(uint) cmd.GetHashCode()}).");
     }
 
     private void Command_SetInterval(CommandArgs args)
@@ -116,7 +116,7 @@ public partial class Plugin : TerrariaPlugin
         }
         var cmd = new DelayCommand(args.Parameters[0], args.Player, start: this._updateCounter, timeout: interval, repeat: 0);
         commands.Add(cmd);
-        args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed in the future (id: {(uint)cmd.GetHashCode()}).");
+        args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed in the future (id: {(uint) cmd.GetHashCode()}).");
     }
 
     private void Command_ClearInterval(CommandArgs args)
@@ -139,7 +139,7 @@ public partial class Plugin : TerrariaPlugin
         for (int i = 0; i < commands.Count; i++)
         {
             var cmd = commands[i];
-            if ((uint)cmd.GetHashCode() == id)
+            if ((uint) cmd.GetHashCode() == id)
             {
                 commands.RemoveAt(i);
                 args.Player.SendSuccessMessage($"Command {id} ({cmd.Command}) has been removed.");
@@ -158,7 +158,7 @@ public partial class Plugin : TerrariaPlugin
         args.Player.SendInfoMessage("Commands:");
         foreach (var cmd in commands)
         {
-            args.Player.SendInfoMessage($"Command: {cmd.Command}, Timeout: {cmd.Timeout}, Repeat: {cmd.Repeat}, Id: {(uint)cmd.GetHashCode()}");
+            args.Player.SendInfoMessage($"Command: {cmd.Command}, Timeout: {cmd.Timeout}, Repeat: {cmd.Repeat}, Id: {(uint) cmd.GetHashCode()}");
         }
     }
 }

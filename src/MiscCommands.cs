@@ -42,7 +42,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             player[0].TPlayer.hostile = pvp;
-            Terraria.NetMessage.TrySendData((int)PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, player[0].Index);
+            Terraria.NetMessage.TrySendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, player[0].Index);
         }
         else
         {
@@ -53,7 +53,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             args.Player.TPlayer.hostile = pvp;
-            Terraria.NetMessage.TrySendData((int)PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, args.Player.Index);
+            Terraria.NetMessage.TrySendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, args.Player.Index);
         }
     }
 
@@ -101,7 +101,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             player[0].TPlayer.team = team;
-            Terraria.NetMessage.TrySendData((int)PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, player[0].Index);
+            Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, player[0].Index);
         }
         else
         {
@@ -112,7 +112,7 @@ public partial class Plugin : TerrariaPlugin
             }
 
             args.Player.TPlayer.team = team;
-            Terraria.NetMessage.TrySendData((int)PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.Player.Index);
+            Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.Player.Index);
         }
     }
     private void Command_GC(CommandArgs args)
@@ -200,7 +200,7 @@ public partial class Plugin : TerrariaPlugin
 
         if (withoutcheck)
         {
-            var cmdargs = (List<string>)typeof(TShockAPI.Command)
+            var cmdargs = (List<string>) typeof(TShockAPI.Command)
                 .GetMethod("ParseParameters", BindingFlags.NonPublic | BindingFlags.Static)!
                 .Invoke(null, new object[] { args.Parameters[1] })!;
             if (cmdargs.Count == 0)

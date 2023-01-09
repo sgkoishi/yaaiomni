@@ -30,6 +30,7 @@ public partial class Plugin : TerrariaPlugin
                 public readonly static string TileProvider = "chireiden.omni.admin.tileprovider";
                 public readonly static string RawBroadcast = "chireiden.omni.admin.rawbroadcast";
                 public readonly static string Sudo = "chireiden.omni.admin.sudo";
+                public readonly static string DetailedPermissionStackTrace = "chireiden.omni.whynot.detailed";
             }
         }
         public static class Commands

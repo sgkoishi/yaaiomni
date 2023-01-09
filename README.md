@@ -16,16 +16,23 @@ Yet another misc plugin for TShock
 | `/_gc` | Trigger garbage collection. | Hidden by default. | `chireiden.omni.admin.gc`, `tshock.cfg.maintenance` | For admin. |
 | `/maxplayers` | Set max players. | | `chireiden.omni.admin.maxplayers` | Might cause unexpected behaviour if lower than current max. |
 | `/tileprovider` | Set tile provider. | | `chireiden.omni.admin.tileprovider` | For admin. |
+| `/settimeout` | Run delay command. | | `chireiden.omni.settimeout` | |
+| `/setinterval` | Run delay command repeatedly. | | `chireiden.omni.setinterval` | |
+| `/clearinterval` | Remove a delay command. | | `chireiden.omni.clearinterval` | |
+| `/showdelay` | Show all pending delay commands. | | `chireiden.omni.showdelay` | |
+| `/rbc` | Broadcast a message. | | `chireiden.omni.admin.rawbroadcast` | For admin. |
+| `/runas` | Run a command as another player. | | `chireiden.omni.admin.sudo` | For owner. |
 
 #### Defaults
-* The permission of `/ghost`, `/setlang`, `/_debugstat` is granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
-* The permission of `/_gc`, `/tileprovider` is granted to the topmost parent of `owner` with maintenance permission, or `trustedadmin`'s parent if `owner` is not found.
-* The permission of switch loadout, pvp and team is granted to the guest group as TShock's config.
+* The permission of `/ghost`, `/setlang`, `/_debugstat`, timeout/delay/interval series commands are granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
+* The permission of `/_gc`, `/tileprovider`, `/maxplayers`, `/rbc` are granted to the topmost parent of `owner` with maintenance permission, or `trustedadmin`'s parent if `owner` is not found.
+* The permission of `/runas` is granted to the topmost parent of `owner` with sudo permission.
+* The permission of switch loadout, pvp and team are granted to the guest group as TShock's config.
   * Unable to switch without these permissions. (`.Permission.Restrict` in config)
 * Vanilla version check is disabled. (`.SyncVersion` in config)
 * Errors thrown from TShock's update check will be silently ignored. (`.SuppressUpdate` in config)
 
-#### More options
+#### More features
 * `.TrimMemory` in config can reduce memory usage.
   * Depends on the content of the map, may vary from no effect to ~600MB reduced.
   * No side effects.
@@ -38,17 +45,30 @@ Yet another misc plugin for TShock
 * `.LavaHandler` in config can stop lava spam.
   * It does not prevent lava from spawning, but rather vacuums it after it *might* spawns.
   * If you have a lava pool and spawn lots of lava slimes (or similar) and butcher, the total amount of lava will be reduced instead of unchanged.
+* `.PlayerWildcardFormat` in config allow wildcard selector as player target.
+  * e.g. `/g zenith *all*` gives Zenith to everyone online!
+* `.Permission.Log` in config record permission queries for `/whynot`.
+  * With `-v` flag shows more stack trace.
+  * With `-t`/`-f` flag filters by allowed(true)/rejected(false).
+* Timeout/Interval commands works like similar functions in JavaScript.
+  * Time unit is in tick/frame/update, which is 60 per second.
+  * Remember to quote or escape your command when necessary.
+  * Use your permission.
+* Sudo is called `/runas` to avoid conflict with TShock's `/sudo`.
+  * With `-f` flag bypasses permission check.
 
 #### Don't touch unless you know what you are doing
 * `.Soundness` in config enforce some soundness permission checks.
   * Keep it enabled unless you know what you are doing.
 * `.Mitigation` in config can fix some issues that exist but not blame to TShock.
   * Keep it enabled unless you know what you are doing.
-* `.Socket` in config can switch to a different socket implementation. 
-  * `AnotherAsyncSocket` might help with 'memory leak'. 
+* `.Socket` in config can switch to a different socket implementation.
+  * `AnotherAsyncSocket` might help with 'memory leak'.
   * Don't use `Hacky*` unless you know what you are doing.
 * `/_gc` triggers garbage collection.
   * Only do this if you know what you are doing.
 * `.TileProvider` in config can switch to a different tile provider.
   * `CheckedTypedCollection` and `CheckedGenericCollection` might slightly improve performance but potentially NRE.
   * Keep it `AsIs` unless you know what you are doing.
+* `.DebugPacket` in config can log all packets and networking exceptions.
+  * Keep it disabled unless you know what you are doing.

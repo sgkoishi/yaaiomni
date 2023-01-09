@@ -120,7 +120,7 @@ public class Config
 
         public class PermissionLogSettings
         {
-            public bool DoLog = true;
+            public bool Enabled = true;
             public int LogCount = 50;
             public bool LogDuplicate = false;
             public double LogDistinctTime = 1;

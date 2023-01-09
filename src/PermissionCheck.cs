@@ -11,7 +11,8 @@ public partial class Plugin : TerrariaPlugin
     private bool Hook_HasPermission(Func<TSPlayer, string, bool> orig, TSPlayer player, string permission)
     {
         var result = orig(player, permission);
-        if (this.config.Permission.Log.DoLog)
+        var strgy = this.config.Permission.Log;
+        if (strgy.Enabled)
         {
             if (player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory) == null)
             {
@@ -19,24 +20,23 @@ public partial class Plugin : TerrariaPlugin
             }
             var history = player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);
             var now = DateTime.Now;
-            var ll = this.config.Permission.Log.LogCount;
-            if (!this.config.Permission.Log.LogDuplicate)
+            if (!strgy.LogDuplicate)
             {
                 lock (history)
                 {
                     foreach (var item in history)
                     {
-                        if (item.Permission == permission && (item.Time - now).TotalSeconds < this.config.Permission.Log.LogDistinctTime)
+                        if (item.Permission == permission && (item.Time - now).TotalSeconds < strgy.LogDistinctTime)
                         {
                             return result;
                         }
                     }
                 }
             }
-            var entry = new PermissionCheckHistory(permission, now, result, this.config.Permission.Log.LogStackTrace ? new StackTrace() : null);
+            var entry = new PermissionCheckHistory(permission, now, result, strgy.LogStackTrace ? new StackTrace() : null);
             lock (history)
             {
-                if (ll > 0 && history.Count == ll)
+                if (strgy.LogCount > 0 && history.Count == strgy.LogCount)
                 {
                     history.Dequeue();
                 }
@@ -48,18 +48,27 @@ public partial class Plugin : TerrariaPlugin
 
     private void Command_PermissionCheck(CommandArgs args)
     {
-        Queue<PermissionCheckHistory> list;
+        List<PermissionCheckHistory> list;
         var existing = args.Player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);
         if (existing != null)
         {
             lock (existing)
             {
-                list = new Queue<PermissionCheckHistory>(existing);
+                list = new List<PermissionCheckHistory>(existing);
             }
         }
         else
         {
             list = new();
+        }
+
+        if (args.Parameters.Contains("-t"))
+        {
+            list = list.Where(x => x.Result).ToList();
+        }
+        else if (args.Parameters.Contains("-f"))
+        {
+            list = list.Where(x => !x.Result).ToList();
         }
 
         if (list.Count == 0)
@@ -69,7 +78,7 @@ public partial class Plugin : TerrariaPlugin
         }
 
         args.Player.SendInfoMessage("Permission check history:");
-        var detailed = args.Parameters.Contains("-t") && args.Player.HasPermission("chireiden.omni.whynot.detailed");
+        var detailed = args.Parameters.Contains("-v") && args.Player.HasPermission(Consts.Permissions.Admin.DetailedPermissionStackTrace);
 
         foreach (var item in list)
         {
