@@ -22,11 +22,14 @@ Yet another misc plugin for TShock
 | `/showdelay` | Show all pending delay commands. | | `chireiden.omni.showdelay` | |
 | `/rbc` | Broadcast a message. | | `chireiden.omni.admin.rawbroadcast` | For admin. |
 | `/runas` | Run a command as another player. | | `chireiden.omni.admin.sudo` | For owner. |
+| `/listclients` | Show connected clients, including pending/joining ones. | | `chireiden.omni.admin.listclients` | For owner. |
+| `/dumpbuffer` | Dump buffer. | | `chireiden.omni.admin.dumpbuffer` | For owner. |
+| `/kc` | Disconnect a client. | | `chireiden.omni.admin.terminatesocket` | For admin. |
 
 #### Defaults
 * The permission of `/ghost`, `/setlang`, `/_debugstat`, timeout/delay/interval series commands are granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
-* The permission of `/_gc`, `/tileprovider`, `/maxplayers`, `/rbc` are granted to the topmost parent of `owner` with maintenance permission, or `trustedadmin`'s parent if `owner` is not found.
-* The permission of `/runas` is granted to the topmost parent of `owner` with sudo permission.
+* The permission of `/_gc`, `/tileprovider`, `/maxplayers`, `/rbc`, `/kc` are granted to the topmost parent of `owner` with maintenance permission, or `trustedadmin`'s parent if `owner` is not found.
+* The permission of `/runas`, `/listclients`, `/dumpbuffer` are granted to the topmost parent of `owner` with sudo permission.
 * The permission of switch loadout, pvp and team are granted to the guest group as TShock's config.
   * Unable to switch without these permissions. (`.Permission.Restrict` in config)
 * Vanilla version check is disabled. (`.SyncVersion` in config)

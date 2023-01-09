@@ -31,6 +31,9 @@ public partial class Plugin : TerrariaPlugin
                 public readonly static string RawBroadcast = "chireiden.omni.admin.rawbroadcast";
                 public readonly static string Sudo = "chireiden.omni.admin.sudo";
                 public readonly static string DetailedPermissionStackTrace = "chireiden.omni.whynot.detailed";
+                public readonly static string ListClients = "chireiden.omni.admin.listclients";
+                public readonly static string DumpBuffer = "chireiden.omni.admin.dumpbuffer";
+                public readonly static string TerminateSocket = "chireiden.omni.admin.terminatesocket";
             }
         }
         public static class Commands
@@ -50,6 +53,9 @@ public partial class Plugin : TerrariaPlugin
             public readonly static string ShowTimeout = "showdelay";
             public readonly static string RawBroadcast = "rbc";
             public readonly static string Sudo = "runas";
+            public readonly static string ListClients = "listclients";
+            public readonly static string DumpBuffer = "dumpbuffer";
+            public readonly static string TerminateSocket = "kc";
         }
         public static class DataKey
         {

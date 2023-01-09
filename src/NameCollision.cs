@@ -11,7 +11,7 @@ public partial class Plugin : TerrariaPlugin
     private void Hook_NameCollision(NameCollisionEventArgs args)
     {
         var ip = TShockAPI.TShock.Utils.GetRealIP(Netplay.Clients[args.Who].Socket.GetRemoteAddress().ToString());
-        var player = TShockAPI.TShock.Players.First(p => p != null && p.Name == args.Name && p.Index != args.Who);
+        var player = Utils.ActivePlayers.First(p => p.Name == args.Name && p.Index != args.Who);
         var account = TShockAPI.TShock.UserAccounts.GetUserAccountByName(args.Name);
         var knownIPs = JsonConvert.DeserializeObject<List<string>>(account?.KnownIps ?? "[]")!;
         var first = false;

@@ -26,7 +26,7 @@ public partial class Plugin : TerrariaPlugin
     private void Hook_TimeoutInterval(EventArgs args)
     {
         this._updateCounter++;
-        foreach (var player in TShockAPI.TShock.Players)
+        foreach (var player in Utils.ActivePlayers)
         {
             if (player.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> commands)
             {

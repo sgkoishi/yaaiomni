@@ -9,9 +9,9 @@ namespace Chireiden.TShock.Omni;
 
 public static class Utils
 {
-    internal static TileActionAttempt WithPermissionCheck(TileActionAttempt action, TSPlayer player)
+    internal static TileActionAttempt WithPermissionCheck(TileActionAttempt action, TSPlayer? player)
     {
-        return (x, y) => player.HasBuildPermission(x, y) && action(x, y);
+        return (x, y) => (player?.HasBuildPermission(x, y) ?? false) && action(x, y);
     }
 
     public static bool TryParseGameCulture(string s, [NotNullWhen(returnValue: true)] out GameCulture? culture)
@@ -116,4 +116,6 @@ public static class Utils
         }
         return sb.ToString();
     }
+
+    public static IEnumerable<TSPlayer> ActivePlayers => TShockAPI.TShock.Players.Where(p => p != null && p.Active);
 }

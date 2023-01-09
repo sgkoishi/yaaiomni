@@ -83,11 +83,14 @@ public partial class Plugin : TerrariaPlugin
         ta?.AddPermission(Consts.Permissions.Admin.TileProvider);
         ta?.AddPermission(Consts.Permissions.Admin.TriggerGarbageCollection);
         ta?.AddPermission(Consts.Permissions.Admin.RawBroadcast);
+        ta?.AddPermission(Consts.Permissions.Admin.TerminateSocket);
 
         var owner = Utils.ParentGroup(
             TShockAPI.TShock.Groups.GetGroupByName("owner"),
             g => g.HasPermission(TShockAPI.Permissions.su));
 
         owner?.AddPermission(Consts.Permissions.Admin.Sudo);
+        owner?.AddPermission(Consts.Permissions.Admin.ListClients);
+        owner?.AddPermission(Consts.Permissions.Admin.DumpBuffer);
     }
 }

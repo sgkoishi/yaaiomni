@@ -14,13 +14,8 @@ public partial class Plugin : TerrariaPlugin
             if (this.config.PlayerWildcardFormat.Contains(arg))
             {
                 e.Handled = true;
-                foreach (var player in TShockAPI.TShock.Players)
+                foreach (var player in Utils.ActivePlayers)
                 {
-                    if (player is null || !player.Active)
-                    {
-                        continue;
-                    }
-
                     var newargs = e.Parameters.ToList();
                     newargs[i] = player.Name;
                     TShockAPI.Commands.HandleCommand(player, Utils.ToCommand(e.CommandPrefix, e.CommandName, newargs));

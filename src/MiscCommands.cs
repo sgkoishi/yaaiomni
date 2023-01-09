@@ -180,7 +180,7 @@ public partial class Plugin : TerrariaPlugin
         }
         else if (args.Parameters[0] == "*" || this.config.PlayerWildcardFormat.Contains(args.Parameters[0]))
         {
-            player = TShockAPI.TShock.Players.Where(p => p != null && p.Active).ToList();
+            player = Utils.ActivePlayers.ToList();
         }
         else
         {
@@ -251,5 +251,55 @@ public partial class Plugin : TerrariaPlugin
                 TShockAPI.Commands.HandleCommand(p, args.Parameters[1]);
             }
         }
+    }
+
+    private void Command_ListConnected(CommandArgs args)
+    {
+        foreach (var client in Terraria.Netplay.Clients)
+        {
+            if (client.IsConnected())
+            {
+                args.Player.SendInfoMessage($"Index: {client.Id} {client.Socket.GetRemoteAddress()} {client.Name} State: {client.State} Bytes: {Terraria.NetMessage.buffer[client.Id].totalData}");
+                args.Player.SendInfoMessage($"Status: {client.StatusText}");
+                args.Player.SendInfoMessage($"Status: {client.StatusText2}");
+            }
+        }
+    }
+
+    private void Command_DumpBuffer(CommandArgs args)
+    {
+        if (args.Parameters.Count == 0)
+        {
+            args.Player.SendErrorMessage("Invalid player.");
+            return;
+        }
+
+        if (!byte.TryParse(args.Parameters[0], out var index))
+        {
+            args.Player.SendErrorMessage("Invalid player.");
+            return;
+        }
+
+        var path = args.Parameters.Count > 1 ? string.Join("_", args.Parameters[1].Split(Path.GetInvalidFileNameChars())) : "dump.bin";
+        path = Path.Combine(TShockAPI.TShock.SavePath, path);
+
+        File.WriteAllBytes(path, Terraria.NetMessage.buffer[index].readBuffer[..Terraria.NetMessage.buffer[index].totalData]);
+    }
+
+    private void Command_TerminateSocket(CommandArgs args)
+    {
+        if (args.Parameters.Count == 0)
+        {
+            args.Player.SendErrorMessage("Invalid player.");
+            return;
+        }
+
+        if (!byte.TryParse(args.Parameters[0], out var index))
+        {
+            args.Player.SendErrorMessage("Invalid player.");
+            return;
+        }
+
+        Terraria.Netplay.Clients[index]?.Socket?.Close();
     }
 }

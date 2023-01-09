@@ -113,6 +113,7 @@ public partial class Plugin : TerrariaPlugin
         OTAPI.Hooks.NetMessage.SendBytes += this.Hook_Ghost_SendBytes;
         OTAPI.Hooks.NetMessage.SendBytes += this.Hook_DebugPacket_SendBytes;
         OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Permission_SyncLoadout;
+        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Modded_GetData;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.Hook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.Hook_TimeoutInterval);
@@ -141,6 +142,7 @@ public partial class Plugin : TerrariaPlugin
             OTAPI.Hooks.NetMessage.SendBytes -= this.Hook_DebugPacket_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Mitigation_GetData;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Permission_SyncLoadout;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Modded_GetData;
             OTAPI.Hooks.Netplay.CreateTcpListener -= this.Hook_Socket_OnCreate;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.Hook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
@@ -187,6 +189,9 @@ public partial class Plugin : TerrariaPlugin
         Commands.ChatCommands.Add(new Command(Consts.Permissions.ShowTimeout, this.Command_ListDelay, Consts.Commands.ShowTimeout));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.RawBroadcast, this.Command_RawBroadcast, Consts.Commands.RawBroadcast));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.Sudo, this.Command_Sudo, Consts.Commands.Sudo));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.ListClients, this.Command_ListConnected, Consts.Commands.ListClients));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DumpBuffer, this.Command_DumpBuffer, Consts.Commands.DumpBuffer));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.TerminateSocket, this.Command_TerminateSocket, Consts.Commands.TerminateSocket));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }
