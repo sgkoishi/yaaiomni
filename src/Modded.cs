@@ -4,40 +4,40 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void Hook_Modded_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs e)
+    private void Hook_Modded_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
-        if (e.Result == OTAPI.HookResult.Cancel)
+        if (args.Result == OTAPI.HookResult.Cancel)
         {
             return;
         }
 
-        var whoAmI = e.Instance.whoAmI;
+        var whoAmI = args.Instance.whoAmI;
         var state = Terraria.Netplay.Clients[whoAmI].State;
         var flag = false;
         if (state == -1)
         {
-            if (e.PacketId != (byte) PacketTypes.PasswordSend)
+            if (args.PacketId != (byte) PacketTypes.PasswordSend)
             {
                 flag = true;
             }
         }
         else if (state == 0)
         {
-            if (e.PacketId != (byte) PacketTypes.ConnectRequest)
+            if (args.PacketId != (byte) PacketTypes.ConnectRequest)
             {
                 flag = true;
             }
         }
         else if (state < 10)
         {
-            if (e.PacketId > (byte) PacketTypes.PlayerSpawn
-                && e.PacketId != (byte) PacketTypes.SocialHandshake
-                && e.PacketId != (byte) PacketTypes.PlayerHp
-                && e.PacketId != (byte) PacketTypes.PlayerMana
-                && e.PacketId != (byte) PacketTypes.PlayerBuff
-                && e.PacketId != (byte) PacketTypes.PasswordSend
-                && e.PacketId != (byte) PacketTypes.ClientUUID
-                && e.PacketId != (byte) PacketTypes.SyncLoadout)
+            if (args.PacketId > (byte) PacketTypes.PlayerSpawn
+                && args.PacketId != (byte) PacketTypes.SocialHandshake
+                && args.PacketId != (byte) PacketTypes.PlayerHp
+                && args.PacketId != (byte) PacketTypes.PlayerMana
+                && args.PacketId != (byte) PacketTypes.PlayerBuff
+                && args.PacketId != (byte) PacketTypes.PasswordSend
+                && args.PacketId != (byte) PacketTypes.ClientUUID
+                && args.PacketId != (byte) PacketTypes.SyncLoadout)
             {
                 flag = true;
             }
@@ -49,7 +49,9 @@ public partial class Plugin : TerrariaPlugin
             // Stop handling any data
             Terraria.Netplay.Clients[whoAmI].PendingTermination = true;
             Terraria.Netplay.Clients[whoAmI].PendingTerminationApproved = true;
-            e.Result = OTAPI.HookResult.Cancel;
+            args.Result = OTAPI.HookResult.Cancel;
+            // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
+            args.PacketId = byte.MaxValue;
         }
     }
 }

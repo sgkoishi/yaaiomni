@@ -15,22 +15,22 @@ public partial class Plugin : TerrariaPlugin
         return state == null ? orig(player) : !state.Value;
     }
 
-    private void Hook_Ghost_SendBytes(object? sender, OTAPI.Hooks.NetMessage.SendBytesEventArgs e)
+    private void Hook_Ghost_SendBytes(object? sender, OTAPI.Hooks.NetMessage.SendBytesEventArgs args)
     {
-        if (e.Data[2] != (int) PacketTypes.PlayerActive)
+        if (args.Data[2] != (int) PacketTypes.PlayerActive)
         {
             return;
         }
 
-        var playerIndex = e.Data[3];
-        if (e.RemoteClient != playerIndex)
+        var playerIndex = args.Data[3];
+        if (args.RemoteClient != playerIndex)
         {
             var state = TShockAPI.TShock.Players[playerIndex]?.GetData<bool?>(Consts.DataKey.Ghost);
             if (state == null)
             {
                 return;
             }
-            e.Data[4] = (byte) (!state).GetHashCode();
+            args.Data[4] = (byte) (!state).GetHashCode();
         }
     }
 

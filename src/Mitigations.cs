@@ -84,9 +84,9 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
-    private void Hook_Mitigation_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs e)
+    private void Hook_Mitigation_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
-        if (e.Result == OTAPI.HookResult.Cancel)
+        if (args.Result == OTAPI.HookResult.Cancel)
         {
             return;
         }
@@ -97,15 +97,15 @@ public partial class Plugin : TerrariaPlugin
             return;
         }
 
-        switch (e.PacketId)
+        switch (args.PacketId)
         {
             case (int) PacketTypes.PlayerSlot:
                 if (mitigation.InventorySlotPE)
                 {
-                    var index = e.Instance.whoAmI;
-                    if (Mitigations.HandleInventorySlotPE((byte) index, e.Instance.readBuffer.AsSpan(e.ReadOffset, e.Length - 1)))
+                    var index = args.Instance.whoAmI;
+                    if (Mitigations.HandleInventorySlotPE((byte) index, args.Instance.readBuffer.AsSpan(args.ReadOffset, args.Length - 1)))
                     {
-                        e.Result = OTAPI.HookResult.Cancel;
+                        args.Result = OTAPI.HookResult.Cancel;
                         this.Statistics.MitigationSlotPE++;
                         var player = TShockAPI.TShock.Players[index];
                         if (player == null)

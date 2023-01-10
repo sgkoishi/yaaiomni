@@ -6,19 +6,19 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void Hook_Wildcard_PlayerCommand(PlayerCommandEventArgs e)
+    private void Hook_Wildcard_PlayerCommand(PlayerCommandEventArgs args)
     {
-        for (var i = 0; i < e.Parameters.Count; i++)
+        for (var i = 0; i < args.Parameters.Count; i++)
         {
-            var arg = e.Parameters[i];
+            var arg = args.Parameters[i];
             if (this.config.PlayerWildcardFormat.Contains(arg))
             {
-                e.Handled = true;
+                args.Handled = true;
                 foreach (var player in Utils.ActivePlayers)
                 {
-                    var newargs = e.Parameters.ToList();
+                    var newargs = args.Parameters.ToList();
                     newargs[i] = player.Name;
-                    TShockAPI.Commands.HandleCommand(player, Utils.ToCommand(e.CommandPrefix, e.CommandName, newargs));
+                    TShockAPI.Commands.HandleCommand(player, Utils.ToCommand(args.CommandPrefix, args.CommandName, newargs));
                 }
                 return;
             }

@@ -8,12 +8,12 @@ public partial class Plugin : TerrariaPlugin
 {
     private List<Command> _hiddenCommands = new();
 
-    private void Hook_HideCommand_PlayerCommand(PlayerCommandEventArgs e)
+    private void Hook_HideCommand_PlayerCommand(PlayerCommandEventArgs args)
     {
-        var hc = this._hiddenCommands.FindAll(c => c.HasAlias(e.CommandName) && c.CanRun(e.Player));
+        var hc = this._hiddenCommands.FindAll(c => c.HasAlias(args.CommandName) && c.CanRun(args.Player));
         if (hc.Count > 0)
         {
-            var ecl = (List<Command>) e.CommandList;
+            var ecl = (List<Command>) args.CommandList;
             ecl.AddRange(hc.Except(Commands.ChatCommands));
         }
         var hidden = Commands.ChatCommands.FindAll(c => this.config.HideCommands.Any(h => c.HasAlias(h)));

@@ -85,7 +85,7 @@ public partial class Plugin : TerrariaPlugin
         }
 
         args.Result = OTAPI.HookResult.Cancel;
-        // TSAPI is not respecting args.Result, so we have to craft invalid packet. Switch to Loadout 255 when only 3.
+        // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet. Switch to Loadout 255 when only 3.
         args.Instance.readBuffer[args.ReadOffset + 1] = 255;
         Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, args.Instance.whoAmI, player.TPlayer.CurrentLoadoutIndex);
     }
