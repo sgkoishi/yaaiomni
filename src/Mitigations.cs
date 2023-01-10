@@ -6,14 +6,6 @@ public partial class Plugin : TerrariaPlugin
 {
     internal static class Mitigations
     {
-        /// <summary>
-        /// Mobile (PE) client keep (likely every frame) send PlayerSlot packet to the server if
-        /// any item exists in non-active loadout.
-        ///
-        /// Cause lag.
-        ///
-        /// This will silently proceed the packet without boardcasting it.
-        /// </summary>
         internal static bool HandleInventorySlotPE(byte player, Span<byte> data)
         {
             if (data.Length != 8)
@@ -100,34 +92,95 @@ public partial class Plugin : TerrariaPlugin
         switch (args.PacketId)
         {
             case (int) PacketTypes.PlayerSlot:
-                if (mitigation.InventorySlotPE)
+            {
+                if (!mitigation.InventorySlotPE)
                 {
-                    var index = args.Instance.whoAmI;
-                    if (Mitigations.HandleInventorySlotPE((byte) index, args.Instance.readBuffer.AsSpan(args.ReadOffset, args.Length - 1)))
+                    break;
+                }
+                var index = args.Instance.whoAmI;
+                if (Mitigations.HandleInventorySlotPE((byte) index, args.Instance.readBuffer.AsSpan(args.ReadOffset, args.Length - 1)))
+                {
+                    args.Result = OTAPI.HookResult.Cancel;
+                    this.Statistics.MitigationSlotPE++;
+                    var player = TShockAPI.TShock.Players[index];
+                    if (player == null)
                     {
-                        args.Result = OTAPI.HookResult.Cancel;
-                        this.Statistics.MitigationSlotPE++;
-                        var player = TShockAPI.TShock.Players[index];
-                        if (player == null)
-                        {
-                            return;
-                        }
-                        var value = player.GetData<int>(Consts.DataKey.DetectPE);
-                        player.SetData<int>(Consts.DataKey.DetectPE, value + 1);
-                        if (value % 500 == 0)
-                        {
-                            var currentLoadoutIndex = Terraria.Main.player[index].CurrentLoadoutIndex;
-                            Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, (currentLoadoutIndex + 1) % 3);
-                            Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, currentLoadoutIndex);
-                            player.SetData<bool>(Consts.DataKey.IsPE, true);
-                        }
+                        return;
                     }
-                    else
+                    var value = player.GetData<int>(Consts.DataKey.DetectPE);
+                    player.SetData<int>(Consts.DataKey.DetectPE, value + 1);
+                    if (value % 500 == 0)
                     {
-                        this.Statistics.MitigationSlotPEAllowed++;
+                        var currentLoadoutIndex = Terraria.Main.player[index].CurrentLoadoutIndex;
+                        Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, (currentLoadoutIndex + 1) % 3);
+                        Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, currentLoadoutIndex);
+                        player.SetData<bool>(Consts.DataKey.IsPE, true);
+                    }
+                }
+                else
+                {
+                    this.Statistics.MitigationSlotPEAllowed++;
+                }
+                break;
+            }
+            case (int) PacketTypes.EffectHeal:
+            {
+                if (!mitigation.PotionSicknessPE)
+                {
+                    break;
+                }
+                var index = args.Instance.whoAmI;
+                if (args.Instance.readBuffer[args.ReadOffset] != index)
+                {
+                    args.Result = OTAPI.HookResult.Cancel;
+                    break;
+                }
+                if (Terraria.Main.player[index].inventory[Terraria.Main.player[index].selectedItem].potion)
+                {
+                    var amount = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1, 2));
+                    TShockAPI.TShock.Players[index]?.SetData<int>(Consts.DataKey.PendingRevertHeal, amount);
+                }
+                break;
+            }
+            case (int) PacketTypes.PlayerBuff:
+            {
+                if (!mitigation.PotionSicknessPE)
+                {
+                    break;
+                }
+                var index = args.Instance.whoAmI;
+                if (args.Instance.readBuffer[args.ReadOffset] != index)
+                {
+                    args.Result = OTAPI.HookResult.Cancel;
+                    break;
+                }
+                var buffcount = (args.Length - 1) / 2;
+                for (var i = 0; i < buffcount; i++)
+                {
+                    var buff = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1 + i * 2, 2));
+                    if (buff == Terraria.ID.BuffID.PotionSickness)
+                    {
+                        TShockAPI.TShock.Players[index]?.SetData<int>(Consts.DataKey.PendingRevertHeal, 0);
                     }
                 }
                 break;
+            }
+            case (int) PacketTypes.ClientSyncedInventory:
+            {
+                if (!mitigation.PotionSicknessPE)
+                {
+                    break;
+                }
+                var index = args.Instance.whoAmI;
+                var pending = TShockAPI.TShock.Players[index]?.GetData<int>(Consts.DataKey.PendingRevertHeal) ?? 0;
+                if (pending > 0)
+                {
+                    TShockAPI.TShock.Players[index]?.SetData<int>(Consts.DataKey.PendingRevertHeal, 0);
+                    Terraria.Main.player[index].statLife -= pending;
+                    Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerHp, -1, -1, null, index);
+                }
+                break;
+            }
             default:
                 break;
         }

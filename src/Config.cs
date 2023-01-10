@@ -40,6 +40,20 @@ public class Config
         Preset,
     }
 
+    /// <summary>
+    /// We found 'memory leak', from the memory dump it seems that the async networking is using much more memory than expected.
+    /// <code>
+    /// <seealso cref="System.Threading.ThreadPool.s_workQueue"/>,
+    /// -> <seealso cref="System.Net.Sockets.SocketAsyncContext+BufferMemorySendOperation"/>,
+    ///   -> <seealso cref="System.Action.{System.Int32, System.Byte[], System.Int32, System.Net.Sockets.SocketFlags, System.Net.Sockets.SocketError}"/>,
+    ///     -> <seealso cref="System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs"/>,
+    /// -> <seealso cref="System.Threading.QueueUserWorkItemCallbackDefaultContext"/>,
+    ///   -> <seealso cref="System.Net.Sockets.SocketAsyncContext+BufferMemorySendOperation"/>,
+    ///     -> <seealso cref="System.Action.{System.Int32, System.Byte[], System.Int32, System.Net.Sockets.SocketFlags, System.Net.Sockets.SocketError}"/>,
+    ///       -> <seealso cref="System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs"/>
+    /// </code>
+    /// This 'memory leak' is now confirmed to be related to <seealso cref="Chireiden.TShock.Omni.Config.MitigationSettings.InventorySlotPE"/>.
+    /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum SocketType
     {
@@ -210,6 +224,27 @@ public class Config
     public class MitigationSettings
     {
         public bool Enabled = true;
+
+        /// <summary>
+        /// Mobile (PE) client keep (likely per frame) send PlayerSlot packet
+        /// to the server if any item exists in non-active loadout.
+        ///
+        /// Cause lag and high memory usage.
+        ///
+        /// This will silently proceed the packet without boardcasting it, and
+        /// stop future unnecessary sync.
+        /// </summary>
         public bool InventorySlotPE = true;
+
+        /// <summary>
+        /// Mobile (PE) client can use healing potion (etc.) without getting
+        /// or being restricted by PotionSickness.
+        ///
+        /// Cause imbalance.
+        ///
+        /// This will silently revert the attempt of healing.
+        /// Item is still consumed as punishment.
+        /// </summary>
+        public bool PotionSicknessPE = true;
     }
 }
