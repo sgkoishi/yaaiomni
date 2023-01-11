@@ -30,6 +30,12 @@ jobs:
           Compress-Archive -Path bin/Debug/net6.0/*,../LICENSE,../README.md ../Artifact.zip
           echo "TAG_NAME=v$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
 
+      - name: CI Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Artifact
+          path: ./src/bin/Debug/net6.0
+
       - name: Release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'

@@ -8,6 +8,11 @@ public partial class Plugin : TerrariaPlugin
 {
     private void Hook_Wildcard_PlayerCommand(PlayerCommandEventArgs args)
     {
+        if (args.Handled)
+        {
+            return;
+        }
+
         for (var i = 0; i < args.Parameters.Count; i++)
         {
             var arg = args.Parameters[i];

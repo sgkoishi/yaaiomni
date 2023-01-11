@@ -39,7 +39,6 @@ public partial class Plugin : TerrariaPlugin
                 args.Handled = true;
                 break;
             case Config.NameCollisionAction.Known:
-            case Config.NameCollisionAction.Preset:
                 if (!knownIPs.Contains(ip))
                 {
                     second = true;
@@ -55,6 +54,7 @@ public partial class Plugin : TerrariaPlugin
                 args.Handled = true;
                 break;
             case Config.NameCollisionAction.Unhandled:
+            case Config.NameCollisionAction.Preset:
                 return;
             default:
                 throw new SwitchExpressionException($"Unexpected option {this.config.NameCollision}");
