@@ -10,8 +10,12 @@ public partial class Plugin : TerrariaPlugin
 {
     private void Hook_NameCollision(NameCollisionEventArgs args)
     {
+        if (args.Handled)
+        {
+            return;
+        }
         var ip = TShockAPI.TShock.Utils.GetRealIP(Netplay.Clients[args.Who].Socket.GetRemoteAddress().ToString());
-        var player = Utils.ActivePlayers.First(p => p.Name == args.Name && p.Index != args.Who);
+        var player = Utils.ActivePlayers.FirstOrDefault(p => p.Name == args.Name && p.Index != args.Who);
         var account = TShockAPI.TShock.UserAccounts.GetUserAccountByName(args.Name);
         var knownIPs = JsonConvert.DeserializeObject<List<string>>(account?.KnownIps ?? "[]")!;
         var first = false;
@@ -40,7 +44,7 @@ public partial class Plugin : TerrariaPlugin
                 {
                     second = true;
                 }
-                else if (!knownIPs.Contains(player.IP) && !player.IsLoggedIn)
+                else if (player != null && !knownIPs.Contains(player.IP) && !player.IsLoggedIn)
                 {
                     first = true;
                 }
@@ -57,7 +61,7 @@ public partial class Plugin : TerrariaPlugin
         }
         if (first)
         {
-            NetMessage.BootPlayer(player.Index, NetworkText.FromKey(Lang.mp[5].Key, args.Name));
+            NetMessage.BootPlayer(player!.Index, NetworkText.FromKey(Lang.mp[5].Key, args.Name));
         }
         if (second)
         {
