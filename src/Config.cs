@@ -246,5 +246,16 @@ public class Config
         /// Item is still consumed as punishment.
         /// </summary>
         public bool PotionSicknessPE = true;
+
+        /// <summary>
+        /// Similar to <seealso cref="PotionSicknessPE"/>, but generic for
+        /// all items.
+        ///
+        /// Cause imbalance.
+        ///
+        /// This will silently revert the attempt of using the item.
+        /// Might cause player slightly desync when they try to do so.
+        /// </summary>
+        public bool SwapWhileUsePE = true;
     }
 }

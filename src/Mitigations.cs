@@ -181,6 +181,29 @@ public partial class Plugin : TerrariaPlugin
                 }
                 break;
             }
+            case (int) PacketTypes.PlayerUpdate:
+            {
+                if (!mitigation.SwapWhileUsePE)
+                {
+                    break;
+                }
+                var index = args.Instance.whoAmI;
+                if (args.Instance.readBuffer[args.ReadOffset] != index)
+                {
+                    args.Result = OTAPI.HookResult.Cancel;
+                    break;
+                }
+                Terraria.BitsByte control = args.Instance.readBuffer[args.ReadOffset + 1];
+                var selectedItem = args.Instance.readBuffer[args.ReadOffset + 5];
+                if (Terraria.Main.player[index].controlUseItem && control[5] && selectedItem != Terraria.Main.player[index].selectedItem)
+                {
+                    args.Result = OTAPI.HookResult.Cancel;
+                    Terraria.Main.player[index].controlUseItem = false;
+                    Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, -1, null, index);
+                    break;
+                }
+                break;
+            }
             default:
                 break;
         }
