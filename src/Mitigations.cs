@@ -204,6 +204,34 @@ public partial class Plugin : TerrariaPlugin
                 }
                 break;
             }
+            case (int) PacketTypes.LoadNetModule:
+            {
+                var type = BitConverter.ToUInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2));
+                if (type == Terraria.Net.NetManager.Instance.GetId<Terraria.GameContent.NetModules.NetTextModule>())
+                {
+                    var index = args.Instance.whoAmI;
+                    var player = TShockAPI.TShock.Players[index];
+                    if (player == null)
+                    {
+                        break;
+                    }
+
+                    for (var i = 0; i < this.config.Mitigation.ChatSpamRestrict.Count; i++)
+                    {
+                        var ratelimit = this.config.Mitigation.ChatSpamRestrict[i];
+                        var tat = Math.Max(this._updateCounter, player.GetData<int>(Consts.DataKey.ChatSpamRestrict + i)) + ratelimit.RateLimit;
+                        if (tat > this._updateCounter + ratelimit.Maximum)
+                        {
+                            args.Result = OTAPI.HookResult.Cancel;
+                            // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
+                            args.PacketId = byte.MaxValue;
+                            break;
+                        }
+                        player.SetData<int>(Consts.DataKey.ChatSpamRestrict + i, tat);
+                    }
+                }
+                break;
+            }
             default:
                 break;
         }

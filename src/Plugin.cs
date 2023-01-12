@@ -100,6 +100,21 @@ public partial class Plugin : TerrariaPlugin
         {
             Utils.TryRenameCommand(command, this.config.CommandRenames);
         }
+        foreach (var field in typeof(Consts.DataKey).GetFields())
+        {
+            if (field.GetValue(null) is string key)
+            {
+                foreach (var player in TShockAPI.TShock.Players)
+                {
+                    if (player is null)
+                    {
+                        continue;
+                    }
+                    // TODO: We should clear those data, either delete or null
+                    // player.SetData<object?>(key, null);
+                }
+            }
+        }
     }
 
     public override void Initialize()

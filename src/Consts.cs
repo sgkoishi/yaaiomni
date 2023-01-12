@@ -65,6 +65,7 @@ public partial class Plugin : TerrariaPlugin
             public readonly static string IsPE = "chireiden.data.ispe";
             public readonly static string DelayCommands = "chireiden.data.delaycommands";
             public readonly static string PendingRevertHeal = "chireiden.data.pendingheal";
+            public readonly static string ChatSpamRestrict = "chireiden.data.chatspam";
         }
         public readonly static string ConfigFile = "chireiden.omni.json";
         public readonly static string VanillaGroup = "chireiden_vanilla";

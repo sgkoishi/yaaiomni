@@ -6,21 +6,34 @@
     <Nullable>enable</Nullable>
     <AssemblyName>Chireiden.TShock.Omni</AssemblyName>
     <RootNamespace>Chireiden.TShock.Omni</RootNamespace>
+    <Deterministic>true</Deterministic>
+    <IncludeSymbols>true</IncludeSymbols>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EmbedAllSources>true</EmbedAllSources>
+    <PackageType>TShockPlugin</PackageType>
+    <Authors>Chireiden</Authors>
+    <Description>Yet another misc plugin for TShock</Description>
+    <NoWarn>$(NoWarn);CS1591;MSB3270</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OTAPI.Upcoming" Version="3.1.20" />
-    <PackageReference Include="TSAPI" Version="5.1.3" />
     <PackageReference Include="TShock" Version="5.1.3">
       <ExcludeAssets>ContentFiles</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <Target Name="githash" BeforeTargets="PreBuildEvent">
+    <Exec Command="git rev-list --count HEAD" ContinueOnError="true" ConsoleToMSBuild="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="CommitVersionValue" />
+    </Exec>
     <Exec Command="git log -1 --pretty=&quot;format:%25H&quot;" ContinueOnError="true" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="CommitHashValue" />
     </Exec>
 
+    <PropertyGroup>
+      <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+      <PackageVersion>0.0.$(CommitVersionValue)</PackageVersion>
+    </PropertyGroup>
     <ItemGroup>
       <AssemblyAttribute Include="Chireiden.CommitHashAttribute">
         <_Parameter1>$(CommitHashValue)</_Parameter1>

@@ -22,25 +22,30 @@ jobs:
         with:
           dotnet-version: '6.0.100'
 
+      - name: Set env output
+        id: setenvo
+        run: |
+          echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
+
       - name: Build
-        id: build
         run: |
           cd src
           dotnet build
           Compress-Archive -Path bin/Debug/net6.0/*,../LICENSE,../README.md ../Artifact.zip
-          echo "TAG_NAME=v$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
 
       - name: CI Artifact
         uses: actions/upload-artifact@v3
         with:
           name: Artifact
-          path: ./src/bin/Debug/net6.0
+          path: |
+            ./src/bin/Debug/net6.0
+            ./src/bin/Debug/*.symbols.nupkg
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
           prerelease: true
-          tag_name: ${{ steps.build.outputs.TAG_NAME }}
-          name: Release ${{ steps.build.outputs.TAG_NAME }}
+          tag_name: v${{ steps.setenvo.outputs.TAG_NAME }}
+          name: Release v${{ steps.setenvo.outputs.TAG_NAME }}
           files: Artifact.zip

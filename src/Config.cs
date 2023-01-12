@@ -3,14 +3,24 @@ using Newtonsoft.Json.Converters;
 
 namespace Chireiden.TShock.Omni;
 
+/// <summary>
+/// This is the config file for Omni.
+/// </summary>
 public class Config
 {
+    /// <summary> Disable vanilla version check. </summary>
     public bool SyncVersion = true;
+    /// <summary> Trim memory depends on the world. No side effect. </summary>
     public bool TrimMemory = true;
+    /// <summary> Weather to show the config file on load/reload. </summary>
     public bool ShowConfig = false;
+    /// <summary> Weather to log all exceptions. </summary>
     public bool LogFirstChance = false;
+    /// <summary> DateTime format for logging. </summary>
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
+    /// <summary> Action for TShock's update </summary>
     public UpdateOptions SuppressUpdate = UpdateOptions.Preset;
+    /// <summary> Socket Provider </summary>
     public SocketType Socket = SocketType.Preset;
     public NameCollisionAction NameCollision = NameCollisionAction.Preset;
     public TileProviderOptions TileProvider = TileProviderOptions.Preset;
@@ -44,14 +54,14 @@ public class Config
     /// <summary>
     /// We found 'memory leak', from the memory dump it seems that the async networking is using much more memory than expected.
     /// <code>
-    /// <seealso cref="System.Threading.ThreadPool.s_workQueue"/>,
-    /// -> <seealso cref="System.Net.Sockets.SocketAsyncContext+BufferMemorySendOperation"/>,
-    ///   -> <seealso cref="System.Action.{System.Int32, System.Byte[], System.Int32, System.Net.Sockets.SocketFlags, System.Net.Sockets.SocketError}"/>,
-    ///     -> <seealso cref="System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs"/>,
-    /// -> <seealso cref="System.Threading.QueueUserWorkItemCallbackDefaultContext"/>,
-    ///   -> <seealso cref="System.Net.Sockets.SocketAsyncContext+BufferMemorySendOperation"/>,
-    ///     -> <seealso cref="System.Action.{System.Int32, System.Byte[], System.Int32, System.Net.Sockets.SocketFlags, System.Net.Sockets.SocketError}"/>,
-    ///       -> <seealso cref="System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs"/>
+    /// System.Threading.ThreadPool.s_workQueue
+    /// -> System.Net.Sockets.SocketAsyncContext+BufferMemorySendOperation
+    ///   -> System.Action&lt;System.Int32, System.Byte[], System.Int32, System.Net.Sockets.SocketFlags, System.Net.Sockets.SocketError&gt;
+    ///     -> System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs
+    /// -> System.Threading.QueueUserWorkItemCallbackDefaultContext
+    ///   -> System.Net.Sockets.SocketAsyncContext+BufferMemorySendOperation
+    ///     -> System.Action&lt;System.Int32, System.Byte[], System.Int32, System.Net.Sockets.SocketFlags, System.Net.Sockets.SocketError&gt;
+    ///       -> System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs
     /// </code>
     /// This 'memory leak' is now confirmed to be related to <seealso cref="Chireiden.TShock.Omni.Config.MitigationSettings.InventorySlotPE"/>.
     /// </summary>
@@ -123,7 +133,7 @@ public class Config
 
     public class SoundnessSettings
     {
-        /// <summary> Permission restrict server-side tile modification projectiles like liquid bombs & rockets, dirt bombs. </summary>
+        /// <summary> Permission restrict server-side tile modification projectiles like liquid bombs &amp; rockets, dirt bombs. </summary>
         public bool ProjectileKillMapEditRestriction = true;
     }
 
@@ -258,5 +268,18 @@ public class Config
         /// Might cause player slightly desync when they try to do so.
         /// </summary>
         public bool SwapWhileUsePE = true;
+
+        /// <summary>
+        /// Chat spam rate limit. This restriction also applies to commands.
+        /// Each item is a pair of rate and maximum.
+        /// Higher rate and lower maximum means more strict.
+        /// The default limit:
+        ///   3 messages per 5 seconds
+        ///   5 messages per 20 seconds
+        /// </summary>
+        public List<(int RateLimit, int Maximum)> ChatSpamRestrict = new List<(int RateLimit, int Maximum)> {
+            (100, 300),
+            (240, 1200)
+        };
     }
 }

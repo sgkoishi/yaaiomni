@@ -94,10 +94,12 @@ public static class Utils
         }
     }
 
+#pragma warning disable CS1574 // ParseParameters could not be resolved because it is private
     /// <summary>
     /// Converts a list of arguments back to a command.
     /// This is a rough inverse of <see cref="TShockAPI.Commands.ParseParameters(string)"/>.
     /// </summary>
+#pragma warning restore CS1574
     public static string ToCommand(string specifier, string command, List<string> args)
     {
         var sb = new System.Text.StringBuilder();

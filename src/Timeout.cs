@@ -11,7 +11,7 @@ public partial class Plugin : TerrariaPlugin
         public string Command { get; set; }
         public TSPlayer Player { get; set; }
         public int Timeout { get; set; }
-        internal int Start { get; set; }
+        public int Start { get; set; }
         public int Repeat { get; set; }
         public DelayCommand(string command, TSPlayer player, int start = 0, int timeout = 60, int repeat = 1)
         {
