@@ -8,6 +8,7 @@ public class Config
     public bool SyncVersion = true;
     public bool TrimMemory = true;
     public bool ShowConfig = false;
+    public bool LogFirstChance = false;
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
     public UpdateOptions SuppressUpdate = UpdateOptions.Preset;
     public SocketType Socket = SocketType.Preset;
@@ -152,7 +153,7 @@ public class Config
         public class PresetSettings
         {
             public bool Enabled = true;
-            public bool DebugForAdminOnly = true;
+            public bool DebugForAdminOnly = false;
             public bool Restrict = true;
         }
     }

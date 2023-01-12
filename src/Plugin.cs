@@ -19,6 +19,7 @@ public partial class Plugin : TerrariaPlugin
 
     public Plugin(Main game) : base(game)
     {
+        AppDomain.CurrentDomain.FirstChanceException += this.FirstChanceExceptionHandler;
         this.Order = int.MinValue;
         this.config = new Config();
         var bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
