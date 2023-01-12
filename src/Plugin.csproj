@@ -14,12 +14,17 @@
     <Authors>Chireiden</Authors>
     <Description>Yet another misc plugin for TShock</Description>
     <NoWarn>$(NoWarn);CS1591;MSB3270</NoWarn>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sgkoishi/yaaiomni</PackageProjectUrl>
+    <Copyright>Copyright (c) Chireiden 2023</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="TShock" Version="5.1.3">
       <ExcludeAssets>ContentFiles</ExcludeAssets>
     </PackageReference>
+    <None Include="../README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <Target Name="githash" BeforeTargets="PreBuildEvent">
@@ -32,7 +37,8 @@
 
     <PropertyGroup>
       <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-      <PackageVersion>0.0.$(CommitVersionValue)</PackageVersion>
+      <PackageVersion>0.0.$(CommitVersionValue)-ci</PackageVersion>
+      <RepositoryCommit>$(CommitHashValue)</RepositoryCommit>
     </PropertyGroup>
     <ItemGroup>
       <AssemblyAttribute Include="Chireiden.CommitHashAttribute">

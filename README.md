@@ -13,7 +13,7 @@ Yet another misc plugin for TShock
 | `/_pvp` | Toggle PvP. | Hidden by default. | `chireiden.omni.pvp` <br> `chireiden.omni.admin.setpvp` | |
 | `/_team` | Toggle team. | Hidden by default. | `chireiden.omni.team` <br> `chireiden.omni.admin.setteam` | |
 | `/_debugstat` | Show debug stats. | Hidden by default. | `chireiden.omni.admin.debugstat` | |
-| `/_gc` | Trigger garbage collection. | Hidden by default. | `chireiden.omni.admin.gc`, `tshock.cfg.maintenance` | For admin. |
+| `/_gc` | Trigger garbage collection. | Hidden by default. | `chireiden.omni.admin.gc` <br> `tshock.cfg.maintenance` | For admin. |
 | `/maxplayers` | Set max players. | | `chireiden.omni.admin.maxplayers` | Might cause unexpected behaviour if lower than current max. |
 | `/tileprovider` | Set tile provider. | | `chireiden.omni.admin.tileprovider` | For admin. |
 | `/settimeout` | Run delay command. | | `chireiden.omni.settimeout` | |
@@ -25,6 +25,7 @@ Yet another misc plugin for TShock
 | `/listclients` | Show connected clients, including pending/joining ones. | | `chireiden.omni.admin.listclients` | For owner. |
 | `/dumpbuffer` | Dump buffer. | | `chireiden.omni.admin.dumpbuffer` | For owner. |
 | `/kc` | Disconnect a client. | | `chireiden.omni.admin.terminatesocket` | For admin. |
+| `/resetcharacter` | Reset character. | | `chireiden.omni.resetcharacter` <br> `chireiden.omni.admin.resetcharacter` <br> `chireiden.omni.admin.resetcharacter.all` | For admin. |
 
 #### Defaults
 * The permission of `/ghost`, `/setlang`, `/_debugstat`, timeout/delay/interval series commands are granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
@@ -34,6 +35,7 @@ Yet another misc plugin for TShock
   * Unable to switch without these permissions. (`.Permission.Restrict` in config)
 * Vanilla version check is disabled. (`.SyncVersion` in config)
 * Errors thrown from TShock's update check will be silently ignored. (`.SuppressUpdate` in config)
+* Chat spam limit to 3 msg/5 sec, 5 msg/20 sec. (`.Mitigation.ChatSpamRestrict` in config)
 
 #### More features
 * `.TrimMemory` in config can reduce memory usage.

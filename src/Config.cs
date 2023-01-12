@@ -8,22 +8,38 @@ namespace Chireiden.TShock.Omni;
 /// </summary>
 public class Config
 {
-    /// <summary> Disable vanilla version check. </summary>
+    /// <summary> 
+    /// Disable vanilla version check. 
+    /// </summary>
     public bool SyncVersion = true;
     /// <summary> Trim memory depends on the world. No side effect. </summary>
     public bool TrimMemory = true;
-    /// <summary> Weather to show the config file on load/reload. </summary>
+    /// <summary> 
+    /// Weather to show the config file on load/reload. 
+    /// </summary>
     public bool ShowConfig = false;
-    /// <summary> Weather to log all exceptions. </summary>
+    /// <summary> 
+    /// Weather to log all exceptions. 
+    /// </summary>
     public bool LogFirstChance = false;
-    /// <summary> DateTime format for logging. </summary>
+    /// <summary> 
+    /// DateTime format for logging. 
+    /// </summary>
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
-    /// <summary> Action for TShock's update </summary>
+    /// <summary> 
+    /// Action for TShock's update 
+    /// </summary>
     public UpdateOptions SuppressUpdate = UpdateOptions.Preset;
-    /// <summary> Socket Provider </summary>
+    /// <summary> 
+    /// Socket Provider 
+    /// </summary>
     public SocketType Socket = SocketType.Preset;
     public NameCollisionAction NameCollision = NameCollisionAction.Preset;
     public TileProviderOptions TileProvider = TileProviderOptions.Preset;
+    /// <summary> 
+    /// The wildcard of matching all players. Directly using "*" itself is not
+    /// suggested as some commands might have special meaning for it.
+    /// </summary>
     public List<string> PlayerWildcardFormat = new List<string> {
         "*all*"
     };
@@ -33,6 +49,7 @@ public class Config
         Plugin.Consts.Commands.SetTeam,
         Plugin.Consts.Commands.TriggerGarbageCollection,
         Plugin.Consts.Commands.DebugStat,
+        Plugin.Consts.Commands.ResetCharacter
     };
     public Dictionary<string, List<string>> CommandRenames = new();
     public LavaSettings LavaHandler = new();
@@ -81,17 +98,29 @@ public class Config
     [JsonConverter(typeof(StringEnumConverter))]
     public enum NameCollisionAction
     {
-        /// <summary> Kick the first player </summary>
+        /// <summary> 
+        /// Kick the first player 
+        /// </summary>
         First,
-        /// <summary> Kick the second player </summary>
+        /// <summary> 
+        /// Kick the second player 
+        /// </summary>
         Second,
-        /// <summary> Kick both players </summary>
+        /// <summary> 
+        /// Kick both players 
+        /// </summary>
         Both,
-        /// <summary> Kick neither player </summary>
+        /// <summary> 
+        /// Kick neither player 
+        /// </summary>
         None,
-        /// <summary> Kick whoever does not using a known ip and not logged in, fallback to <see cref="Second"/> </summary>
+        /// <summary> 
+        /// Kick whoever does not using a known ip and not logged in, fallback to <see cref="Second"/> 
+        /// </summary>
         Known,
-        /// <summary> Do nothing </summary>
+        /// <summary> 
+        /// Do nothing 
+        /// </summary>
         Unhandled,
         Preset,
     }

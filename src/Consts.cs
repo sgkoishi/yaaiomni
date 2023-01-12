@@ -18,6 +18,7 @@ public partial class Plugin : TerrariaPlugin
             public readonly static string IntervalCommand = "chireiden.omni.interval";
             public readonly static string ClearInterval = "chireiden.omni.cleartimeout";
             public readonly static string ShowTimeout = "chireiden.omni.showtimeout";
+            public readonly static string ResetCharacter = "chireiden.omni.resetcharacter";
             public static class Admin
             {
                 public readonly static string Ghost = "chireiden.omni.ghost";
@@ -34,6 +35,8 @@ public partial class Plugin : TerrariaPlugin
                 public readonly static string ListClients = "chireiden.omni.admin.listclients";
                 public readonly static string DumpBuffer = "chireiden.omni.admin.dumpbuffer";
                 public readonly static string TerminateSocket = "chireiden.omni.admin.terminatesocket";
+                public readonly static string ResetCharacterOther = "chireiden.omni.admin.resetcharacter";
+                public readonly static string ResetCharacterAll = "chireiden.omni.admin.resetcharacter.all";
             }
         }
         public static class Commands
@@ -56,6 +59,7 @@ public partial class Plugin : TerrariaPlugin
             public readonly static string ListClients = "listclients";
             public readonly static string DumpBuffer = "dumpbuffer";
             public readonly static string TerminateSocket = "kc";
+            public readonly static string ResetCharacter = "resetcharacter";
         }
         public static class DataKey
         {

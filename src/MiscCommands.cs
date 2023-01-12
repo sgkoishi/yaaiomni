@@ -302,4 +302,137 @@ public partial class Plugin : TerrariaPlugin
 
         Terraria.Netplay.Clients[index]?.Socket?.Close();
     }
+
+    private class DummyGroup : Group
+    {
+        public DummyGroup() : base("*dummy*")
+        {
+        }
+
+        public override bool HasPermission(string permission)
+        {
+            if (permission == TShockAPI.Permissions.bypassssc)
+            {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    private class DummyPlayer : TSPlayer
+    {
+        public DummyPlayer() : base("Dummy")
+        {
+            this.Group = new DummyGroup();
+            this.IsLoggedIn = true;
+            this.Account = new TShockAPI.DB.UserAccount();
+        }
+    }
+
+    private void Command_ResetCharacter(CommandArgs args)
+    {
+        var account = new List<int>();
+        if (args.Parameters.Count == 0)
+        {
+            if (args.Player.Account?.ID != null)
+            {
+                account.Add(args.Player.Account.ID);
+            }
+        }
+        else if (args.Parameters[0] == "*" && args.Player.HasPermission(Consts.Permissions.Admin.ResetCharacterAll))
+        {
+            account = TShockAPI.TShock.UserAccounts.GetUserAccounts().Select(a => a.ID).ToList();
+        }
+        else if ((args.Parameters[0].StartsWith("tsp:") || args.Parameters[0].StartsWith("tsi:"))
+            && args.Player.HasPermission(Consts.Permissions.Admin.ResetCharacterOther))
+        {
+            var ta = TSPlayer.FindByNameOrID(args.Parameters[0]).SingleOrDefault();
+            if (ta != null && ta.Account != null)
+            {
+                account.Add(ta.Account.ID);
+            }
+        }
+        else if ((args.Parameters[0].StartsWith("usr:") || args.Parameters[0].StartsWith("usi:"))
+            && args.Player.HasPermission(Consts.Permissions.Admin.ResetCharacterOther))
+        {
+            account = Utils.SearchUserAccounts(args.Parameters[0]).Select(a => a.ID).ToList();
+        }
+
+        if (account.Count == 0)
+        {
+            args.Player.SendErrorMessage("Invalid player.");
+            return;
+        }
+
+        if (!args.Parameters.Contains("-f"))
+        {
+            if (account.Count > 20)
+            {
+                args.Player.SendErrorMessage("More than 20 players will be reset. Use -f to force.");
+                return;
+            }
+            if (account.Count > 1)
+            {
+                var names = string.Join(", ", account.Select(a =>
+                {
+                    var acc = TShockAPI.TShock.UserAccounts.GetUserAccountByID(a);
+                    return $"{acc.Name} (Index: {acc.ID})";
+                }).ToArray());
+                args.Player.SendErrorMessage($"{names} will be reset. Use -f to force.");
+                return;
+            }
+            if (args.Player.Account?.ID != null && account.Contains(args.Player.Account.ID))
+            {
+                args.Player.SendErrorMessage("Your character data will be reset. Use -f to force.");
+                return;
+            }
+        }
+
+        var resetStyle = args.Parameters.Contains("-s");
+        foreach (var a in account)
+        {
+            var p = new DummyPlayer();
+            p.Account.ID = a;
+            var data = new PlayerData(p);
+            var existing = TShockAPI.TShock.CharacterDB.GetPlayerData(p, a);
+            if (!resetStyle)
+            {
+                data.skinVariant = existing.skinVariant;
+                data.hair = existing.hair;
+                data.hairDye = existing.hairDye;
+                data.hairColor = existing.hairColor;
+                data.pantsColor = existing.pantsColor;
+                data.shirtColor = existing.shirtColor;
+                data.underShirtColor = existing.underShirtColor;
+                data.shoeColor = existing.shoeColor;
+                data.hideVisuals = existing.hideVisuals;
+                data.skinColor = existing.skinColor;
+                data.eyeColor = existing.eyeColor;
+            }
+            var ps = TShockAPI.TShock.ServerSideCharacterConfig.Settings;
+            data.health = ps.StartingHealth;
+            data.maxHealth = ps.StartingHealth;
+            data.mana = ps.StartingMana;
+            data.maxMana = ps.StartingMana;
+            data.spawnX = -1;
+            data.spawnY = -1;
+            data.questsCompleted = 0;
+            data.inventory = new NetItem[NetItem.MaxInventory];
+            for (var i = 0; i < ps.StartingInventory.Count; i++)
+            {
+                data.inventory[i] = ps.StartingInventory[i];
+            }
+            foreach (var client in TShockAPI.TShock.Players)
+            {
+                if (client == null || client.Account == null || client.Account.ID != a)
+                {
+                    continue;
+                }
+                client.PlayerData = data;
+                data.RestoreCharacter(client);
+                break;
+            }
+            TShockAPI.TShock.CharacterDB.InsertSpecificPlayerData(p, data);
+        }
+    }
 }

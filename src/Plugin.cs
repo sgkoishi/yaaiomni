@@ -100,6 +100,15 @@ public partial class Plugin : TerrariaPlugin
         {
             Utils.TryRenameCommand(command, this.config.CommandRenames);
         }
+        var spamlim = this.config.Mitigation.ChatSpamRestrict;
+        if (spamlim.Count > 0)
+        {
+            e?.Player?.SendInfoMessage("ChatSpam limit applied:");
+            foreach (var (rate, max) in spamlim)
+            {
+                e?.Player?.SendInfoMessage($"  {(int) (max * 10.0 / rate) / 10.0:G} messages per {(int) (max / 6.0) / 10.0:G} seconds");
+            }
+        }
         foreach (var field in typeof(Consts.DataKey).GetFields())
         {
             if (field.GetValue(null) is string key)
@@ -208,6 +217,7 @@ public partial class Plugin : TerrariaPlugin
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.ListClients, this.Command_ListConnected, Consts.Commands.ListClients));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DumpBuffer, this.Command_DumpBuffer, Consts.Commands.DumpBuffer));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.TerminateSocket, this.Command_TerminateSocket, Consts.Commands.TerminateSocket));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.ResetCharacter, this.Command_ResetCharacter, Consts.Commands.ResetCharacter));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

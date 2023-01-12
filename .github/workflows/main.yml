@@ -36,9 +36,15 @@ jobs:
       - name: CI Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: Artifact
+          name: Plugin
           path: |
-            ./src/bin/Debug/net6.0
+            ./src/bin/Debug/net6.0/
+
+      - name: CI Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: NuGet Package
+          path: |
             ./src/bin/Debug/*.symbols.nupkg
 
       - name: Release
