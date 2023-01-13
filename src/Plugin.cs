@@ -119,8 +119,7 @@ public partial class Plugin : TerrariaPlugin
                     {
                         continue;
                     }
-                    // TODO: We should clear those data, either delete or null
-                    // player.SetData<object?>(key, null);
+                    player.SetData<object?>(key, null);
                 }
             }
         }

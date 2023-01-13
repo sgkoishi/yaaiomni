@@ -107,7 +107,7 @@ public partial class Plugin : TerrariaPlugin
                     {
                         return;
                     }
-                    var value = player.GetData<int>(Consts.DataKey.DetectPE);
+                    var value = player.GetData<int?>(Consts.DataKey.DetectPE) ?? 0;
                     player.SetData<int>(Consts.DataKey.DetectPE, value + 1);
                     if (value % 500 == 0)
                     {
@@ -172,7 +172,7 @@ public partial class Plugin : TerrariaPlugin
                     break;
                 }
                 var index = args.Instance.whoAmI;
-                var pending = TShockAPI.TShock.Players[index]?.GetData<int>(Consts.DataKey.PendingRevertHeal) ?? 0;
+                var pending = TShockAPI.TShock.Players[index]?.GetData<int?>(Consts.DataKey.PendingRevertHeal) ?? 0;
                 if (pending > 0)
                 {
                     TShockAPI.TShock.Players[index]?.SetData<int>(Consts.DataKey.PendingRevertHeal, 0);
@@ -219,7 +219,7 @@ public partial class Plugin : TerrariaPlugin
                     for (var i = 0; i < this.config.Mitigation.ChatSpamRestrict.Count; i++)
                     {
                         var ratelimit = this.config.Mitigation.ChatSpamRestrict[i];
-                        var tat = Math.Max(this._updateCounter, player.GetData<int>(Consts.DataKey.ChatSpamRestrict + i)) + ratelimit.RateLimit;
+                        var tat = Math.Max(this._updateCounter, player.GetData<int?>(Consts.DataKey.ChatSpamRestrict + i) ?? 0) + ratelimit.RateLimit;
                         if (tat > this._updateCounter + ratelimit.Maximum)
                         {
                             args.Result = OTAPI.HookResult.Cancel;

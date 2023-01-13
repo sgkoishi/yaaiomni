@@ -46,10 +46,10 @@ public partial class Plugin : TerrariaPlugin
     {
         for (int i = 0; i < command.Count; i++)
         {
-            command[i].Repeat -= 1;
             if ((this._updateCounter - command[i].Start) % command[i].Timeout == 0)
             {
                 TShockAPI.Commands.HandleCommand(player, command[i].Command);
+                command[i].Repeat -= 1;
             }
             if (command[i].Repeat == 0)
             {

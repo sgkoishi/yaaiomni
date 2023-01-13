@@ -4,20 +4,24 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <NoWarn>$(NoWarn);CS1591;MSB3270</NoWarn>
     <AssemblyName>Chireiden.TShock.Omni</AssemblyName>
     <RootNamespace>Chireiden.TShock.Omni</RootNamespace>
     <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>Chireiden</Authors>
+    <Description>Yet another misc plugin for TShock</Description>
+    <PackageProjectUrl>https://github.com/sgkoishi/yaaiomni</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageType>TShockPlugin</PackageType>
+    <Copyright>Copyright (c) Chireiden 2023</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <EmbedAllSources>true</EmbedAllSources>
-    <PackageType>TShockPlugin</PackageType>
-    <Authors>Chireiden</Authors>
-    <Description>Yet another misc plugin for TShock</Description>
-    <NoWarn>$(NoWarn);CS1591;MSB3270</NoWarn>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/sgkoishi/yaaiomni</PackageProjectUrl>
-    <Copyright>Copyright (c) Chireiden 2023</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

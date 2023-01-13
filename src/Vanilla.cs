@@ -84,6 +84,7 @@ public partial class Plugin : TerrariaPlugin
         ta?.AddPermission(Consts.Permissions.Admin.TriggerGarbageCollection);
         ta?.AddPermission(Consts.Permissions.Admin.RawBroadcast);
         ta?.AddPermission(Consts.Permissions.Admin.TerminateSocket);
+        ta?.AddPermission(Consts.Permissions.Admin.ResetCharacterOther);
 
         var owner = Utils.ParentGroup(
             TShockAPI.TShock.Groups.GetGroupByName("owner"),
@@ -92,5 +93,6 @@ public partial class Plugin : TerrariaPlugin
         owner?.AddPermission(Consts.Permissions.Admin.Sudo);
         owner?.AddPermission(Consts.Permissions.Admin.ListClients);
         owner?.AddPermission(Consts.Permissions.Admin.DumpBuffer);
+        owner?.AddPermission(Consts.Permissions.Admin.ResetCharacterAll);
     }
 }

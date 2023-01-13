@@ -332,7 +332,7 @@ public partial class Plugin : TerrariaPlugin
     private void Command_ResetCharacter(CommandArgs args)
     {
         var account = new List<int>();
-        if (args.Parameters.Count == 0)
+        if (args.Parameters.Count == 0 || (args.Parameters.Count == 1 && args.Parameters[0] == "-f"))
         {
             if (args.Player.Account?.ID != null)
             {

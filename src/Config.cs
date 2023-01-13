@@ -44,12 +44,12 @@ public class Config
         "*all*"
     };
     public List<string> HideCommands = new List<string> {
-        Plugin.Consts.Commands.Whynot,
-        Plugin.Consts.Commands.SetPvp,
-        Plugin.Consts.Commands.SetTeam,
-        Plugin.Consts.Commands.TriggerGarbageCollection,
-        Plugin.Consts.Commands.DebugStat,
-        Plugin.Consts.Commands.ResetCharacter
+        Consts.Commands.Whynot,
+        Consts.Commands.SetPvp,
+        Consts.Commands.SetTeam,
+        Consts.Commands.TriggerGarbageCollection,
+        Consts.Commands.DebugStat,
+        Consts.Commands.ResetCharacter
     };
     public Dictionary<string, List<string>> CommandRenames = new();
     public LavaSettings LavaHandler = new();
@@ -246,9 +246,9 @@ public class Config
                 TShockAPI.Permissions.canchat,
                 TShockAPI.Permissions.synclocalarea,
                 TShockAPI.Permissions.sendemoji,
-                Plugin.Consts.Permissions.TogglePvP,
-                Plugin.Consts.Permissions.ToggleTeam,
-                Plugin.Consts.Permissions.SyncLoadout,
+                Consts.Permissions.TogglePvP,
+                Consts.Permissions.ToggleTeam,
+                Consts.Permissions.SyncLoadout,
             };
             public bool AllowJourney = false;
             public bool IgnoreAntiCheat = false;

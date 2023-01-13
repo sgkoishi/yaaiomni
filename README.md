@@ -1,7 +1,11 @@
 # yaaiomni
-[![Total Downloads](https://img.shields.io/github/downloads/sgkoishi/yaaiomni/total?label=Downloads%40Total&style=for-the-badge) ![Latest Downloads](https://img.shields.io/github/downloads-pre/sgkoishi/yaaiomni/latest/total?label=Downloads%40Latest&style=for-the-badge)](https://github.com/sgkoishi/yaaiomni/releases)
+[![Total Downloads](https://img.shields.io/github/downloads/sgkoishi/yaaiomni/total?label=Downloads%40Total&style=for-the-badge) ![Latest Downloads](https://img.shields.io/github/downloads-pre/sgkoishi/yaaiomni/latest/total?label=Downloads%40Latest&style=for-the-badge)](https://github.com/sgkoishi/yaaiomni/releases) [![NuGet](https://img.shields.io/nuget/dt/Chireiden.TShock.Omni?label=NuGet&style=for-the-badge)](https://www.nuget.org/packages/Chireiden.TShock.Omni/)
 
 Yet another misc plugin for TShock
+
+#### FAQ
+
+__If you use Linux and don't know which version to download, download the tar one.__
 
 #### Commands
 
@@ -25,7 +29,7 @@ Yet another misc plugin for TShock
 | `/listclients` | Show connected clients, including pending/joining ones. | | `chireiden.omni.admin.listclients` | For owner. |
 | `/dumpbuffer` | Dump buffer. | | `chireiden.omni.admin.dumpbuffer` | For owner. |
 | `/kc` | Disconnect a client. | | `chireiden.omni.admin.terminatesocket` | For admin. |
-| `/resetcharacter` | Reset character. | | `chireiden.omni.resetcharacter` <br> `chireiden.omni.admin.resetcharacter` <br> `chireiden.omni.admin.resetcharacter.all` | For admin. |
+| `/resetcharacter` | Reset character. | Hidden by default. | `chireiden.omni.resetcharacter` <br> `chireiden.omni.admin.resetcharacter` <br> `chireiden.omni.admin.resetcharacter.all` | For admin. |
 
 #### Defaults
 * The permission of `/ghost`, `/setlang`, `/_debugstat`, timeout/delay/interval series commands are granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.

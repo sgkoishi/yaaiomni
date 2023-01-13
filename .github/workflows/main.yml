@@ -1,6 +1,6 @@
 name: Main
 
-on: [push]
+on: [push, pull_request]
 
 defaults:
   run:
@@ -22,16 +22,10 @@ jobs:
         with:
           dotnet-version: '6.0.100'
 
-      - name: Set env output
-        id: setenvo
-        run: |
-          echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
-
       - name: Build
         run: |
           cd src
           dotnet build
-          Compress-Archive -Path bin/Debug/net6.0/*,../LICENSE,../README.md ../Artifact.zip
 
       - name: CI Artifact
         uses: actions/upload-artifact@v3
@@ -47,6 +41,16 @@ jobs:
           path: |
             ./src/bin/Debug/*.symbols.nupkg
 
+      - name: Set env output and package
+        id: setenvo
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          dotnet nuget push src/bin/Debug/*.symbols.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+          echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
+          Copy-Item ./src/bin/Debug/net6.0/* ./
+          tar cvf Artifact.tar Chireiden.TShock.Omni.* LICENSE README.md
+          Compress-Archive -Path Chireiden.TShock.Omni.*,LICENSE,README.md Artifact.zip
+
       - name: Release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -54,4 +58,5 @@ jobs:
           prerelease: true
           tag_name: v${{ steps.setenvo.outputs.TAG_NAME }}
           name: Release v${{ steps.setenvo.outputs.TAG_NAME }}
+          files: Artifact.tar
           files: Artifact.zip
