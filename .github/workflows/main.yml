@@ -58,5 +58,6 @@ jobs:
           prerelease: true
           tag_name: v${{ steps.setenvo.outputs.TAG_NAME }}
           name: Release v${{ steps.setenvo.outputs.TAG_NAME }}
-          files: Artifact.tar
-          files: Artifact.zip
+          files: |
+            Artifact.tar
+            Artifact.zip

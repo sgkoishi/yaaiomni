@@ -1,5 +1,5 @@
 # yaaiomni
-[![Total Downloads](https://img.shields.io/github/downloads/sgkoishi/yaaiomni/total?label=Downloads%40Total&style=for-the-badge) ![Latest Downloads](https://img.shields.io/github/downloads-pre/sgkoishi/yaaiomni/latest/total?label=Downloads%40Latest&style=for-the-badge)](https://github.com/sgkoishi/yaaiomni/releases) [![NuGet](https://img.shields.io/nuget/dt/Chireiden.TShock.Omni?label=NuGet&style=for-the-badge)](https://www.nuget.org/packages/Chireiden.TShock.Omni/)
+[![Total Downloads](https://img.shields.io/github/downloads/sgkoishi/yaaiomni/total?label=Downloads%40Release&style=for-the-badge) ![Latest Downloads](https://img.shields.io/github/downloads-pre/sgkoishi/yaaiomni/latest/total?label=Downloads%40Latest%20Release&style=for-the-badge)](https://github.com/sgkoishi/yaaiomni/releases) [![NuGet](https://img.shields.io/nuget/dt/Chireiden.TShock.Omni?label=NuGet&style=for-the-badge)](https://www.nuget.org/packages/Chireiden.TShock.Omni/)
 
 Yet another misc plugin for TShock
 
