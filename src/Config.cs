@@ -43,6 +43,10 @@ public class Config
     public List<string> PlayerWildcardFormat = new List<string> {
         "*all*"
     };
+    public List<string> ServerWildcardFormat = new List<string> {
+        "*server*",
+        "*console*",
+    };
     public List<string> HideCommands = new List<string> {
         Consts.Commands.Whynot,
         Consts.Commands.SetPvp,
@@ -143,6 +147,7 @@ public class Config
         public bool AllowLavaSlime = false;
         public bool AllowLavabat = false;
     }
+
     public class DebugPacketSettings
     {
         public bool In = false;

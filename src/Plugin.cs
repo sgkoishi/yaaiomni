@@ -49,6 +49,11 @@ public partial class Plugin : TerrariaPlugin
             typeof(WorldGen)
                 .GetMethod(nameof(WorldGen.KillTile), bfany)!,
             this.Hook_Lava_KillTile);
+        this.Detour(
+            nameof(this.Hook_Wildcard_GetPlayers),
+            typeof(TSPlayer)
+                .GetMethod(nameof(TSPlayer.FindByNameOrID), bfany)!,
+            this.Hook_Wildcard_GetPlayers);
     }
 
     private void OnReload(ReloadEventArgs? e)

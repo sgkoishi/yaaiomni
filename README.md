@@ -7,7 +7,7 @@ Yet another misc plugin for TShock
 
 __If you use Linux and don't know which version to download, download the tar one.__
 
-#### Commands
+### Commands
 
 | Command | Description | Hidden | Permission | Note |
 | --- | --- | --- | --- | --- |
@@ -31,7 +31,7 @@ __If you use Linux and don't know which version to download, download the tar on
 | `/kc` | Disconnect a client. | | `chireiden.omni.admin.terminatesocket` | For admin. |
 | `/resetcharacter` | Reset character. | Hidden by default. | `chireiden.omni.resetcharacter` <br> `chireiden.omni.admin.resetcharacter` <br> `chireiden.omni.admin.resetcharacter.all` | For admin. |
 
-#### Defaults
+### Defaults
 * The permission of `/ghost`, `/setlang`, `/_debugstat`, timeout/delay/interval series commands are granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
 * The permission of `/_gc`, `/tileprovider`, `/maxplayers`, `/rbc`, `/kc` are granted to the topmost parent of `owner` with maintenance permission, or `trustedadmin`'s parent if `owner` is not found.
 * The permission of `/runas`, `/listclients`, `/dumpbuffer` are granted to the topmost parent of `owner` with sudo permission.
@@ -41,7 +41,7 @@ __If you use Linux and don't know which version to download, download the tar on
 * Errors thrown from TShock's update check will be silently ignored. (`.SuppressUpdate` in config)
 * Chat spam limit to 3 msg/5 sec, 5 msg/20 sec. (`.Mitigation.ChatSpamRestrict` in config)
 
-#### More features
+### More features
 * `.TrimMemory` in config can reduce memory usage.
   * Depends on the content of the map, may vary from no effect to ~600MB reduced.
   * No side effects.
@@ -66,7 +66,7 @@ __If you use Linux and don't know which version to download, download the tar on
 * Sudo is called `/runas` to avoid conflict with TShock's `/sudo`.
   * With `-f` flag bypasses permission check.
 
-#### Don't touch unless you know what you are doing
+### Don't touch unless you know what you are doing
 * `.Soundness` in config enforce some soundness permission checks.
   * Keep it enabled unless you know what you are doing.
 * `.Mitigation` in config can fix some issues that exist but not blame to TShock.

@@ -32,8 +32,13 @@ public partial class Plugin : TerrariaPlugin
                 args.Result = new Socket.HackyAsyncSocket();
                 return;
             case Config.SocketType.AnotherAsyncSocket:
-            case Config.SocketType.Preset:
                 args.Result = new Socket.AnotherAsyncSocket();
+                return;
+            case Config.SocketType.Preset:
+                if (args.Result is TShockAPI.Sockets.LinuxTcpSocket)
+                {
+                    args.Result = new Socket.AnotherAsyncSocket();
+                }
                 return;
         }
     }

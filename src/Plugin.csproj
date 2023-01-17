@@ -19,7 +19,8 @@
     <PackageType>TShockPlugin</PackageType>
     <Copyright>Copyright (c) Chireiden 2023</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- https://github.com/Pryaxis/TShock/isnsues/2895 -->
+    <!-- <GenerateDocumentationFile>true</GenerateDocumentationFile> -->
     <EmbedAllSources>true</EmbedAllSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
