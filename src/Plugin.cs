@@ -143,6 +143,7 @@ public partial class Plugin : TerrariaPlugin
         OTAPI.Hooks.NetMessage.SendBytes += this.Hook_DebugPacket_SendBytes;
         OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Permission_SyncLoadout;
         OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Modded_GetData;
+        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Ping_GetData;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.Hook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.Hook_TimeoutInterval);
@@ -173,6 +174,7 @@ public partial class Plugin : TerrariaPlugin
             OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Mitigation_GetData;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Permission_SyncLoadout;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Modded_GetData;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Ping_GetData;
             OTAPI.Hooks.Netplay.CreateTcpListener -= this.Hook_Socket_OnCreate;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.Hook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
@@ -226,6 +228,7 @@ public partial class Plugin : TerrariaPlugin
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DumpBuffer, this.Command_DumpBuffer, Consts.Commands.DumpBuffer));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.TerminateSocket, this.Command_TerminateSocket, Consts.Commands.TerminateSocket));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.ResetCharacter, this.Command_ResetCharacter, Consts.Commands.ResetCharacter));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Ping, this.Command_Ping, Consts.Commands.Ping));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

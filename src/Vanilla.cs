@@ -59,6 +59,7 @@ public partial class Plugin : TerrariaPlugin
             guest?.AddPermission(Consts.Permissions.ToggleTeam);
             guest?.AddPermission(Consts.Permissions.SyncLoadout);
         }
+        guest?.AddPermission(Consts.Permissions.Ping);
 
         var na = Utils.ParentGroup(
             TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("newadmin"),

@@ -60,8 +60,10 @@ internal static class Socket
 
         public SelfSocket()
         {
-            this._connection = new TcpClient();
-            this._connection.NoDelay = true;
+            this._connection = new TcpClient
+            {
+                NoDelay = true
+            };
         }
 
         public SelfSocket(TcpClient tcpClient)
@@ -217,10 +219,7 @@ internal static class Socket
         {
             try
             {
-                this._connection.GetStream().ReadAsync(data, offset, size).ContinueWith(task =>
-                {
-                    callback(state, task.Result);
-                });
+                this._connection.GetStream().ReadAsync(data, offset, size).ContinueWith(task => callback(state, task.Result));
             }
             catch
             {

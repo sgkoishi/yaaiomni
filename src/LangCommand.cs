@@ -10,7 +10,7 @@ namespace Chireiden.TShock.Omni;
 public partial class Plugin : TerrariaPlugin
 {
     private CultureInfo? _targetCulture = null;
-    private Type _tshockI18n = typeof(TShockAPI.TShock).Module.GetTypes().Single(t => t.Name == "I18n")!;
+    private readonly Type _tshockI18n = typeof(TShockAPI.TShock).Module.GetTypes().Single(t => t.Name == "I18n")!;
     private void Command_Lang(CommandArgs args)
     {
         var tscinfo = this._tshockI18n
@@ -37,14 +37,9 @@ public partial class Plugin : TerrariaPlugin
         GameCulture? culture = null;
         if (remaining.Count != 0)
         {
-            if (Utils.TryParseGameCulture(remaining[0], out culture))
-            {
-                this._targetCulture = Utils.CultureRedirect(culture.CultureInfo);
-            }
-            else
-            {
-                this._targetCulture = Utils.CultureRedirect(CultureInfo.GetCultureInfo(remaining[0]));
-            }
+            this._targetCulture = Utils.TryParseGameCulture(remaining[0], out culture)
+                ? Utils.CultureRedirect(culture.CultureInfo)
+                : Utils.CultureRedirect(CultureInfo.GetCultureInfo(remaining[0]));
         }
 
         if (setGameLang && culture != null)

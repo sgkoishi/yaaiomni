@@ -76,7 +76,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
-    private bool[] _BuffUpdateNPC = new bool[Terraria.Main.npc.Length];
+    private readonly bool[] _BuffUpdateNPC = new bool[Terraria.Main.npc.Length];
 
     private void Hook_Mitigation_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
@@ -159,7 +159,7 @@ public partial class Plugin : TerrariaPlugin
                 var buffcount = (args.Length - 1) / 2;
                 for (var i = 0; i < buffcount; i++)
                 {
-                    var buff = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1 + i * 2, 2));
+                    var buff = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1 + (i * 2), 2));
                     if (buff == Terraria.ID.BuffID.PotionSickness)
                     {
                         TShockAPI.TShock.Players[index]?.SetData<int>(Consts.DataKey.PendingRevertHeal, 0);
@@ -220,9 +220,9 @@ public partial class Plugin : TerrariaPlugin
 
                     for (var i = 0; i < this.config.Mitigation.ChatSpamRestrict.Count; i++)
                     {
-                        var ratelimit = this.config.Mitigation.ChatSpamRestrict[i];
-                        var tat = Math.Max(this._updateCounter, player.GetData<int?>(Consts.DataKey.ChatSpamRestrict + i) ?? 0) + ratelimit.RateLimit;
-                        if (tat > this._updateCounter + ratelimit.Maximum)
+                        var (RateLimit, Maximum) = this.config.Mitigation.ChatSpamRestrict[i];
+                        var tat = Math.Max(this._updateCounter, player.GetData<int?>(Consts.DataKey.ChatSpamRestrict + i) ?? 0) + RateLimit;
+                        if (tat > this._updateCounter + Maximum)
                         {
                             args.Result = OTAPI.HookResult.Cancel;
                             // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
@@ -257,7 +257,7 @@ public partial class Plugin : TerrariaPlugin
             return;
         }
 
-        _BuffUpdateNPC[args.ID] = true;
+        this._BuffUpdateNPC[args.ID] = true;
         Terraria.Main.npc[args.ID].AddBuff(args.Type, args.Time, quiet: true);
         args.Handled = true;
     }
@@ -276,10 +276,10 @@ public partial class Plugin : TerrariaPlugin
             {
                 for (var i = 0; i < Terraria.Main.npc.Length; i++)
                 {
-                    if (_BuffUpdateNPC[i])
+                    if (this._BuffUpdateNPC[i])
                     {
                         Terraria.NetMessage.TrySendData((int) PacketTypes.NpcUpdateBuff, -1, -1, null, i);
-                        _BuffUpdateNPC[i] = false;
+                        this._BuffUpdateNPC[i] = false;
                     }
                 }
             }

@@ -218,9 +218,9 @@ public partial class Plugin : TerrariaPlugin
 
             var silent = cmdname.StartsWith(Commands.SilentSpecifier);
             var specifier = silent ? Commands.SilentSpecifier : Commands.Specifier;
-            cmdname = cmdname.Substring(specifier.Length);
+            cmdname = cmdname[specifier.Length..];
             var cmds = Commands.ChatCommands.Where(c => c.HasAlias(cmdname)).ToList();
-            var cmdtext = args.Parameters[1].Substring(specifier.Length);
+            var cmdtext = args.Parameters[1][specifier.Length..];
             foreach (var p in player)
             {
                 var cmds_clone = cmds.ToList().AsEnumerable();
@@ -311,11 +311,7 @@ public partial class Plugin : TerrariaPlugin
 
         public override bool HasPermission(string permission)
         {
-            if (permission == TShockAPI.Permissions.bypassssc)
-            {
-                return false;
-            }
-            return true;
+            return permission != TShockAPI.Permissions.bypassssc;
         }
     }
 

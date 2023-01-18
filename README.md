@@ -3,9 +3,8 @@
 
 Yet another misc plugin for TShock
 
-#### FAQ
-
-__If you use Linux and don't know which version to download, download the tar one.__
+> __Note__
+> If you use Linux and don't know which version to download, download the tar one.
 
 ### Commands
 
@@ -67,17 +66,14 @@ __If you use Linux and don't know which version to download, download the tar on
   * With `-f` flag bypasses permission check.
 
 ### Don't touch unless you know what you are doing
+> __Warning__  
+> **KEEP IT UNCHANGED. DO NOT TOUCH UNLESS YOU KNOW WHAT YOU ARE DOING**
 * `.Soundness` in config enforce some soundness permission checks.
-  * Keep it enabled unless you know what you are doing.
 * `.Mitigation` in config can fix some issues that exist but not blame to TShock.
-  * Keep it enabled unless you know what you are doing.
 * `.Socket` in config can switch to a different socket implementation.
   * `AnotherAsyncSocket` might help with 'memory leak'.
-  * Don't use `Hacky*` unless you know what you are doing.
+  * Don't use `Hacky*`.
 * `/_gc` triggers garbage collection.
-  * Only do this if you know what you are doing.
 * `.TileProvider` in config can switch to a different tile provider.
   * `CheckedTypedCollection` and `CheckedGenericCollection` might slightly improve performance but potentially NRE.
-  * Keep it `AsIs` unless you know what you are doing.
 * `.DebugPacket` in config can log all packets and networking exceptions.
-  * Keep it disabled unless you know what you are doing.

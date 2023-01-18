@@ -1,5 +1,5 @@
-﻿using Terraria.ID;
-using Terraria;
+﻿using Terraria;
+using Terraria.ID;
 using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
@@ -10,8 +10,8 @@ public partial class Plugin : TerrariaPlugin
     {
         if (this.config.Soundness.ProjectileKillMapEditRestriction)
         {
-            if (self.type == ProjectileID.DirtBomb ||
-                self.type == ProjectileID.DirtStickyBomb)
+            if (self.type is ProjectileID.DirtBomb or
+                ProjectileID.DirtStickyBomb)
             {
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),
@@ -20,11 +20,11 @@ public partial class Plugin : TerrariaPlugin
                 self.active = false;
                 return;
             }
-            if (self.type == ProjectileID.WetRocket ||
-                self.type == ProjectileID.WetGrenade ||
-                self.type == ProjectileID.WetMine ||
-                self.type == ProjectileID.WetSnowmanRocket ||
-                self.type == ProjectileID.WetBomb)
+            if (self.type is ProjectileID.WetRocket or
+                ProjectileID.WetGrenade or
+                ProjectileID.WetMine or
+                ProjectileID.WetSnowmanRocket or
+                ProjectileID.WetBomb)
             {
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),
@@ -33,11 +33,11 @@ public partial class Plugin : TerrariaPlugin
                 self.active = false;
                 return;
             }
-            if (self.type == ProjectileID.LavaRocket ||
-                self.type == ProjectileID.LavaGrenade ||
-                self.type == ProjectileID.LavaMine ||
-                self.type == ProjectileID.LavaSnowmanRocket ||
-                self.type == ProjectileID.LavaBomb)
+            if (self.type is ProjectileID.LavaRocket or
+                ProjectileID.LavaGrenade or
+                ProjectileID.LavaMine or
+                ProjectileID.LavaSnowmanRocket or
+                ProjectileID.LavaBomb)
             {
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),
@@ -46,11 +46,11 @@ public partial class Plugin : TerrariaPlugin
                 self.active = false;
                 return;
             }
-            if (self.type == ProjectileID.HoneyRocket ||
-                self.type == ProjectileID.HoneyGrenade ||
-                self.type == ProjectileID.HoneyMine ||
-                self.type == ProjectileID.HoneySnowmanRocket ||
-                self.type == ProjectileID.HoneyBomb)
+            if (self.type is ProjectileID.HoneyRocket or
+                ProjectileID.HoneyGrenade or
+                ProjectileID.HoneyMine or
+                ProjectileID.HoneySnowmanRocket or
+                ProjectileID.HoneyBomb)
             {
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),
@@ -59,11 +59,11 @@ public partial class Plugin : TerrariaPlugin
                 self.active = false;
                 return;
             }
-            if (self.type == ProjectileID.DryRocket ||
-                self.type == ProjectileID.DryGrenade ||
-                self.type == ProjectileID.DryMine ||
-                self.type == ProjectileID.DrySnowmanRocket ||
-                self.type == ProjectileID.DryBomb)
+            if (self.type is ProjectileID.DryRocket or
+                ProjectileID.DryGrenade or
+                ProjectileID.DryMine or
+                ProjectileID.DrySnowmanRocket or
+                ProjectileID.DryBomb)
             {
                 self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
                     self.Center.ToTileCoordinates(),

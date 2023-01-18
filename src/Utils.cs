@@ -37,16 +37,13 @@ public static class Utils
         }
 
         culture = GameCulture._legacyCultures.Values.SingleOrDefault(c => c.CultureInfo.NativeName.Contains(s));
-        if (culture != null)
-        {
-            return true;
-        }
-
-        return false;
+        return culture != null;
     }
 
     public static CultureInfo CultureRedirect(CultureInfo cultureInfo)
-        => cultureInfo.Name == "zh-Hans" ? new CultureInfo("zh-CN") : cultureInfo;
+    {
+        return cultureInfo.Name == "zh-Hans" ? new CultureInfo("zh-CN") : cultureInfo;
+    }
 
     public static Group? ParentGroup(Group? group, Func<Group, bool> predicate)
     {
@@ -94,12 +91,10 @@ public static class Utils
         }
     }
 
-#pragma warning disable CS1574 // ParseParameters could not be resolved because it is private
     /// <summary>
     /// Converts a list of arguments back to a command.
     /// This is a rough inverse of <see cref="TShockAPI.Commands.ParseParameters(string)"/>.
     /// </summary>
-#pragma warning restore CS1574
     public static string ToCommand(string specifier, string command, List<string> args)
     {
         var sb = new System.Text.StringBuilder();
@@ -119,13 +114,13 @@ public static class Utils
         return sb.ToString();
     }
 
-    public static IEnumerable<TSPlayer> ActivePlayers => TShockAPI.TShock.Players.Where(p => p != null && p.Active);
+    public static IEnumerable<TSPlayer> ActivePlayers => TShockAPI.TShock.Players.Where(p => p?.Active == true);
 
     public static IEnumerable<TShockAPI.DB.UserAccount> SearchUserAccounts(string pat)
     {
         if (pat.StartsWith("usr:"))
         {
-            pat = pat.Substring(4);
+            pat = pat[4..];
             var exact = TShockAPI.TShock.UserAccounts.GetUserAccountByName(pat);
             if (exact != null)
             {
@@ -144,7 +139,7 @@ public static class Utils
         }
         else if (pat.StartsWith("usi:"))
         {
-            pat = pat.Substring(4);
+            pat = pat[4..];
             if (int.TryParse(pat, out var id))
             {
                 var exact = TShockAPI.TShock.UserAccounts.GetUserAccountByID(id);

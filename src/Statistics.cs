@@ -9,7 +9,7 @@ public partial class Plugin : TerrariaPlugin
     public DebugStat Statistics { get; } = new();
     public class DebugStat
     {
-        public string CommitHash => Chireiden.CommitHashAttribute.GetCommitHash();
+        public string CommitHash => CommitHashAttribute.GetCommitHash();
         public int MitigationSlotPE { get; set; }
         public int MitigationSlotPEAllowed { get; set; }
     }

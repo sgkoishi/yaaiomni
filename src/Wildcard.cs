@@ -32,13 +32,6 @@ public partial class Plugin : TerrariaPlugin
 
     private List<TSPlayer> Hook_Wildcard_GetPlayers(Func<string, List<TSPlayer>> orig, string name)
     {
-        if (this.config.ServerWildcardFormat.Contains(name))
-        {
-            return new List<TSPlayer> { TSPlayer.Server };
-        }
-        else
-        {
-            return orig(name);
-        }
+        return this.config.ServerWildcardFormat.Contains(name) ? new List<TSPlayer> { TSPlayer.Server } : orig(name);
     }
 }

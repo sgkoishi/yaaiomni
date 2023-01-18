@@ -44,7 +44,7 @@ public partial class Plugin : TerrariaPlugin
 
     private void ProcessDelayCommand(TSPlayer player, List<DelayCommand> command)
     {
-        for (int i = 0; i < command.Count; i++)
+        for (var i = 0; i < command.Count; i++)
         {
             if ((this._updateCounter - command[i].Start) % command[i].Timeout == 0)
             {
@@ -66,7 +66,7 @@ public partial class Plugin : TerrariaPlugin
             args.Player.SendErrorMessage("Invalid syntax! Proper syntax: /settimeout <command> <timeout>");
             return;
         }
-        if (!int.TryParse(args.Parameters[1], out int timeout))
+        if (!int.TryParse(args.Parameters[1], out var timeout))
         {
             args.Player.SendErrorMessage("Invalid timeout!");
             return;
@@ -78,7 +78,7 @@ public partial class Plugin : TerrariaPlugin
         }
         if (args.Parameters[0].StartsWith("/"))
         {
-            args.Parameters[0] = args.Parameters[0].Substring(1);
+            args.Parameters[0] = args.Parameters[0][1..];
         }
         if (args.Player.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> commands)
         {
@@ -96,7 +96,7 @@ public partial class Plugin : TerrariaPlugin
             args.Player.SendErrorMessage("Invalid syntax! Proper syntax: /setinterval <command> <interval>");
             return;
         }
-        if (!int.TryParse(args.Parameters[1], out int interval))
+        if (!int.TryParse(args.Parameters[1], out var interval))
         {
             args.Player.SendErrorMessage("Invalid interval!");
             return;
@@ -108,7 +108,7 @@ public partial class Plugin : TerrariaPlugin
         }
         if (args.Parameters[0].StartsWith("/"))
         {
-            args.Parameters[0] = args.Parameters[0].Substring(1);
+            args.Parameters[0] = args.Parameters[0][1..];
         }
         if (args.Player.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> commands)
         {
@@ -136,7 +136,7 @@ public partial class Plugin : TerrariaPlugin
             args.Player.SendErrorMessage("No commands found!");
             return;
         }
-        for (int i = 0; i < commands.Count; i++)
+        for (var i = 0; i < commands.Count; i++)
         {
             var cmd = commands[i];
             if ((uint) cmd.GetHashCode() == id)

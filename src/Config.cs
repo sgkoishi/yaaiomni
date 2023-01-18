@@ -53,7 +53,8 @@ public class Config
         Consts.Commands.SetTeam,
         Consts.Commands.TriggerGarbageCollection,
         Consts.Commands.DebugStat,
-        Consts.Commands.ResetCharacter
+        Consts.Commands.ResetCharacter,
+        Consts.Commands.Ping,
     };
     public Dictionary<string, List<string>> CommandRenames = new();
     public LavaSettings LavaHandler = new();
@@ -254,6 +255,7 @@ public class Config
                 Consts.Permissions.TogglePvP,
                 Consts.Permissions.ToggleTeam,
                 Consts.Permissions.SyncLoadout,
+                Consts.Permissions.Ping
             };
             public bool AllowJourney = false;
             public bool IgnoreAntiCheat = false;
