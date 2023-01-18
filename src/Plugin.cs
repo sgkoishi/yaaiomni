@@ -146,6 +146,7 @@ public partial class Plugin : TerrariaPlugin
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.Hook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.Hook_TimeoutInterval);
+        TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.Hook_Mitigation_GameUpdate);
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.Hook_HideCommand_PlayerCommand;
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.Hook_Wildcard_PlayerCommand;
         TShockAPI.Hooks.GeneralHooks.ReloadEvent += this.OnReload;
@@ -176,12 +177,14 @@ public partial class Plugin : TerrariaPlugin
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.Hook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
             TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.Hook_TimeoutInterval);
+            TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.Hook_Mitigation_GameUpdate);
             TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.Hook_HideCommand_PlayerCommand;
             TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.Hook_Wildcard_PlayerCommand;
             TShockAPI.Hooks.GeneralHooks.ReloadEvent -= this.OnReload;
             TShockAPI.TShock.Initialized -= this.PostTShockInitialize;
             TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.Hook_Permission_TogglePvp);
             TShockAPI.GetDataHandlers.PlayerTeam.UnRegister(this.Hook_Permission_PlayerTeam);
+            TShockAPI.GetDataHandlers.NPCAddBuff.UnRegister(this.Hook_Mitigation_NpcAddBuff);
             var asm = Assembly.GetExecutingAssembly();
             Commands.ChatCommands.RemoveAll(c => c.CommandDelegate.Method?.DeclaringType?.Assembly == asm);
             foreach (var detour in this._detours.Values)
@@ -197,6 +200,7 @@ public partial class Plugin : TerrariaPlugin
         OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Mitigation_GetData;
         On.Terraria.NetMessage.SendData += this.Hook_DebugPacket_CatchSend;
         On.Terraria.MessageBuffer.GetData += this.Hook_DebugPacket_CatchGet;
+        TShockAPI.GetDataHandlers.NPCAddBuff.Register(this.Hook_Mitigation_NpcAddBuff);
     }
 
     private void PostTShockInitialize()

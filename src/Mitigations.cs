@@ -76,6 +76,8 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    private bool[] _BuffUpdateNPC = new bool[Terraria.Main.npc.Length];
+
     private void Hook_Mitigation_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
         if (args.Result == OTAPI.HookResult.Cancel)
@@ -234,6 +236,53 @@ public partial class Plugin : TerrariaPlugin
             }
             default:
                 break;
+        }
+    }
+
+    private void Hook_Mitigation_NpcAddBuff(object? sender, TShockAPI.GetDataHandlers.NPCAddBuffEventArgs args)
+    {
+        if (args.Handled)
+        {
+            return;
+        }
+
+        var mitigation = this.config.Mitigation;
+        if (!mitigation.Enabled)
+        {
+            return;
+        }
+
+        if (!mitigation.NpcUpdateBuffRateLimit)
+        {
+            return;
+        }
+
+        _BuffUpdateNPC[args.ID] = true;
+        Terraria.Main.npc[args.ID].AddBuff(args.Type, args.Time, quiet: true);
+        args.Handled = true;
+    }
+
+    private void Hook_Mitigation_GameUpdate(EventArgs args)
+    {
+        var mitigation = this.config.Mitigation;
+        if (!mitigation.Enabled)
+        {
+            return;
+        }
+
+        if (mitigation.NpcUpdateBuffRateLimit)
+        {
+            if (this._updateCounter % 10 == 0)
+            {
+                for (var i = 0; i < Terraria.Main.npc.Length; i++)
+                {
+                    if (_BuffUpdateNPC[i])
+                    {
+                        Terraria.NetMessage.TrySendData((int) PacketTypes.NpcUpdateBuff, -1, -1, null, i);
+                        _BuffUpdateNPC[i] = false;
+                    }
+                }
+            }
         }
     }
 }

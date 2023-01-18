@@ -315,5 +315,17 @@ public class Config
             (100, 300),
             (240, 1200)
         };
+
+        /// <summary>
+        /// Restrict the rate of sending <see cref="PacketTypes.NpcUpdateBuff"/>.
+        /// In some cases, the client will send <see cref="PacketTypes.NpcAddBuff"/> frequently,
+        /// and the server will boardcast in O(n^2) and cause network storm.
+        ///
+        /// Likely caused by shimmer.
+        ///
+        /// This will replace the logic of these two packets and only boardcast at time interval.
+        /// Use with caution.
+        /// </summary>
+        public bool NpcUpdateBuffRateLimit = false;
     }
 }
