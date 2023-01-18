@@ -116,8 +116,12 @@ public static class Utils
 
     public static IEnumerable<TSPlayer> ActivePlayers => TShockAPI.TShock.Players.Where(p => p?.Active == true);
 
-    public static IEnumerable<TShockAPI.DB.UserAccount> SearchUserAccounts(string pat)
+    public static IEnumerable<TShockAPI.DB.UserAccount> SearchUserAccounts(string? pat)
     {
+        if (pat == null)
+        {
+            yield break;
+        }
         if (pat.StartsWith("usr:"))
         {
             pat = pat[4..];
@@ -135,21 +139,17 @@ public static class Utils
             {
                 yield return acc;
             }
-            yield break;
         }
         else if (pat.StartsWith("usi:"))
         {
-            pat = pat[4..];
-            if (int.TryParse(pat, out var id))
+            if (int.TryParse(pat[4..], out var id))
             {
                 var exact = TShockAPI.TShock.UserAccounts.GetUserAccountByID(id);
                 if (exact != null)
                 {
                     yield return exact;
-                    yield break;
                 }
             }
         }
-        yield break;
     }
 }

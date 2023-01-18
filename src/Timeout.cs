@@ -76,10 +76,6 @@ public partial class Plugin : TerrariaPlugin
             args.Player.SendErrorMessage("Timeout must be greater than 0!");
             return;
         }
-        if (args.Parameters[0].StartsWith("/"))
-        {
-            args.Parameters[0] = args.Parameters[0][1..];
-        }
         if (args.Player.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> commands)
         {
             args.Player.SetData(Consts.DataKey.DelayCommands, commands = new List<DelayCommand>());
@@ -105,10 +101,6 @@ public partial class Plugin : TerrariaPlugin
         {
             args.Player.SendErrorMessage("Interval must be greater than 0!");
             return;
-        }
-        if (args.Parameters[0].StartsWith("/"))
-        {
-            args.Parameters[0] = args.Parameters[0][1..];
         }
         if (args.Player.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> commands)
         {

@@ -8,35 +8,35 @@ namespace Chireiden.TShock.Omni;
 /// </summary>
 public class Config
 {
-    /// <summary> 
-    /// Disable vanilla version check. 
+    /// <summary>
+    /// Disable vanilla version check.
     /// </summary>
     public bool SyncVersion = true;
     /// <summary> Trim memory depends on the world. No side effect. </summary>
     public bool TrimMemory = true;
-    /// <summary> 
-    /// Weather to show the config file on load/reload. 
+    /// <summary>
+    /// Weather to show the config file on load/reload.
     /// </summary>
     public bool ShowConfig = false;
-    /// <summary> 
-    /// Weather to log all exceptions. 
+    /// <summary>
+    /// Weather to log all exceptions.
     /// </summary>
     public bool LogFirstChance = false;
-    /// <summary> 
-    /// DateTime format for logging. 
+    /// <summary>
+    /// DateTime format for logging.
     /// </summary>
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
-    /// <summary> 
-    /// Action for TShock's update 
+    /// <summary>
+    /// Action for TShock's update
     /// </summary>
     public UpdateOptions SuppressUpdate = UpdateOptions.Preset;
-    /// <summary> 
-    /// Socket Provider 
+    /// <summary>
+    /// Socket Provider
     /// </summary>
     public SocketType Socket = SocketType.Preset;
     public NameCollisionAction NameCollision = NameCollisionAction.Preset;
     public TileProviderOptions TileProvider = TileProviderOptions.Preset;
-    /// <summary> 
+    /// <summary>
     /// The wildcard of matching all players. Directly using "*" itself is not
     /// suggested as some commands might have special meaning for it.
     /// </summary>
@@ -103,28 +103,28 @@ public class Config
     [JsonConverter(typeof(StringEnumConverter))]
     public enum NameCollisionAction
     {
-        /// <summary> 
-        /// Kick the first player 
+        /// <summary>
+        /// Kick the first player
         /// </summary>
         First,
-        /// <summary> 
-        /// Kick the second player 
+        /// <summary>
+        /// Kick the second player
         /// </summary>
         Second,
-        /// <summary> 
-        /// Kick both players 
+        /// <summary>
+        /// Kick both players
         /// </summary>
         Both,
-        /// <summary> 
-        /// Kick neither player 
+        /// <summary>
+        /// Kick neither player
         /// </summary>
         None,
-        /// <summary> 
-        /// Kick whoever does not using a known ip and not logged in, fallback to <see cref="Second"/> 
+        /// <summary>
+        /// Kick whoever does not using a known ip and not logged in, fallback to <see cref="Second"/>
         /// </summary>
         Known,
-        /// <summary> 
-        /// Do nothing 
+        /// <summary>
+        /// Do nothing
         /// </summary>
         Unhandled,
         Preset,
@@ -273,45 +273,55 @@ public class Config
         public bool Enabled = true;
 
         /// <summary>
+        /// <para>
         /// Mobile (PE) client keep (likely per frame) send PlayerSlot packet
         /// to the server if any item exists in non-active loadout.
-        ///
-        /// Cause lag and high memory usage.
-        ///
+        /// </para>
+        /// <para>Cause lag and high memory usage.</para>
+        /// <para>
         /// This will silently proceed the packet without boardcasting it, and
         /// stop future unnecessary sync.
+        /// </para>
         /// </summary>
         public bool InventorySlotPE = true;
 
         /// <summary>
+        /// <para>
         /// Mobile (PE) client can use healing potion (etc.) without getting
         /// or being restricted by PotionSickness.
-        ///
-        /// Cause imbalance.
-        ///
+        /// </para>
+        /// <para>Cause imbalance.</para>
+        /// <para>
         /// This will silently revert the attempt of healing.
         /// Item is still consumed as punishment.
+        /// </para>
         /// </summary>
         public bool PotionSicknessPE = true;
 
         /// <summary>
+        /// <para>
         /// Similar to <seealso cref="PotionSicknessPE"/>, but generic for
         /// all items.
-        ///
-        /// Cause imbalance.
-        ///
+        /// </para>
+        /// <para>Cause imbalance.</para>
+        /// <para>
         /// This will silently revert the attempt of using the item.
         /// Might cause player slightly desync when they try to do so.
+        /// </para>
         /// </summary>
         public bool SwapWhileUsePE = true;
 
         /// <summary>
+        /// <para>
         /// Chat spam rate limit. This restriction also applies to commands.
         /// Each item is a pair of rate and maximum.
-        /// Higher rate and lower maximum means more strict.
+        /// </para>
+        /// <para>Higher rate and lower maximum means more strict.</para>
+        /// <para>
         /// The default limit:
         ///   3 messages per 5 seconds
         ///   5 messages per 20 seconds
+        /// </para>
         /// </summary>
         public List<(int RateLimit, int Maximum)> ChatSpamRestrict = new List<(int RateLimit, int Maximum)> {
             (100, 300),
@@ -319,14 +329,16 @@ public class Config
         };
 
         /// <summary>
+        /// <para>
         /// Restrict the rate of sending <see cref="PacketTypes.NpcUpdateBuff"/>.
         /// In some cases, the client will send <see cref="PacketTypes.NpcAddBuff"/> frequently,
         /// and the server will boardcast in O(n^2) and cause network storm.
-        ///
-        /// Likely caused by shimmer.
-        ///
+        /// </para>
+        /// <para>Likely caused by shimmer.</para>
+        /// <para>
         /// This will replace the logic of these two packets and only boardcast at time interval.
         /// Use with caution.
+        /// </para>
         /// </summary>
         public bool NpcUpdateBuffRateLimit = false;
     }

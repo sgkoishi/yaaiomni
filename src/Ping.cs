@@ -31,7 +31,7 @@ public partial class Plugin : TerrariaPlugin
             SingleWriter = true
         });
         player.SetData(Consts.DataKey.PingChannel, channel);
-        Terraria.NetMessage.TrySendData((int) PacketTypes.RemoveItemOwner, -1, -1, null, inv);
+        Terraria.NetMessage.TrySendData((int) PacketTypes.RemoveItemOwner, player.Index, -1, null, inv);
         while (!token.IsCancellationRequested)
         {
             var end = await channel.Reader.ReadAsync(token);
@@ -74,7 +74,7 @@ public partial class Plugin : TerrariaPlugin
         try
         {
             var player = args.Player;
-            var result = await Ping(player);
+            var result = await this.Ping(player);
             player.SendSuccessMessage($"Ping: {result.TotalMilliseconds:F1}ms");
         }
         catch (Exception e)
