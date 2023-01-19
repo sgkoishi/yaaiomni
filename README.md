@@ -13,10 +13,10 @@ Yet another misc plugin for TShock
 | `/whynot` | Show recent permission queries related to your player. | Hidden by default. | `chireiden.omni.whynot` | |
 | `/ghost` | Hide yourself from viewing, `/playing`, etc. | | `chireiden.omni.ghost` | |
 | `/setlang` | Set language. | | `chireiden.omni.setlang` | For admin. |
-| `/_pvp` | Toggle PvP. | Hidden by default. | `chireiden.omni.pvp` <br> `chireiden.omni.admin.setpvp` | |
-| `/_team` | Toggle team. | Hidden by default. | `chireiden.omni.team` <br> `chireiden.omni.admin.setteam` | |
+| `/_pvp` | Toggle PvP. | Hidden by default. | `chireiden.omni.pvp` <br /> `chireiden.omni.admin.setpvp` | |
+| `/_team` | Toggle team. | Hidden by default. | `chireiden.omni.team` <br /> `chireiden.omni.admin.setteam` | |
 | `/_debugstat` | Show debug stats. | Hidden by default. | `chireiden.omni.admin.debugstat` | |
-| `/_gc` | Trigger garbage collection. | Hidden by default. | `chireiden.omni.admin.gc` <br> `tshock.cfg.maintenance` | For admin. |
+| `/_gc` | Trigger garbage collection. | Hidden by default. | `chireiden.omni.admin.gc` <br /> `tshock.cfg.maintenance` | For admin. |
 | `/maxplayers` | Set max players. | | `chireiden.omni.admin.maxplayers` | Might cause unexpected behaviour if lower than current max. |
 | `/tileprovider` | Set tile provider. | | `chireiden.omni.admin.tileprovider` | For admin. |
 | `/settimeout` | Run delay command. | | `chireiden.omni.settimeout` | |
@@ -28,13 +28,15 @@ Yet another misc plugin for TShock
 | `/listclients` | Show connected clients, including pending/joining ones. | | `chireiden.omni.admin.listclients` | For owner. |
 | `/dumpbuffer` | Dump buffer. | | `chireiden.omni.admin.dumpbuffer` | For owner. |
 | `/kc` | Disconnect a client. | | `chireiden.omni.admin.terminatesocket` | For admin. |
-| `/resetcharacter` | Reset character. | Hidden by default. | `chireiden.omni.resetcharacter` <br> `chireiden.omni.admin.resetcharacter` <br> `chireiden.omni.admin.resetcharacter.all` | For admin. |
+| `/resetcharacter` | Reset character. | Hidden by default. | `chireiden.omni.resetcharacter` <br /> `chireiden.omni.admin.resetcharacter` <br /> `chireiden.omni.admin.resetcharacter.all` | For admin. |
+| `/_ping` | Ping. | Hidden by default. | `chireiden.omni.ping` | |
+| `/_chat` | Chat. | Hidden by default. | `chireiden.omni.chat` <br /> `tshock.canchat` | |
 
 ### Defaults
 * The permission of `/ghost`, `/setlang`, `/_debugstat`, timeout/delay/interval series commands are granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
 * The permission of `/_gc`, `/tileprovider`, `/maxplayers`, `/rbc`, `/kc` are granted to the topmost parent of `owner` with maintenance permission, or `trustedadmin`'s parent if `owner` is not found.
 * The permission of `/runas`, `/listclients`, `/dumpbuffer` are granted to the topmost parent of `owner` with sudo permission.
-* The permission of switch loadout, pvp and team are granted to the guest group as TShock's config.
+* The permission of switch loadout, pvp and team, `/_ping` are granted to the guest group as TShock's config.
   * Unable to switch without these permissions. (`.Permission.Restrict` in config)
 * Vanilla version check is disabled. (`.SyncVersion` in config)
 * Errors thrown from TShock's update check will be silently ignored. (`.SuppressUpdate` in config)

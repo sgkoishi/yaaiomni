@@ -150,6 +150,7 @@ public partial class Plugin : TerrariaPlugin
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.Hook_Mitigation_GameUpdate);
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.Hook_HideCommand_PlayerCommand;
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.Hook_Wildcard_PlayerCommand;
+        TShockAPI.Hooks.PlayerHooks.PlayerPermission += this.Hook_Sudo_OnPlayerPermission;
         TShockAPI.Hooks.GeneralHooks.ReloadEvent += this.OnReload;
         TShockAPI.TShock.Initialized += this.PostTShockInitialize;
         TShockAPI.GetDataHandlers.TogglePvp.Register(this.Hook_Permission_TogglePvp);
@@ -182,6 +183,7 @@ public partial class Plugin : TerrariaPlugin
             TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.Hook_Mitigation_GameUpdate);
             TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.Hook_HideCommand_PlayerCommand;
             TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.Hook_Wildcard_PlayerCommand;
+            TShockAPI.Hooks.PlayerHooks.PlayerPermission -= this.Hook_Sudo_OnPlayerPermission;
             TShockAPI.Hooks.GeneralHooks.ReloadEvent -= this.OnReload;
             TShockAPI.TShock.Initialized -= this.PostTShockInitialize;
             TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.Hook_Permission_TogglePvp);
@@ -229,6 +231,7 @@ public partial class Plugin : TerrariaPlugin
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.TerminateSocket, this.Command_TerminateSocket, Consts.Commands.TerminateSocket));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.ResetCharacter, this.Command_ResetCharacter, Consts.Commands.ResetCharacter));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Ping, this.Command_Ping, Consts.Commands.Ping));
+        Commands.ChatCommands.Add(new Command(new List<string> { Consts.Permissions.Chat, Permissions.canchat }, this.Command_Chat, Consts.Commands.Chat));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

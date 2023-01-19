@@ -28,7 +28,7 @@ public partial class Plugin : TerrariaPlugin
         }
         if (addperm.Length > 0)
         {
-            TShockAPI.TSPlayer.Server.SendInfoMessage($"Failed to add permissions to group chireiden_vanilla.");
+            TShockAPI.TSPlayer.Server.SendInfoMessage($"Failed to add permissions to group {Consts.VanillaGroup}.");
         }
 
         var vg = TShockAPI.TShock.Groups.GetGroupByName(Consts.VanillaGroup);

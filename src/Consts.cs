@@ -16,6 +16,7 @@ public static class Consts
         public static readonly string ShowTimeout = "chireiden.omni.showtimeout";
         public static readonly string ResetCharacter = "chireiden.omni.resetcharacter";
         public static readonly string Ping = "chireiden.omni.ping";
+        public static readonly string Chat = "chireiden.omni.chat";
         public static class Admin
         {
             public static readonly string Ghost = "chireiden.omni.ghost";
@@ -58,6 +59,7 @@ public static class Consts
         public static readonly string TerminateSocket = "kc";
         public static readonly string ResetCharacter = "resetcharacter";
         public static readonly string Ping = "_ping";
+        public static readonly string Chat = "_chat";
     }
     public static class DataKey
     {
@@ -69,6 +71,7 @@ public static class Consts
         public static readonly string PendingRevertHeal = "chireiden.data.pendingheal";
         public static readonly string ChatSpamRestrict = "chireiden.data.chatspam";
         public static readonly string PingChannel = "chireiden.data.pingchannel";
+        public static readonly string PermissionBypass = "chireiden.data.permissionbypass";
     }
     public static readonly string ConfigFile = "chireiden.omni.json";
     public static readonly string VanillaGroup = "chireiden_vanilla";

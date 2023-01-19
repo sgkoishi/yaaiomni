@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Terraria.Localization;
+﻿using Terraria.Localization;
 using TerrariaApi.Server;
 using TShockAPI;
 
@@ -200,48 +199,9 @@ public partial class Plugin : TerrariaPlugin
 
         if (withoutcheck)
         {
-            var cmdargs = (List<string>) typeof(TShockAPI.Command)
-                .GetMethod("ParseParameters", BindingFlags.NonPublic | BindingFlags.Static)!
-                .Invoke(null, new object[] { args.Parameters[1] })!;
-            if (cmdargs.Count == 0)
-            {
-                args.Player.SendErrorMessage("Invalid command.");
-                return;
-            }
-
-            var cmdname = cmdargs[0];
-            if (!cmdname.StartsWith(Commands.Specifier) && !cmdname.StartsWith(Commands.SilentSpecifier))
-            {
-                args.Player.SendErrorMessage("Invalid command.");
-                return;
-            }
-
-            var silent = cmdname.StartsWith(Commands.SilentSpecifier);
-            var specifier = silent ? Commands.SilentSpecifier : Commands.Specifier;
-            cmdname = cmdname[specifier.Length..];
-            var cmds = Commands.ChatCommands.Where(c => c.HasAlias(cmdname)).ToList();
-            var cmdtext = args.Parameters[1][specifier.Length..];
             foreach (var p in player)
             {
-                var cmds_clone = cmds.ToList().AsEnumerable();
-                if (TShockAPI.Hooks.PlayerHooks.OnPlayerCommand(p, cmdname, cmdtext, cmdargs, ref cmds_clone, specifier))
-                {
-                    continue;
-                }
-
-                foreach (var cmd in cmds_clone)
-                {
-                    if (cmd.DoLog)
-                    {
-                        TShockAPI.TShock.Log.ConsoleInfo($"{args.Player.Name} force {p.Name} executed: {specifier}{cmdtext}");
-                    }
-                    else
-                    {
-                        TShockAPI.TShock.Log.ConsoleInfo($"{args.Player.Name} force {p.Name} executed (args omitted): {specifier}{cmdname}");
-                    }
-
-                    cmd.CommandDelegate(new CommandArgs(cmdtext, silent, p, cmdargs));
-                }
+                this.RunWithoutPermissionChecks(() => TShockAPI.Commands.HandleCommand(p, args.Parameters[1]), p);
             }
         }
         else
@@ -430,5 +390,17 @@ public partial class Plugin : TerrariaPlugin
             }
             TShockAPI.TShock.CharacterDB.InsertSpecificPlayerData(p, data);
         }
+    }
+
+    private void Command_Chat(CommandArgs args)
+    {
+        var index = args.Player.Index;
+        var scea = new ServerChatEventArgs();
+        var command = Terraria.Chat.ChatCommandId.FromType<Terraria.Chat.Commands.SayChatCommand>();
+        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.Buffer))!.SetValue(scea, Terraria.NetMessage.buffer[index]);
+        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.Who))!.SetValue(scea, index);
+        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.Text))!.SetValue(scea, string.Join(" ", args.Parameters));
+        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.CommandId))!.SetValue(scea, command);
+        TerrariaApi.Server.ServerApi.Hooks.ServerChat.Invoke(scea);
     }
 }
