@@ -55,8 +55,8 @@ public partial class Plugin : TerrariaPlugin
             var state = args.Player.GetData<bool?>(Consts.DataKey.Ghost) ?? false;
             args.Player.SetData<bool?>(Consts.DataKey.Ghost, !state);
         }
-        Terraria.NetMessage.TrySendData(4, -1, args.Player.Index, null, args.Player.Index);
-        Terraria.NetMessage.TrySendData(13, -1, args.Player.Index, null, args.Player.Index);
-        Terraria.NetMessage.TrySendData(14, -1, args.Player.Index, null, args.Player.Index, args.TPlayer.active.GetHashCode());
+        Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerInfo, -1, args.Player.Index, null, args.Player.Index);
+        Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, args.Player.Index, null, args.Player.Index);
+        Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerActive, -1, args.Player.Index, null, args.Player.Index, args.TPlayer.active.GetHashCode());
     }
 }

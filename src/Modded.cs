@@ -45,7 +45,7 @@ public partial class Plugin : TerrariaPlugin
 
         if (flag)
         {
-            Terraria.NetMessage.TrySendData(2, whoAmI, -1, Terraria.Lang.mp[1].ToNetworkText());
+            Terraria.NetMessage.TrySendData((int) PacketTypes.Disconnect, whoAmI, -1, Terraria.Lang.mp[1].ToNetworkText());
             // Stop handling any data
             Terraria.Netplay.Clients[whoAmI].PendingTermination = true;
             Terraria.Netplay.Clients[whoAmI].PendingTerminationApproved = true;

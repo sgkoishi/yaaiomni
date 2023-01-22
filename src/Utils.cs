@@ -97,21 +97,18 @@ public static class Utils
     /// </summary>
     public static string ToCommand(string specifier, string command, List<string> args)
     {
-        var sb = new System.Text.StringBuilder();
-        sb.Append(specifier).Append(command).Append(' ');
-        foreach (var arg in args)
+        return string.Join(" ", new List<string> { $"{specifier}{command}" }.Concat(args.Select(arg =>
         {
             var parg = arg.Replace("\\", "\\\\").Replace("\"", "\\\"");
-            if (parg.Contains(' '))
+            if (parg.Contains(' ') || parg.Contains('\\'))
             {
-                sb.Append('"').Append(parg).Append('"');
+                return $"\"{parg}\"";
             }
             else
             {
-                sb.Append(parg);
+                return parg;
             }
-        }
-        return sb.ToString();
+        })));
     }
 
     public static IEnumerable<TSPlayer> ActivePlayers => TShockAPI.TShock.Players.Where(p => p?.Active == true);

@@ -43,6 +43,9 @@ public class Config
     public List<string> PlayerWildcardFormat = new List<string> {
         "*all*"
     };
+    /// <summary>
+    /// The pattern of matching the server itself.
+    /// </summary>
     public List<string> ServerWildcardFormat = new List<string> {
         "*server*",
         "*console*",
