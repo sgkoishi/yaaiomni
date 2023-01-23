@@ -74,7 +74,7 @@ public partial class Plugin : TerrariaPlugin
         try
         {
             var player = args.Player;
-            var result = await this.Ping(player);
+            var result = await this.Ping(player, new CancellationTokenSource(1000).Token);
             player.SendSuccessMessage($"Ping: {result.TotalMilliseconds:F1}ms");
         }
         catch (Exception e)
