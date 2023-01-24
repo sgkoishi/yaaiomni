@@ -5,7 +5,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private bool Hook_PlayerActive(Func<TSPlayer, bool> orig, TSPlayer player)
+    private bool Detour_PlayerActive(Func<TSPlayer, bool> orig, TSPlayer player)
     {
         if (player?.TPlayer == null)
         {

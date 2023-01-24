@@ -24,36 +24,41 @@ public partial class Plugin : TerrariaPlugin
         this.config = new Config();
         var bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
         this.Detour(
-            nameof(this.Hook_UpdateCheckAsync),
+            nameof(this.Detour_UpdateCheckAsync),
             typeof(UpdateManager)
                 .GetMethod(nameof(UpdateManager.UpdateCheckAsync), bfany)!,
-            this.Hook_UpdateCheckAsync);
+            this.Detour_UpdateCheckAsync);
         this.Detour(
-            nameof(this.Hook_HasPermission),
+            nameof(this.Detour_HasPermission),
             typeof(TSPlayer)
                 .GetMethod(nameof(TSPlayer.HasPermission), bfany, new[] { typeof(string) })!,
-            this.Hook_HasPermission);
+            this.Detour_HasPermission);
         this.Detour(
-            nameof(this.Hook_PlayerActive),
+            nameof(this.Detour_PlayerActive),
             typeof(TSPlayer)
                 .GetProperty(nameof(TSPlayer.Active), bfany)!
                 .GetMethod!,
-            this.Hook_PlayerActive);
+            this.Detour_PlayerActive);
         this.Detour(
-            nameof(this.Hook_Lava_HitEffect),
+            nameof(this.Detour_Lava_HitEffect),
             typeof(NPC)
                 .GetMethod(nameof(NPC.HitEffect), bfany)!,
-            this.Hook_Lava_HitEffect);
+            this.Detour_Lava_HitEffect);
         this.Detour(
-            nameof(this.Hook_Lava_KillTile),
+            nameof(this.Detour_Lava_KillTile),
             typeof(WorldGen)
                 .GetMethod(nameof(WorldGen.KillTile), bfany)!,
-            this.Hook_Lava_KillTile);
+            this.Detour_Lava_KillTile);
         this.Detour(
-            nameof(this.Hook_Wildcard_GetPlayers),
+            nameof(this.Detour_Wildcard_GetPlayers),
             typeof(TSPlayer)
                 .GetMethod(nameof(TSPlayer.FindByNameOrID), bfany)!,
-            this.Hook_Wildcard_GetPlayers);
+            this.Detour_Wildcard_GetPlayers);
+        this.Detour(
+            nameof(this.Detour_Backport_2894),
+            typeof(TShockAPI.DB.CharacterManager)
+                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), bfany)!,
+            this.Detour_Backport_2894);
     }
 
     private void OnReload(ReloadEventArgs? e)

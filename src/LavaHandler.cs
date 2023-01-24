@@ -4,7 +4,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void Hook_Lava_KillTile(On.Terraria.WorldGen.orig_KillTile orig, int i, int j, bool fail, bool effectOnly, bool noItem)
+    private void Detour_Lava_KillTile(On.Terraria.WorldGen.orig_KillTile orig, int i, int j, bool fail, bool effectOnly, bool noItem)
     {
         var shouldHandle = false;
         var strtg = this.config.LavaHandler;
@@ -30,7 +30,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
-    private void Hook_Lava_HitEffect(On.Terraria.NPC.orig_HitEffect orig, Terraria.NPC self, int hitDirection, double dmg)
+    private void Detour_Lava_HitEffect(On.Terraria.NPC.orig_HitEffect orig, Terraria.NPC self, int hitDirection, double dmg)
     {
         var shouldHandle = false;
         var strtg = this.config.LavaHandler;

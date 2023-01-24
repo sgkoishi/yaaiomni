@@ -8,7 +8,7 @@ public partial class Plugin : TerrariaPlugin
 {
     public record PermissionCheckHistory(string Permission, DateTime Time, bool Result, StackTrace? Trace);
 
-    private bool Hook_HasPermission(Func<TSPlayer, string, bool> orig, TSPlayer player, string permission)
+    private bool Detour_HasPermission(Func<TSPlayer, string, bool> orig, TSPlayer player, string permission)
     {
         var result = orig(player, permission);
         var strgy = this.config.Permission.Log;

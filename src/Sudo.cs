@@ -78,7 +78,7 @@ public partial class Plugin : TerrariaPlugin
             {
                 continue;
             }
-            if (frame.GetMethod()?.Equals(bp) ?? false)
+            if (method.Equals(bp))
             {
                 args.Result = PermissionHookResult.Granted;
                 return;
