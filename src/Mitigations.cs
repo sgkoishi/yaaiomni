@@ -285,4 +285,21 @@ public partial class Plugin : TerrariaPlugin
             }
         }
     }
+
+    private void Detour_Mitigation_SetTitle(Action<TShockAPI.Utils, bool> orig, TShockAPI.Utils self, bool empty)
+    {
+        if (this.config.Mitigation.Enabled && this.config.Mitigation.SuppressTitle)
+        {
+            if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+            {
+                var term = Environment.GetEnvironmentVariable("TERM");
+                if (!(term?.Contains("xterm") ?? false))
+                {
+                    return;
+                }
+            }
+        }
+
+        orig(self, empty);
+    }
 }

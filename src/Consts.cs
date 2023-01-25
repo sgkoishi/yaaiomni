@@ -35,6 +35,7 @@ public static class Consts
             public static readonly string TerminateSocket = "chireiden.omni.admin.terminatesocket";
             public static readonly string ResetCharacterOther = "chireiden.omni.admin.resetcharacter";
             public static readonly string ResetCharacterAll = "chireiden.omni.admin.resetcharacter.all";
+            public static readonly string DownloadCharacter = "chireiden.omni.admin.downloadcharacter";
         }
     }
     public static class Commands
@@ -60,6 +61,7 @@ public static class Consts
         public static readonly string ResetCharacter = "resetcharacter";
         public static readonly string Ping = "_ping";
         public static readonly string Chat = "_chat";
+        public static readonly string DownloadCharacter = "downloadcharacter";
     }
     public static class DataKey
     {

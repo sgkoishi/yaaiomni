@@ -344,5 +344,21 @@ public class Config
         /// </para>
         /// </summary>
         public bool NpcUpdateBuffRateLimit = false;
+
+        /// <summary>
+        /// <para>
+        /// Some terminals does not support Operating System Commands (OSCs) for setting the title.
+        /// This will cause title being interpreted as stdio.
+        /// </para>
+        /// <para>
+        /// linux should support OSC commands according to the implementation of <seealso cref="Console.Title"/>, but some doesn't.
+        /// https://source.dot.net/#System.Console/System/TerminalFormatStrings.cs,e0a3bdd93a9caf05,references
+        /// </para>
+        /// <para>Cause spam in console.</para>
+        /// <para>
+        /// This will prevent the title from being set if TERM has no xterm.
+        /// </para>
+        /// </summary>
+        public bool SuppressTitle = true;
     }
 }

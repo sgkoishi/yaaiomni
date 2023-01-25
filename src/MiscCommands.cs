@@ -403,4 +403,17 @@ public partial class Plugin : TerrariaPlugin
         typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.CommandId))!.SetValue(scea, command);
         TerrariaApi.Server.ServerApi.Hooks.ServerChat.Invoke(scea);
     }
+
+    private void Command_DownloadCharacter(CommandArgs args)
+    {
+        if (!Terraria.Main.ServerSideCharacter)
+        {
+            args.Player.SendErrorMessage("Server side character is not enabled.");
+            return;
+        }
+
+        Terraria.Main.ServerSideCharacter = false;
+        Terraria.NetMessage.TrySendData(2, args.Player.Index);
+        Terraria.Main.ServerSideCharacter = true;
+    }
 }

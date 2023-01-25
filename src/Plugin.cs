@@ -59,6 +59,11 @@ public partial class Plugin : TerrariaPlugin
             typeof(TShockAPI.DB.CharacterManager)
                 .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), bfany)!,
             this.Detour_Backport_2894);
+        this.Detour(
+            nameof(this.Detour_Mitigation_SetTitle),
+            typeof(TShockAPI.Utils)
+                .GetMethod("SetConsoleTitle", bfany)!,
+            this.Detour_Mitigation_SetTitle);
     }
 
     private void OnReload(ReloadEventArgs? e)
@@ -215,8 +220,14 @@ public partial class Plugin : TerrariaPlugin
     private void PostTShockInitialize()
     {
         OTAPI.Hooks.Netplay.CreateTcpListener += this.Hook_Socket_OnCreate;
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Whynot, this.Command_PermissionCheck, Consts.Commands.Whynot));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.Ghost, this.Command_Ghost, Consts.Commands.Ghost));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Whynot, this.Command_PermissionCheck, Consts.Commands.Whynot)
+        {
+            AllowServer = false,
+        });
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.Ghost, this.Command_Ghost, Consts.Commands.Ghost)
+        {
+            AllowServer = false,
+        });
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.SetLanguage, this.Command_Lang, Consts.Commands.SetLanguage));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.PvPCommand, this.Command_PvP, Consts.Commands.SetPvp));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.TeamCommand, this.Command_Team, Consts.Commands.SetTeam));
@@ -235,8 +246,18 @@ public partial class Plugin : TerrariaPlugin
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DumpBuffer, this.Command_DumpBuffer, Consts.Commands.DumpBuffer));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.TerminateSocket, this.Command_TerminateSocket, Consts.Commands.TerminateSocket));
         Commands.ChatCommands.Add(new Command(Consts.Permissions.ResetCharacter, this.Command_ResetCharacter, Consts.Commands.ResetCharacter));
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Ping, this.Command_Ping, Consts.Commands.Ping));
-        Commands.ChatCommands.Add(new Command(new List<string> { Consts.Permissions.Chat, Permissions.canchat }, this.Command_Chat, Consts.Commands.Chat));
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Ping, this.Command_Ping, Consts.Commands.Ping)
+        {
+            AllowServer = false,
+        });
+        Commands.ChatCommands.Add(new Command(new List<string> { Consts.Permissions.Chat, Permissions.canchat }, this.Command_Chat, Consts.Commands.Chat)
+        {
+            AllowServer = false,
+        });
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DownloadCharacter, this.Command_DownloadCharacter, Consts.Commands.DownloadCharacter)
+        {
+            AllowServer = false,
+        });
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

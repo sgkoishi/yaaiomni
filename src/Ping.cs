@@ -6,7 +6,12 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    public async Task<TimeSpan> Ping(TSPlayer player, CancellationToken token = default)
+    public async Task<TimeSpan> Ping(TSPlayer player)
+    {
+        return await this.Ping(player, new CancellationTokenSource(1000).Token);
+    }
+
+    public async Task<TimeSpan> Ping(TSPlayer player, CancellationToken token)
     {
         var result = TimeSpan.MaxValue;
 
@@ -74,7 +79,7 @@ public partial class Plugin : TerrariaPlugin
         try
         {
             var player = args.Player;
-            var result = await this.Ping(player, new CancellationTokenSource(1000).Token);
+            var result = await this.Ping(player);
             player.SendSuccessMessage($"Ping: {result.TotalMilliseconds:F1}ms");
         }
         catch (Exception e)
