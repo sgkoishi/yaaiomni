@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using Terraria.Localization;
 using TShockAPI;
 using static Terraria.Utils;
@@ -191,6 +192,53 @@ public static class Utils
                 }
             }
             yield break;
+        }
+    }
+
+    private static ConditionalWeakTable<TSPlayer, ReaderWriterLockSlim> _playerDataLocks = new ConditionalWeakTable<TSPlayer, ReaderWriterLockSlim>();
+
+    public static T GetOrCreatePlayerAttachedData<T>(this TSPlayer player, string key) where T : new()
+    {
+        return player.GetOrCreatePlayerAttachedData(key, () => new T());
+    }
+
+    public static T GetOrCreatePlayerAttachedData<T>(this TSPlayer player, string key, Func<T> factory)
+    {
+        _playerDataLocks.GetOrCreateValue(player).EnterUpgradeableReadLock();
+        try
+        {
+            var value = player.GetData<T>(key);
+            if (value is not T)
+            {
+                _playerDataLocks.GetOrCreateValue(player).EnterWriteLock();
+                try
+                {
+                    value = factory();
+                    player.SetData(key, value);
+                }
+                finally
+                {
+                    _playerDataLocks.GetOrCreateValue(player).ExitWriteLock();
+                }
+            }
+            return value;
+        }
+        finally
+        {
+            _playerDataLocks.GetOrCreateValue(player).ExitReadLock();
+        }
+    }
+
+    public static void SetPlayerAttachedData<T>(this TSPlayer player, string key, T value)
+    {
+        _playerDataLocks.GetOrCreateValue(player).EnterWriteLock();
+        try
+        {
+            player.SetData(key, value);
+        }
+        finally
+        {
+            _playerDataLocks.GetOrCreateValue(player).ExitWriteLock();
         }
     }
 }

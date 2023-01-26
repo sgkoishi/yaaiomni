@@ -109,14 +109,14 @@ public partial class Plugin : TerrariaPlugin
                     {
                         return;
                     }
-                    var value = player.GetData<int?>(Consts.DataKey.DetectPE) ?? 0;
-                    player.SetData<int>(Consts.DataKey.DetectPE, value + 1);
+                    var value = player.GetOrCreatePlayerAttachedData<int>(Consts.DataKey.DetectPE);
+                    player.SetPlayerAttachedData<int>(Consts.DataKey.DetectPE, value + 1);
                     if (value % 500 == 0)
                     {
                         var currentLoadoutIndex = Terraria.Main.player[index].CurrentLoadoutIndex;
                         Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, (currentLoadoutIndex + 1) % 3);
                         Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, currentLoadoutIndex);
-                        player.SetData<bool>(Consts.DataKey.IsPE, true);
+                        player.SetPlayerAttachedData<bool>(Consts.DataKey.IsPE, true);
                     }
                 }
                 else
@@ -140,7 +140,7 @@ public partial class Plugin : TerrariaPlugin
                 if (Terraria.Main.player[index].inventory[Terraria.Main.player[index].selectedItem].potion)
                 {
                     var amount = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1, 2));
-                    TShockAPI.TShock.Players[index]?.SetData<int>(Consts.DataKey.PendingRevertHeal, amount);
+                    TShockAPI.TShock.Players[index]?.SetPlayerAttachedData<int>(Consts.DataKey.PendingRevertHeal, amount);
                 }
                 break;
             }
@@ -162,7 +162,7 @@ public partial class Plugin : TerrariaPlugin
                     var buff = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1 + (i * 2), 2));
                     if (buff == Terraria.ID.BuffID.PotionSickness)
                     {
-                        TShockAPI.TShock.Players[index]?.SetData<int>(Consts.DataKey.PendingRevertHeal, 0);
+                        TShockAPI.TShock.Players[index]?.SetPlayerAttachedData<int>(Consts.DataKey.PendingRevertHeal, 0);
                     }
                 }
                 break;
@@ -174,10 +174,10 @@ public partial class Plugin : TerrariaPlugin
                     break;
                 }
                 var index = args.Instance.whoAmI;
-                var pending = TShockAPI.TShock.Players[index]?.GetData<int?>(Consts.DataKey.PendingRevertHeal) ?? 0;
+                var pending = TShockAPI.TShock.Players[index].GetOrCreatePlayerAttachedData<int>(Consts.DataKey.PendingRevertHeal);
                 if (pending > 0)
                 {
-                    TShockAPI.TShock.Players[index]?.SetData<int>(Consts.DataKey.PendingRevertHeal, 0);
+                    TShockAPI.TShock.Players[index]?.SetPlayerAttachedData<int>(Consts.DataKey.PendingRevertHeal, 0);
                     Terraria.Main.player[index].statLife -= pending;
                     Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerHp, -1, -1, null, index);
                 }
@@ -221,7 +221,7 @@ public partial class Plugin : TerrariaPlugin
                     for (var i = 0; i < this.config.Mitigation.ChatSpamRestrict.Count; i++)
                     {
                         var (RateLimit, Maximum) = this.config.Mitigation.ChatSpamRestrict[i];
-                        var tat = Math.Max(this._updateCounter, player.GetData<int?>(Consts.DataKey.ChatSpamRestrict + i) ?? 0) + RateLimit;
+                        var tat = Math.Max(this._updateCounter, player.GetOrCreatePlayerAttachedData<int>(Consts.DataKey.ChatSpamRestrict + i)) + RateLimit;
                         if (tat > this._updateCounter + Maximum)
                         {
                             args.Result = OTAPI.HookResult.Cancel;
@@ -229,7 +229,7 @@ public partial class Plugin : TerrariaPlugin
                             args.PacketId = byte.MaxValue;
                             break;
                         }
-                        player.SetData<int>(Consts.DataKey.ChatSpamRestrict + i, tat);
+                        player.SetPlayerAttachedData<int>(Consts.DataKey.ChatSpamRestrict + i, tat);
                     }
                 }
                 break;

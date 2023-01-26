@@ -28,17 +28,11 @@ public partial class Plugin : TerrariaPlugin
         this._updateCounter++;
         foreach (var player in Utils.ActivePlayers)
         {
-            if (player.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> commands)
-            {
-                continue;
-            }
+            var commands = player.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
             this.ProcessDelayCommand(player, commands);
         }
 
-        if (TSPlayer.Server.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> serverCommands)
-        {
-            return;
-        }
+        var serverCommands = TSPlayer.Server.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
         this.ProcessDelayCommand(TSPlayer.Server, serverCommands);
     }
 
@@ -76,10 +70,8 @@ public partial class Plugin : TerrariaPlugin
             args.Player.SendErrorMessage("Timeout must be greater than 0!");
             return;
         }
-        if (args.Player.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> commands)
-        {
-            args.Player.SetData(Consts.DataKey.DelayCommands, commands = new List<DelayCommand>());
-        }
+
+        var commands = args.Player.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
         var cmd = new DelayCommand(args.Parameters[0], args.Player, start: this._updateCounter, timeout: timeout);
         commands.Add(cmd);
         args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed once in the future (id: {(uint) cmd.GetHashCode()}).");
@@ -102,10 +94,7 @@ public partial class Plugin : TerrariaPlugin
             args.Player.SendErrorMessage("Interval must be greater than 0!");
             return;
         }
-        if (args.Player.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> commands)
-        {
-            args.Player.SetData(Consts.DataKey.DelayCommands, commands = new List<DelayCommand>());
-        }
+        var commands = args.Player.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
         var cmd = new DelayCommand(args.Parameters[0], args.Player, start: this._updateCounter, timeout: interval, repeat: 0);
         commands.Add(cmd);
         args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed in the future (id: {(uint) cmd.GetHashCode()}).");
@@ -123,7 +112,8 @@ public partial class Plugin : TerrariaPlugin
             args.Player.SendErrorMessage("Invalid id!");
             return;
         }
-        if (args.Player.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> commands)
+        var commands = args.Player.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
+        if (commands.Count == 0)
         {
             args.Player.SendErrorMessage("No commands found!");
             return;
@@ -142,7 +132,8 @@ public partial class Plugin : TerrariaPlugin
 
     private void Command_ListDelay(CommandArgs args)
     {
-        if (args.Player.GetData<List<DelayCommand>>(Consts.DataKey.DelayCommands) is not List<DelayCommand> commands)
+        var commands = args.Player.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
+        if (commands.Count == 0)
         {
             args.Player.SendErrorMessage("No commands found!");
             return;

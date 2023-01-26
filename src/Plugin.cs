@@ -134,7 +134,7 @@ public partial class Plugin : TerrariaPlugin
                     {
                         continue;
                     }
-                    player.SetData<object?>(key, null);
+                    player.SetPlayerAttachedData<object?>(key, null);
                 }
             }
         }

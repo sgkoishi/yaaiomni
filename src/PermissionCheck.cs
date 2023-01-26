@@ -14,11 +14,7 @@ public partial class Plugin : TerrariaPlugin
         var strgy = this.config.Permission.Log;
         if (strgy.Enabled)
         {
-            if (player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory) == null)
-            {
-                player.SetData(Consts.DataKey.PermissionHistory, new Queue<PermissionCheckHistory>());
-            }
-            var history = player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);
+            var history = player.GetOrCreatePlayerAttachedData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);
             var now = DateTime.Now;
             if (!strgy.LogDuplicate)
             {
@@ -49,17 +45,10 @@ public partial class Plugin : TerrariaPlugin
     private void Command_PermissionCheck(CommandArgs args)
     {
         List<PermissionCheckHistory> list;
-        var existing = args.Player.GetData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);
-        if (existing != null)
+        var existing = args.Player.GetOrCreatePlayerAttachedData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);
+        lock (existing)
         {
-            lock (existing)
-            {
-                list = new List<PermissionCheckHistory>(existing);
-            }
-        }
-        else
-        {
-            list = new();
+            list = new List<PermissionCheckHistory>(existing);
         }
 
         if (args.Parameters.Contains("-t"))

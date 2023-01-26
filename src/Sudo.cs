@@ -19,11 +19,7 @@ public partial class Plugin : TerrariaPlugin
     {
         if (player != null && player.RealPlayer)
         {
-            if (player.GetData<IntObject?>(Consts.DataKey.PermissionBypass) is null)
-            {
-                player.SetData(Consts.DataKey.PermissionBypass, new IntObject());
-            }
-            var iobj = player.GetData<IntObject>(Consts.DataKey.PermissionBypass);
+            var iobj = player.GetOrCreatePlayerAttachedData<IntObject>(Consts.DataKey.PermissionBypass);
             Interlocked.Increment(ref iobj.Value);
         }
         else
@@ -38,7 +34,7 @@ public partial class Plugin : TerrariaPlugin
         {
             if (player != null && player.RealPlayer)
             {
-                var iobj = player.GetData<IntObject>(Consts.DataKey.PermissionBypass);
+                var iobj = player.GetOrCreatePlayerAttachedData<IntObject>(Consts.DataKey.PermissionBypass);
                 Interlocked.Decrement(ref iobj.Value);
             }
             else
@@ -51,12 +47,9 @@ public partial class Plugin : TerrariaPlugin
     private void Hook_Sudo_OnPlayerPermission(PlayerPermissionEventArgs args)
     {
         var flag = false;
-        if (args.Player.GetData<IntObject?>(Consts.DataKey.PermissionBypass) is IntObject iobj)
+        if (args.Player.GetOrCreatePlayerAttachedData<IntObject>(Consts.DataKey.PermissionBypass).Value > 0)
         {
-            if (iobj.Value > 0)
-            {
-                flag = true;
-            }
+            flag = true;
         }
 
         if (this._globalPermissionBypass > 0)

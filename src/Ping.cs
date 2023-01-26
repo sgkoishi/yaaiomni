@@ -30,12 +30,7 @@ public partial class Plugin : TerrariaPlugin
         }
 
         var start = DateTime.Now;
-        var channel = Channel.CreateBounded<int>(new BoundedChannelOptions(30)
-        {
-            SingleReader = true,
-            SingleWriter = true
-        });
-        player.SetData(Consts.DataKey.PingChannel, channel);
+        var channel = player.GetOrCreatePlayerAttachedData(Consts.DataKey.PingChannel, this.CreatePingChannel);
         Terraria.NetMessage.TrySendData((int) PacketTypes.RemoveItemOwner, player.Index, -1, null, inv);
         while (!token.IsCancellationRequested)
         {
@@ -46,7 +41,7 @@ public partial class Plugin : TerrariaPlugin
                 break;
             }
         }
-        player.SetData<Channel<int>?>(Consts.DataKey.PingChannel, null);
+        player.SetPlayerAttachedData<Channel<int>?>(Consts.DataKey.PingChannel, null);
         return result;
     }
 
@@ -64,7 +59,7 @@ public partial class Plugin : TerrariaPlugin
         }
 
         var whoami = args.Instance.whoAmI;
-        var pingresponse = TShockAPI.TShock.Players[whoami]?.GetData<Channel<int>?>(Consts.DataKey.PingChannel);
+        var pingresponse = TShockAPI.TShock.Players[whoami]?.GetOrCreatePlayerAttachedData<Channel<int>>(Consts.DataKey.PingChannel, this.CreatePingChannel);
         if (pingresponse == null)
         {
             return;
@@ -72,6 +67,15 @@ public partial class Plugin : TerrariaPlugin
 
         var index = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2));
         pingresponse.Writer.TryWrite(index);
+    }
+
+    private Channel<int> CreatePingChannel()
+    {
+        return Channel.CreateBounded<int>(new BoundedChannelOptions(30)
+        {
+            SingleReader = true,
+            SingleWriter = true
+        });
     }
 
     private async void Command_Ping(CommandArgs args)
