@@ -413,7 +413,8 @@ public partial class Plugin : TerrariaPlugin
         }
 
         Terraria.Main.ServerSideCharacter = false;
-        Terraria.NetMessage.TrySendData(2, args.Player.Index);
+        Terraria.NetMessage.TrySendData(7, args.Player.Index);
         Terraria.Main.ServerSideCharacter = true;
+        Terraria.NetMessage.TrySendData(2, args.Player.Index);
     }
 }
