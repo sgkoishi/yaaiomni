@@ -6,6 +6,23 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
+    public class PingData
+    {
+        internal class PingDetails
+        {
+            internal Channel<int> Channel = System.Threading.Channels.Channel.CreateBounded<int>(new BoundedChannelOptions(30)
+            {
+                SingleReader = true,
+                SingleWriter = true
+            });
+            internal DateTime Start = DateTime.Now;
+            internal DateTime? End = null;
+        }
+
+        public TimeSpan LastPing = TimeSpan.MaxValue;
+        internal PingDetails?[] RecentPings = new PingDetails?[Terraria.Main.item.Length];
+    }
+
     public async Task<TimeSpan> Ping(TSPlayer player)
     {
         return await this.Ping(player, new CancellationTokenSource(1000).Token);
@@ -13,36 +30,31 @@ public partial class Plugin : TerrariaPlugin
 
     public async Task<TimeSpan> Ping(TSPlayer player, CancellationToken token)
     {
-        var result = TimeSpan.MaxValue;
-
+        var start = DateTime.Now;
+        var pingdata = player.GetOrCreatePlayerAttachedData<PingData>(Consts.DataKey.PingChannel);
         var inv = -1;
         for (var i = 0; i < Terraria.Main.item.Length; i++)
         {
             if (!Terraria.Main.item[i].active || Terraria.Main.item[i].playerIndexTheItemIsReservedFor == 255)
             {
-                inv = i;
-                break;
+                if (pingdata.RecentPings[inv] == null)
+                {
+                    inv = i;
+                    break;
+                }
             }
         }
         if (inv == -1)
         {
-            return result;
+            return TimeSpan.MaxValue;
         }
-
-        var start = DateTime.Now;
-        var channel = player.GetOrCreatePlayerAttachedData(Consts.DataKey.PingChannel, this.CreatePingChannel);
+        var pd = new PingData.PingDetails();
+        pingdata.RecentPings[inv] = pd;
         Terraria.NetMessage.TrySendData((int) PacketTypes.RemoveItemOwner, player.Index, -1, null, inv);
-        while (!token.IsCancellationRequested)
-        {
-            var end = await channel.Reader.ReadAsync(token);
-            if (end == inv)
-            {
-                result = DateTime.Now - start;
-                break;
-            }
-        }
-        player.SetPlayerAttachedData<Channel<int>?>(Consts.DataKey.PingChannel, null);
-        return result;
+        await pd.Channel.Reader.ReadAsync(token);
+        pingdata.RecentPings[inv] = null;
+        pingdata.LastPing = pd.End!.Value - pd.Start;
+        return pingdata.LastPing;
     }
 
     private void Hook_Ping_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
@@ -59,23 +71,14 @@ public partial class Plugin : TerrariaPlugin
         }
 
         var whoami = args.Instance.whoAmI;
-        var pingresponse = TShockAPI.TShock.Players[whoami]?.GetOrCreatePlayerAttachedData<Channel<int>>(Consts.DataKey.PingChannel, this.CreatePingChannel);
-        if (pingresponse == null)
-        {
-            return;
-        }
-
+        var pingresponse = TShockAPI.TShock.Players[whoami]?.GetOrCreatePlayerAttachedData<PingData>(Consts.DataKey.PingChannel);
         var index = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2));
-        pingresponse.Writer.TryWrite(index);
-    }
-
-    private Channel<int> CreatePingChannel()
-    {
-        return Channel.CreateBounded<int>(new BoundedChannelOptions(30)
+        var ping = pingresponse?.RecentPings[index];
+        if (ping != null)
         {
-            SingleReader = true,
-            SingleWriter = true
-        });
+            ping.End = DateTime.Now;
+            ping.Channel.Writer.TryWrite(index);
+        }
     }
 
     private async void Command_Ping(CommandArgs args)
