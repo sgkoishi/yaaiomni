@@ -4,7 +4,7 @@
 Yet another misc plugin for TShock
 
 > __Note__
-> If you use Linux and don't know which version to download, download the tar one.
+> If you are using Linux and don't know which version to download, download the tar one.
 
 ### Commands
 
@@ -12,7 +12,7 @@ Yet another misc plugin for TShock
 | --- | --- | --- | --- | --- |
 | `/whynot` | Show recent permission queries related to your player. | Hidden by default. | `chireiden.omni.whynot` | |
 | `/ghost` | Hide yourself from viewing, `/playing`, etc. | | `chireiden.omni.ghost` | |
-| `/setlang` | Set language. | | `chireiden.omni.setlang` | For admin. |
+| `/setlang` | Set the language. | | `chireiden.omni.setlang` | For admin. |
 | `/_pvp` | Toggle PvP. | Hidden by default. | `chireiden.omni.pvp` <br /> `chireiden.omni.admin.setpvp` | |
 | `/_team` | Toggle team. | Hidden by default. | `chireiden.omni.team` <br /> `chireiden.omni.admin.setteam` | |
 | `/_debugstat` | Show debug stats. | Hidden by default. | `chireiden.omni.admin.debugstat` | |
@@ -24,19 +24,21 @@ Yet another misc plugin for TShock
 | `/clearinterval` | Remove a delay command. | | `chireiden.omni.clearinterval` | |
 | `/showdelay` | Show all pending delay commands. | | `chireiden.omni.showdelay` | |
 | `/rbc` | Broadcast a message. | | `chireiden.omni.admin.rawbroadcast` | For admin. |
-| `/runas` | Run a command as another player. | | `chireiden.omni.admin.sudo` | For owner. |
+| `/runas` | Execute a command as another player. | | `chireiden.omni.admin.sudo` | For owner. |
 | `/listclients` | Show connected clients, including pending/joining ones. | | `chireiden.omni.admin.listclients` | For owner. |
 | `/dumpbuffer` | Dump buffer. | | `chireiden.omni.admin.dumpbuffer` | For owner. |
 | `/kc` | Disconnect a client. | | `chireiden.omni.admin.terminatesocket` | For admin. |
 | `/resetcharacter` | Reset character. | Hidden by default. | `chireiden.omni.resetcharacter` <br /> `chireiden.omni.admin.resetcharacter` <br /> `chireiden.omni.admin.resetcharacter.all` | For admin. |
 | `/_ping` | Ping. | Hidden by default. | `chireiden.omni.ping` | |
 | `/_chat` | Chat. | Hidden by default. | `chireiden.omni.chat` <br /> `tshock.canchat` | |
+| `/downloadcharacter` | Download SSC to this player. | | `chireiden.omni.admin.downloadcharacter` | For admin. |
+| `/exportcharacter` | Export SSC data (server side). | | `chireiden.omni.admin.exportcharacter` | For admin. |
 
 ### Defaults
-* The permission of `/ghost`, `/setlang`, `/_debugstat`, timeout/delay/interval series commands are granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
-* The permission of `/_gc`, `/tileprovider`, `/maxplayers`, `/rbc`, `/kc` are granted to the topmost parent of `owner` with maintenance permission, or `trustedadmin`'s parent if `owner` is not found.
+* The permission of `/ghost`, `/setlang`, `/_debugstat`, timeout/delay/interval series commands, `/downloadcharacter` are granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
+* The permission of `/_gc`, `/tileprovider`, `/maxplayers`, `/rbc`, `/kc`, `/exportcharacter` are granted to the topmost parent of `owner` with maintenance permission, or `trustedadmin`'s parent if `owner` is not found.
 * The permission of `/runas`, `/listclients`, `/dumpbuffer` are granted to the topmost parent of `owner` with sudo permission.
-* The permission of switch loadout, pvp and team, `/_ping` are granted to the guest group as TShock's config.
+* The permission of switch loadout, pvp and team, `/_ping`, `/_chat` are granted to the guest group as TShock's config.
   * Unable to switch without these permissions. (`.Permission.Restrict` in config)
 * Vanilla version check is disabled. (`.SyncVersion` in config)
 * Errors thrown from TShock's update check will be silently ignored. (`.SuppressUpdate` in config)
@@ -56,7 +58,7 @@ Yet another misc plugin for TShock
   * It does not prevent lava from spawning, but rather vacuums it after it *might* spawns.
   * If you have a lava pool and spawn lots of lava slimes (or similar) and butcher, the total amount of lava will be reduced instead of unchanged.
 * `.PlayerWildcardFormat` in config allow wildcard selector as player target.
-  * e.g. `/g zenith *all*` gives Zenith to everyone online!
+  * e.g. `/g zenith *all*` will give Zenith to everyone online!
 * `.Permission.Log` in config record permission queries for `/whynot`.
   * With `-v` flag shows more stack trace.
   * With `-t`/`-f` flag filters by allowed(true)/rejected(false).
@@ -67,7 +69,7 @@ Yet another misc plugin for TShock
 * Sudo is called `/runas` to avoid conflict with TShock's `/sudo`.
   * With `-f` flag bypasses permission check.
 
-### Don't touch unless you know what you are doing
+### Do not touch unless you know what you are doing
 > __Warning__  
 > **KEEP IT UNCHANGED. DO NOT TOUCH UNLESS YOU KNOW WHAT YOU ARE DOING**
 * `.Soundness` in config enforce some soundness permission checks.
@@ -77,5 +79,5 @@ Yet another misc plugin for TShock
   * Don't use `Hacky*`.
 * `/_gc` triggers garbage collection.
 * `.TileProvider` in config can switch to a different tile provider.
-  * `CheckedTypedCollection` and `CheckedGenericCollection` might slightly improve performance but potentially NRE.
+  * `CheckedTypedCollection` and `CheckedGenericCollection` might improve performance slightly but mayy cause NRE.
 * `.DebugPacket` in config can log all packets and networking exceptions.

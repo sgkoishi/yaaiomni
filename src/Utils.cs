@@ -119,7 +119,49 @@ public static class Utils
         {
             yield break;
         }
-        if (pat.StartsWith("usr:"))
+        if (pat == "*")
+        {
+            foreach (var acc in TShockAPI.TShock.UserAccounts.GetUserAccounts())
+            {
+                yield return acc;
+            }
+            yield break;
+        }
+        if (pat.StartsWith("tsp:"))
+        {
+            pat = pat[4..];
+            var exact = TShockAPI.TShock.Players.SingleOrDefault(p => p?.Name == pat)?.Account;
+            if (exact != null)
+            {
+                yield return exact;
+                yield break;
+            }
+
+            foreach (var acc in TShockAPI.TShock.Players.Where(p => p?.Account != null && p.Active && p.Account.Name.StartsWith(pat) == true).Select(p => p!.Account))
+            {
+                yield return acc;
+            }
+
+            foreach (var acc in TShockAPI.TShock.Players.Where(p => p?.Account != null && p.Active && p.Account.Name.Contains(pat) == true).Select(p => p!.Account))
+            {
+                yield return acc;
+            }
+            yield break;
+        }
+        else if (pat.StartsWith("tsi:"))
+        {
+            if (int.TryParse(pat[4..], out var id))
+            {
+                var exact = TShockAPI.TShock.Players.SingleOrDefault(p => p?.Index == id)?.Account;
+                if (exact != null)
+                {
+                    yield return exact;
+                    yield break;
+                }
+            }
+            yield break;
+        }
+        else if (pat.StartsWith("usr:"))
         {
             pat = pat[4..];
             var exact = TShockAPI.TShock.UserAccounts.GetUserAccountByName(pat);
@@ -136,6 +178,7 @@ public static class Utils
             {
                 yield return acc;
             }
+            yield break;
         }
         else if (pat.StartsWith("usi:"))
         {
@@ -147,6 +190,7 @@ public static class Utils
                     yield return exact;
                 }
             }
+            yield break;
         }
     }
 }

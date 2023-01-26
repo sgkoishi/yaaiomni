@@ -258,6 +258,7 @@ public partial class Plugin : TerrariaPlugin
         {
             AllowServer = false,
         });
+        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.ExportCharacter, this.Command_ExportCharacter, Consts.Commands.ExportCharacter));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

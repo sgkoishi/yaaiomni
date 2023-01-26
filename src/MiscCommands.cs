@@ -1,4 +1,5 @@
-﻿using Terraria.Localization;
+﻿using System.Reflection;
+using Terraria.Localization;
 using TerrariaApi.Server;
 using TShockAPI;
 
@@ -275,13 +276,21 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
-    private class DummyPlayer : TSPlayer
+    private class DummyTSPlayer : TSPlayer
     {
-        public DummyPlayer() : base("Dummy")
+        public DummyTSPlayer() : base("Dummy")
         {
             this.Group = new DummyGroup();
             this.IsLoggedIn = true;
             this.Account = new TShockAPI.DB.UserAccount();
+        }
+        public Terraria.Player Player
+        {
+            get => this.TPlayer;
+            set
+            {
+                typeof(TSPlayer).GetField("FakePlayer", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(this, value);
+            }
         }
     }
 
@@ -295,23 +304,30 @@ public partial class Plugin : TerrariaPlugin
                 account.Add(args.Player.Account.ID);
             }
         }
-        else if (args.Parameters[0] == "*" && args.Player.HasPermission(Consts.Permissions.Admin.ResetCharacterAll))
+        else if (args.Parameters[0] == "*")
         {
-            account = TShockAPI.TShock.UserAccounts.GetUserAccounts().Select(a => a.ID).ToList();
-        }
-        else if ((args.Parameters[0].StartsWith("tsp:") || args.Parameters[0].StartsWith("tsi:"))
-            && args.Player.HasPermission(Consts.Permissions.Admin.ResetCharacterOther))
-        {
-            var ta = TSPlayer.FindByNameOrID(args.Parameters[0]).SingleOrDefault();
-            if (ta != null && ta.Account != null)
+            if (args.Player.HasPermission(Consts.Permissions.Admin.ResetCharacterAll))
             {
-                account.Add(ta.Account.ID);
+                account = Utils.SearchUserAccounts(args.Parameters[0]).Select(a => a.ID).ToList();
+            }
+            else
+            {
+                args.Player.SendErrorMessage("You do not have permission to reset all players characters.");
             }
         }
-        else if ((args.Parameters[0].StartsWith("usr:") || args.Parameters[0].StartsWith("usi:"))
-            && args.Player.HasPermission(Consts.Permissions.Admin.ResetCharacterOther))
+        else if (args.Parameters[0].StartsWith("tsp:")
+            || args.Parameters[0].StartsWith("tsi:")
+            || args.Parameters[0].StartsWith("usr:")
+            || args.Parameters[0].StartsWith("usi:"))
         {
-            account = Utils.SearchUserAccounts(args.Parameters[0]).Select(a => a.ID).ToList();
+            if (args.Player.HasPermission(Consts.Permissions.Admin.ResetCharacterOther))
+            {
+                account = Utils.SearchUserAccounts(args.Parameters[0]).Select(a => a.ID).ToList();
+            }
+            else
+            {
+                args.Player.SendErrorMessage("You do not have permission to reset other players characters.");
+            }
         }
 
         if (account.Count == 0)
@@ -347,7 +363,7 @@ public partial class Plugin : TerrariaPlugin
         var resetStyle = args.Parameters.Contains("-s");
         foreach (var a in account)
         {
-            var p = new DummyPlayer();
+            var p = new DummyTSPlayer();
             p.Account.ID = a;
             var data = new PlayerData(p);
             var existing = TShockAPI.TShock.CharacterDB.GetPlayerData(p, a);
@@ -416,5 +432,47 @@ public partial class Plugin : TerrariaPlugin
         Terraria.NetMessage.TrySendData(7, args.Player.Index);
         Terraria.Main.ServerSideCharacter = true;
         Terraria.NetMessage.TrySendData(2, args.Player.Index);
+    }
+
+    private void Command_ExportCharacter(CommandArgs args)
+    {
+        var accounts = args.Parameters.Count == 0
+            ? new List<TShockAPI.DB.UserAccount> { args.Player.Account }
+            : Utils.SearchUserAccounts(args.Parameters[0]).ToList();
+
+        var dir = Path.Combine(TShockAPI.TShock.SavePath, "exported");
+        if (!Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
+
+        foreach (var account in accounts)
+        {
+            try
+            {
+                if (account == null)
+                {
+                    args.Player.SendErrorMessage("Account not found.");
+                    continue;
+                }
+                var p = new DummyTSPlayer();
+                p.Account.ID = account.ID;
+                p.Player = new Terraria.Player();
+                p.Player.name = account.Name;
+                var data = TShockAPI.TShock.CharacterDB.GetPlayerData(p, account.ID);
+                data.RestoreCharacter(p);
+                var file = new Terraria.IO.PlayerFileData();
+                file.Metadata = Terraria.IO.FileMetadata.FromCurrentSettings(Terraria.IO.FileType.Player);
+                file.Player = p.Player;
+                file._path = Path.Combine(dir, $"{account.Name}.plr");
+                Terraria.Player.InternalSavePlayerFile(file);
+                args.Player.SendSuccessMessage($"Exported {account.Name} to {dir}.");
+            }
+            catch (Exception e)
+            {
+                TShockAPI.TShock.Log.ConsoleError($"Failed to export {account.Name}: {e.Message}");
+                args.Player.SendErrorMessage($"Failed to export {account.Name}.");
+            }
+        }
     }
 }

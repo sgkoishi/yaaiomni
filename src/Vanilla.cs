@@ -60,6 +60,7 @@ public partial class Plugin : TerrariaPlugin
             guest?.AddPermission(Consts.Permissions.SyncLoadout);
         }
         guest?.AddPermission(Consts.Permissions.Ping);
+        guest?.AddPermission(Consts.Permissions.Chat);
 
         var na = Utils.ParentGroup(
             TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("newadmin"),
@@ -74,6 +75,7 @@ public partial class Plugin : TerrariaPlugin
         na?.AddPermission(Consts.Permissions.IntervalCommand);
         na?.AddPermission(Consts.Permissions.ClearInterval);
         na?.AddPermission(Consts.Permissions.ShowTimeout);
+        na?.AddPermission(Consts.Permissions.Admin.DownloadCharacter);
         (preset.DebugForAdminOnly ? na : guest)?.AddPermission(Consts.Permissions.Whynot);
 
         var ta = Utils.ParentGroup(
@@ -86,6 +88,7 @@ public partial class Plugin : TerrariaPlugin
         ta?.AddPermission(Consts.Permissions.Admin.RawBroadcast);
         ta?.AddPermission(Consts.Permissions.Admin.TerminateSocket);
         ta?.AddPermission(Consts.Permissions.Admin.ResetCharacterOther);
+        ta?.AddPermission(Consts.Permissions.Admin.ExportCharacter);
 
         var owner = Utils.ParentGroup(
             TShockAPI.TShock.Groups.GetGroupByName("owner"),
