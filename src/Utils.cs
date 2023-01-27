@@ -204,13 +204,14 @@ public static class Utils
 
     public static T GetOrCreatePlayerAttachedData<T>(this TSPlayer player, string key, Func<T> factory)
     {
-        _playerDataLocks.GetOrCreateValue(player).EnterUpgradeableReadLock();
+        var l = _playerDataLocks.GetOrCreateValue(player);
+        l.EnterUpgradeableReadLock();
         try
         {
             var value = player.GetData<T>(key);
             if (value is not T)
             {
-                _playerDataLocks.GetOrCreateValue(player).EnterWriteLock();
+                l.EnterWriteLock();
                 try
                 {
                     value = factory();
@@ -218,27 +219,28 @@ public static class Utils
                 }
                 finally
                 {
-                    _playerDataLocks.GetOrCreateValue(player).ExitWriteLock();
+                    l.ExitWriteLock();
                 }
             }
             return value;
         }
         finally
         {
-            _playerDataLocks.GetOrCreateValue(player).ExitReadLock();
+            l.ExitUpgradeableReadLock();
         }
     }
 
     public static void SetPlayerAttachedData<T>(this TSPlayer player, string key, T value)
     {
-        _playerDataLocks.GetOrCreateValue(player).EnterWriteLock();
+        var l = _playerDataLocks.GetOrCreateValue(player);
+        l.EnterWriteLock();
         try
         {
             player.SetData(key, value);
         }
         finally
         {
-            _playerDataLocks.GetOrCreateValue(player).ExitWriteLock();
+            l.ExitWriteLock();
         }
     }
 }

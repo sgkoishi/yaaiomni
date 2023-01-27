@@ -5,22 +5,20 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private Task Detour_UpdateCheckAsync(Func<UpdateManager, object, Task> orig, UpdateManager um, object state)
+    private async Task Detour_UpdateCheckAsync(Func<UpdateManager, object, Task> orig, UpdateManager um, object state)
     {
-        return Task.Run(() =>
+        if (this.config.SuppressUpdate == Config.UpdateOptions.Disabled)
         {
-            if (this.config.SuppressUpdate == Config.UpdateOptions.Disabled)
-            {
-                return;
-            }
-            try
-            {
-                orig(um, state);
-            }
-            catch when (this.config.SuppressUpdate is Config.UpdateOptions.Silent or Config.UpdateOptions.Preset)
-            {
-                // silently suppress
-            }
-        });
+            return;
+        }
+        try
+        {
+            await orig(um, state);
+            return;
+        }
+        catch when (this.config.SuppressUpdate is Config.UpdateOptions.Silent or Config.UpdateOptions.Preset)
+        {
+            return;
+        }
     }
 }
