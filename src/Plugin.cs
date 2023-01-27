@@ -68,20 +68,34 @@ public partial class Plugin : TerrariaPlugin
 
     private void OnReload(ReloadEventArgs? e)
     {
+        var jss = new JsonSerializerSettings
+        {
+            ObjectCreationHandling = ObjectCreationHandling.Replace,
+            Converters = new List<JsonConverter>
+            {
+                new Config.Limiter.LimiterConverter(),
+            },
+            Formatting = Formatting.Indented,
+        };
         try
         {
-            if (!File.Exists(this.ConfigPath))
+            if (File.Exists(this.ConfigPath))
             {
-                File.WriteAllText(this.ConfigPath, JsonConvert.SerializeObject(this.config, Formatting.Indented));
-            }
-            else
-            {
-                this.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(this.ConfigPath))!;
+                this.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(this.ConfigPath), jss)!;
             }
         }
         catch (Exception ex)
         {
-            e?.Player?.SendErrorMessage(ex.Message);
+            e?.Player?.SendErrorMessage($"Failed to load config: {ex.Message}");
+            return;
+        }
+        try
+        {
+            File.WriteAllText(this.ConfigPath, JsonConvert.SerializeObject(this.config, jss));
+        }
+        catch (Exception ex)
+        {
+            e?.Player?.SendErrorMessage($"Failed to save config: {ex.Message}");
             return;
         }
         e?.Player?.SendSuccessMessage("Chireiden.Omni loaded.");
@@ -119,9 +133,18 @@ public partial class Plugin : TerrariaPlugin
         if (spamlim.Count > 0)
         {
             e?.Player?.SendInfoMessage("ChatSpam limit applied:");
-            foreach (var (rate, max) in spamlim)
+            foreach (var limiter in spamlim)
             {
-                e?.Player?.SendInfoMessage($"  {(int) (max * 10.0 / rate) / 10.0:G} messages per {(int) (max / 6.0) / 10.0:G} seconds");
+                e?.Player?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} messages per {Math.Round(limiter.Maximum / 60, 1):G} seconds");
+            }
+        }
+        var connlim = this.config.Mitigation.ConnectionLimit;
+        if (connlim.Count > 0)
+        {
+            e?.Player?.SendInfoMessage("Connection limit applied:");
+            foreach (var limiter in connlim)
+            {
+                e?.Player?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} connections per IP per {Math.Round(limiter.Maximum, 1):G} seconds");
             }
         }
         foreach (var field in typeof(Consts.DataKey).GetFields())
@@ -149,6 +172,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.MessageBuffer.GetData += this.Hook_DebugPacket_GetData;
         On.Terraria.Projectile.Kill += this.Hook_Soundness_ProjectileKill;
         On.Terraria.WorldGen.clearWorld += this.Hook_TileProvider_ClearWorld;
+        On.Terraria.Netplay.OnConnectionAccepted += this.Hook_Mitigation_OnConnectionAccepted;
         OTAPI.Hooks.NetMessage.SendBytes += this.Hook_Ghost_SendBytes;
         OTAPI.Hooks.NetMessage.SendBytes += this.Hook_DebugPacket_SendBytes;
         OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Permission_SyncLoadout;
@@ -180,6 +204,7 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.MessageBuffer.GetData -= this.Hook_DebugPacket_CatchGet;
             On.Terraria.Projectile.Kill -= this.Hook_Soundness_ProjectileKill;
             On.Terraria.WorldGen.clearWorld -= this.Hook_TileProvider_ClearWorld;
+            On.Terraria.Netplay.OnConnectionAccepted -= this.Hook_Mitigation_OnConnectionAccepted;
             OTAPI.Hooks.NetMessage.SendBytes -= this.Hook_Ghost_SendBytes;
             OTAPI.Hooks.NetMessage.SendBytes -= this.Hook_DebugPacket_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Mitigation_GetData;

@@ -322,13 +322,13 @@ public class Config
         /// <para>Higher rate and lower maximum means more strict.</para>
         /// <para>
         /// The default limit:
-        ///   3 messages per 5 seconds
+        ///   3 messages per 5 seconds,
         ///   5 messages per 20 seconds
         /// </para>
         /// </summary>
-        public List<(int RateLimit, int Maximum)> ChatSpamRestrict = new List<(int RateLimit, int Maximum)> {
-            (100, 300),
-            (240, 1200)
+        public List<Limiter> ChatSpamRestrict = new List<Limiter> {
+            new Limiter { RateLimit = 100, Maximum = 300 },
+            new Limiter { RateLimit = 240, Maximum = 1200 }
         };
 
         /// <summary>
@@ -351,7 +351,8 @@ public class Config
         /// This will cause title being interpreted as stdio.
         /// </para>
         /// <para>
-        /// linux should support OSC commands according to the implementation of <seealso cref="Console.Title"/>, but some doesn't.
+        /// linux should support OSC commands according to the implementation of <seealso cref="Console.Title"/>,
+        /// but some doesn't.
         /// https://source.dot.net/#System.Console/System/TerminalFormatStrings.cs,e0a3bdd93a9caf05,references
         /// </para>
         /// <para>Cause spam in console.</para>
@@ -360,5 +361,60 @@ public class Config
         /// </para>
         /// </summary>
         public bool SuppressTitle = true;
+
+        /// <summary>
+        /// <para>
+        /// Some script kiddies spam connection requests to the server and occupy the connection pool.
+        /// </para>
+        /// <para>Cause player unable to connect.</para>
+        /// <para>
+        /// This will silently drop the connection request that exceeds the limit.
+        /// Does not apply to local address.
+        /// </para>
+        /// <para>
+        /// The default limit:
+        ///   1.6 connections per 5 seconds,
+        ///   4 connections per 60 seconds
+        /// </para>
+        /// </summary>
+        public List<Limiter> ConnectionLimit = new List<Limiter> {
+            new Limiter { RateLimit = 3, Maximum = 5 },
+            new Limiter { RateLimit = 15, Maximum = 60 },
+        };
+    }
+
+    public class Limiter
+    {
+        public double RateLimit { get; set; }
+        public double Maximum { get; set; }
+
+        public class LimiterConverter : JsonConverter<Limiter>
+        {
+            public override void WriteJson(JsonWriter writer, Limiter? value, JsonSerializer serializer)
+            {
+                if (value == null)
+                {
+                    writer.WriteValue("0/1");
+                }
+                else
+                {
+                    var str = Math.Round(value.RateLimit) == value.RateLimit ? $"{(int) value.RateLimit}" : $"{value.RateLimit}";
+                    str += "/";
+                    str += Math.Round(value.Maximum) == value.Maximum ? $"{(int) value.Maximum}" : $"{value.Maximum}";
+                    writer.WriteValue(str);
+                }
+            }
+
+            public override Limiter ReadJson(JsonReader reader, Type objectType, Limiter? existingValue, bool hasExistingValue, JsonSerializer serializer)
+            {
+                var s = reader?.Value?.ToString() ?? "0/1";
+                var split = s.Split('/');
+                return new Limiter
+                {
+                    RateLimit = double.Parse(split[0]),
+                    Maximum = double.Parse(split[1])
+                };
+            }
+        }
     }
 }

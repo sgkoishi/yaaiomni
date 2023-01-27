@@ -287,10 +287,7 @@ public partial class Plugin : TerrariaPlugin
         public Terraria.Player Player
         {
             get => this.TPlayer;
-            set
-            {
-                typeof(TSPlayer).GetField("FakePlayer", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(this, value);
-            }
+            set => typeof(TSPlayer).GetField("FakePlayer", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(this, value);
         }
     }
 
@@ -457,14 +454,18 @@ public partial class Plugin : TerrariaPlugin
                 }
                 var p = new DummyTSPlayer();
                 p.Account.ID = account.ID;
-                p.Player = new Terraria.Player();
-                p.Player.name = account.Name;
+                p.Player = new Terraria.Player
+                {
+                    name = account.Name
+                };
                 var data = TShockAPI.TShock.CharacterDB.GetPlayerData(p, account.ID);
                 data.RestoreCharacter(p);
-                var file = new Terraria.IO.PlayerFileData();
-                file.Metadata = Terraria.IO.FileMetadata.FromCurrentSettings(Terraria.IO.FileType.Player);
-                file.Player = p.Player;
-                file._path = Path.Combine(dir, $"{account.Name}.plr");
+                var file = new Terraria.IO.PlayerFileData
+                {
+                    Metadata = Terraria.IO.FileMetadata.FromCurrentSettings(Terraria.IO.FileType.Player),
+                    Player = p.Player,
+                    _path = Path.Combine(dir, $"{account.Name}.plr")
+                };
                 Terraria.Player.InternalSavePlayerFile(file);
                 args.Player.SendSuccessMessage($"Exported {account.Name} to {dir}.");
             }

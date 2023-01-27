@@ -30,7 +30,6 @@ public partial class Plugin : TerrariaPlugin
 
     public async Task<TimeSpan> Ping(TSPlayer player, CancellationToken token)
     {
-        var start = DateTime.Now;
         var pingdata = player.GetOrCreatePlayerAttachedData<PingData>(Consts.DataKey.PingChannel);
         var inv = -1;
         for (var i = 0; i < Terraria.Main.item.Length; i++)

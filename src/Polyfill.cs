@@ -8,10 +8,6 @@ public partial class Plugin : TerrariaPlugin
         TShockAPI.DB.CharacterManager self, TShockAPI.TSPlayer player, bool fromCommand)
     {
         // FIXME: This is a backport of Pryaxis/TShock#2894
-        if (player.State < 10)
-        {
-            return false;
-        }
-        return orig(self, player, fromCommand);
+        return player.State >= 10 && orig(self, player, fromCommand);
     }
 }

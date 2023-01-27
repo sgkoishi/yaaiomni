@@ -101,14 +101,7 @@ public static class Utils
         return string.Join(" ", new List<string> { $"{specifier}{command}" }.Concat(args.Select(arg =>
         {
             var parg = arg.Replace("\\", "\\\\").Replace("\"", "\\\"");
-            if (parg.Contains(' ') || parg.Contains('\\'))
-            {
-                return $"\"{parg}\"";
-            }
-            else
-            {
-                return parg;
-            }
+            return parg.Contains(' ') || parg.Contains('\\') ? $"\"{parg}\"" : parg;
         })));
     }
 
@@ -195,7 +188,7 @@ public static class Utils
         }
     }
 
-    private static ConditionalWeakTable<TSPlayer, ReaderWriterLockSlim> _playerDataLocks = new ConditionalWeakTable<TSPlayer, ReaderWriterLockSlim>();
+    private static readonly ConditionalWeakTable<TSPlayer, ReaderWriterLockSlim> _playerDataLocks = new ConditionalWeakTable<TSPlayer, ReaderWriterLockSlim>();
 
     public static T GetOrCreatePlayerAttachedData<T>(this TSPlayer player, string key) where T : new()
     {
@@ -209,7 +202,7 @@ public static class Utils
         try
         {
             var value = player.GetData<T>(key);
-            if (value is not T)
+            if (value is null)
             {
                 l.EnterWriteLock();
                 try
@@ -242,5 +235,32 @@ public static class Utils
         {
             l.ExitWriteLock();
         }
+    }
+
+    internal static bool PublicIPv4Address(System.Net.IPAddress address)
+    {
+        if (address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
+        {
+            return false;
+        }
+
+        var bytes = address.GetAddressBytes();
+        if (bytes[0] == 10 || bytes[0] == 127)
+        {
+            return false;
+        }
+        if (bytes[0] == 192 && bytes[1] == 168)
+        {
+            return false;
+        }
+        if (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
+        {
+            return false;
+        }
+        if (bytes[0] == 169 && bytes[1] == 254)
+        {
+            return false;
+        }
+        return true;
     }
 }

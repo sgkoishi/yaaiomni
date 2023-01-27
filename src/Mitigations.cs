@@ -1,4 +1,7 @@
-﻿using TerrariaApi.Server;
+﻿using System.Collections.Concurrent;
+using System.Net;
+using System.Runtime.CompilerServices;
+using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
 
@@ -220,16 +223,16 @@ public partial class Plugin : TerrariaPlugin
 
                     for (var i = 0; i < this.config.Mitigation.ChatSpamRestrict.Count; i++)
                     {
-                        var (RateLimit, Maximum) = this.config.Mitigation.ChatSpamRestrict[i];
-                        var tat = Math.Max(this._updateCounter, player.GetOrCreatePlayerAttachedData<int>(Consts.DataKey.ChatSpamRestrict + i)) + RateLimit;
-                        if (tat > this._updateCounter + Maximum)
+                        var limiter = this.config.Mitigation.ChatSpamRestrict[i];
+                        var tat = Math.Max(this._updateCounter, player.GetOrCreatePlayerAttachedData<double>(Consts.DataKey.ChatSpamRestrict + i)) + limiter.RateLimit;
+                        if (tat > this._updateCounter + limiter.Maximum)
                         {
                             args.Result = OTAPI.HookResult.Cancel;
                             // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
                             args.PacketId = byte.MaxValue;
                             break;
                         }
-                        player.SetPlayerAttachedData<int>(Consts.DataKey.ChatSpamRestrict + i, tat);
+                        player.SetPlayerAttachedData<double>(Consts.DataKey.ChatSpamRestrict + i, tat);
                     }
                 }
                 break;
@@ -286,20 +289,44 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    private static readonly bool ShouldSuppressTitle = !System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
+        && !(Environment.GetEnvironmentVariable("TERM")?.Contains("xterm") ?? false);
     private void Detour_Mitigation_SetTitle(Action<TShockAPI.Utils, bool> orig, TShockAPI.Utils self, bool empty)
     {
         if (this.config.Mitigation.Enabled && this.config.Mitigation.SuppressTitle)
         {
-            if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+            if (ShouldSuppressTitle)
             {
-                var term = Environment.GetEnvironmentVariable("TERM");
-                if (!(term?.Contains("xterm") ?? false))
-                {
-                    return;
-                }
+                return;
             }
         }
 
         orig(self, empty);
+    }
+
+    private readonly ConditionalWeakTable<IPAddress, ConcurrentDictionary<int, double>> _connPool = new ConditionalWeakTable<IPAddress, ConcurrentDictionary<int, double>>();
+    private void Hook_Mitigation_OnConnectionAccepted(On.Terraria.Netplay.orig_OnConnectionAccepted orig, Terraria.Net.Sockets.ISocket client)
+    {
+        var mitigation = this.config.Mitigation;
+        if (mitigation.Enabled && client.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa)
+        {
+            if (mitigation.ConnectionLimit.Count != 0 && Utils.PublicIPv4Address(tcpa.Address))
+            {
+                var cd = this._connPool.GetOrCreateValue(tcpa.Address);
+                for (var i = 0; i < mitigation.ConnectionLimit.Count; i++)
+                {
+                    var limiter = mitigation.ConnectionLimit[i];
+                    var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
+                    var tat = cd.AddOrUpdate(i, (_k) => time + limiter.RateLimit, (k, v) => Math.Max(v, time) + limiter.RateLimit);
+                    if (tat > time + limiter.Maximum)
+                    {
+                        client.Close();
+                        TShockAPI.TShock.Log.ConsoleInfo($"Connection from {tcpa.Address} ({tcpa.Port}) rejected due to connection limit.");
+                        return;
+                    }
+                }
+            }
+        }
+        orig(client);
     }
 }
