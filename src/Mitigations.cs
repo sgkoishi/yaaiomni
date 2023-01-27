@@ -180,6 +180,7 @@ public partial class Plugin : TerrariaPlugin
                 var pending = TShockAPI.TShock.Players[index].GetOrCreatePlayerAttachedData<int>(Consts.DataKey.PendingRevertHeal);
                 if (pending > 0)
                 {
+                    this.Statistics.MitigationRejectedSicknessHeal++;
                     TShockAPI.TShock.Players[index]?.SetPlayerAttachedData<int>(Consts.DataKey.PendingRevertHeal, 0);
                     Terraria.Main.player[index].statLife -= pending;
                     Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerHp, -1, -1, null, index);
@@ -202,6 +203,7 @@ public partial class Plugin : TerrariaPlugin
                 var selectedItem = args.Instance.readBuffer[args.ReadOffset + 5];
                 if (Terraria.Main.player[index].controlUseItem && control[5] && selectedItem != Terraria.Main.player[index].selectedItem)
                 {
+                    this.Statistics.MitigationRejectedSwapWhileUse++;
                     args.Result = OTAPI.HookResult.Cancel;
                     Terraria.Main.player[index].controlUseItem = false;
                     Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, -1, null, index);
@@ -227,6 +229,7 @@ public partial class Plugin : TerrariaPlugin
                         var tat = Math.Max(this._updateCounter, player.GetOrCreatePlayerAttachedData<double>(Consts.DataKey.ChatSpamRestrict + i)) + limiter.RateLimit;
                         if (tat > this._updateCounter + limiter.Maximum)
                         {
+                            this.Statistics.MitigationRejectedChat++;
                             args.Result = OTAPI.HookResult.Cancel;
                             // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
                             args.PacketId = byte.MaxValue;
@@ -304,7 +307,7 @@ public partial class Plugin : TerrariaPlugin
         orig(self, empty);
     }
 
-    private readonly ConditionalWeakTable<IPAddress, ConcurrentDictionary<int, double>> _connPool = new ConditionalWeakTable<IPAddress, ConcurrentDictionary<int, double>>();
+    private readonly ConditionalWeakTable<Terraria.Net.Sockets.ISocket, ConcurrentDictionary<int, double>> _connPool = new ConditionalWeakTable<Terraria.Net.Sockets.ISocket, ConcurrentDictionary<int, double>>();
     private void Hook_Mitigation_OnConnectionAccepted(On.Terraria.Netplay.orig_OnConnectionAccepted orig, Terraria.Net.Sockets.ISocket client)
     {
         var mitigation = this.config.Mitigation;
@@ -312,7 +315,15 @@ public partial class Plugin : TerrariaPlugin
         {
             if (mitigation.ConnectionLimit.Count != 0 && Utils.PublicIPv4Address(tcpa.Address))
             {
-                var cd = this._connPool.GetOrCreateValue(tcpa.Address);
+                var cd = this._connPool
+                    .Where(x => tcpa.Address.Equals(((Terraria.Net.TcpAddress) x.Key.GetRemoteAddress())?.Address))
+                    .Select(x => x.Value)
+                    .FirstOrDefault();
+                if (cd == null)
+                {
+                    cd = new ConcurrentDictionary<int, double>();
+                    this._connPool.Add(client, cd);
+                }
                 for (var i = 0; i < mitigation.ConnectionLimit.Count; i++)
                 {
                     var limiter = mitigation.ConnectionLimit[i];
@@ -320,6 +331,8 @@ public partial class Plugin : TerrariaPlugin
                     var tat = cd.AddOrUpdate(i, (_k) => time + limiter.RateLimit, (k, v) => Math.Max(v, time) + limiter.RateLimit);
                     if (tat > time + limiter.Maximum)
                     {
+                        cd.AddOrUpdate(i, (_k) => throw new NotImplementedException("Unreachable"), (k, v) => v - limiter.RateLimit);
+                        this.Statistics.MitigationRejectedConnection++;
                         client.Close();
                         TShockAPI.TShock.Log.ConsoleInfo($"Connection from {tcpa.Address} ({tcpa.Port}) rejected due to connection limit.");
                         return;
