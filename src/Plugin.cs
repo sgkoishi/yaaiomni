@@ -64,6 +64,11 @@ public partial class Plugin : TerrariaPlugin
             typeof(TShockAPI.Utils)
                 .GetMethod("SetConsoleTitle", bfany)!,
             this.Detour_Mitigation_SetTitle);
+        this.Detour(
+            nameof(this.Detour_Command_Alternative),
+            typeof(TShockAPI.Commands)
+                .GetMethod(nameof(TShockAPI.Commands.HandleCommand), bfany)!,
+            this.Detour_Command_Alternative);
     }
 
     private void OnReload(ReloadEventArgs? e)
@@ -160,6 +165,10 @@ public partial class Plugin : TerrariaPlugin
                     player.SetPlayerAttachedData<object?>(key, null);
                 }
             }
+        }
+        foreach (var command in this.config.StartupCommands)
+        {
+            TShockAPI.Commands.HandleCommand(TShockAPI.TSPlayer.Server, command);
         }
     }
 
@@ -276,10 +285,6 @@ public partial class Plugin : TerrariaPlugin
             AllowServer = false,
         });
         Commands.ChatCommands.Add(new Command(new List<string> { Consts.Permissions.Chat, Permissions.canchat }, this.Command_Chat, Consts.Commands.Chat)
-        {
-            AllowServer = false,
-        });
-        Commands.ChatCommands.Add(new Command(Consts.Permissions.Admin.DownloadCharacter, this.Command_DownloadCharacter, Consts.Commands.DownloadCharacter)
         {
             AllowServer = false,
         });

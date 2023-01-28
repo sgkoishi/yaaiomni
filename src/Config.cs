@@ -23,6 +23,12 @@ public class Config
     /// </summary>
     public bool LogFirstChance = false;
     /// <summary>
+    /// Alternative command syntax implementation.
+    /// Allow multiple commands in one line, quote inside text (e.g. te"x"t)
+    /// Note: this is not fully compatible with TShock's command syntax.
+    /// </summary>
+    public bool AlternativeCommandSyntax = true;
+    /// <summary>
     /// DateTime format for logging.
     /// </summary>
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
@@ -59,6 +65,7 @@ public class Config
         Consts.Commands.ResetCharacter,
         Consts.Commands.Ping,
     };
+    public List<string> StartupCommands = new List<string> { };
     public Dictionary<string, List<string>> CommandRenames = new();
     public LavaSettings LavaHandler = new();
     public DebugPacketSettings DebugPacket = new();

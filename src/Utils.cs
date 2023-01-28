@@ -94,15 +94,92 @@ public static class Utils
 
     /// <summary>
     /// Converts a list of arguments back to a command.
-    /// This is a rough inverse of <see cref="TShockAPI.Commands.ParseParameters(string)"/>.
+    /// This is a rough inverse of <seealso cref="TShockAPI.Commands.ParseParameters(string)"/>.
+    /// Will not add specifier for you.
     /// </summary>
-    public static string ToCommand(string specifier, string command, List<string> args)
+    public static string ToCommand(string command, List<string> args)
     {
-        return string.Join(" ", new List<string> { $"{specifier}{command}" }.Concat(args.Select(arg =>
+        return string.Join(" ", new List<string> { $"{command}" }.Concat(args.Select(arg =>
         {
             var parg = arg.Replace("\\", "\\\\").Replace("\"", "\\\"");
             return parg.Contains(' ') || parg.Contains('\\') ? $"\"{parg}\"" : parg;
         })));
+    }
+
+    /// <summary>
+    /// Parse a string into a list of commands.
+    /// Supports <c>command [args] [&amp;&amp; command [args]] ..</c> and
+    /// <c>command [args] [; command [args]] ..</c>.
+    /// Similar but not fully compatible with the syntax of <seealso cref="TShockAPI.Commands.ParseParameters(string)"/>.
+    /// </summary>
+    public static List<List<string>> ParseCommands(string input)
+    {
+        var result = new List<List<string>>();
+        var currentIndex = 0;
+        var inQuote = false;
+        var currentCommand = new List<string>();
+        var current = "";
+        while (currentIndex < input.Length)
+        {
+            var c = input[currentIndex];
+            if (c == '\"')
+            {
+                inQuote = !inQuote;
+            }
+            else if (c == '\\')
+            {
+                if (currentIndex + 1 < input.Length)
+                {
+                    currentIndex++;
+                }
+                current += input[currentIndex];
+            }
+            else if (!inQuote && c == '&' && currentIndex + 1 < input.Length && input[currentIndex + 1] == '&')
+            {
+                result.Add(currentCommand);
+                currentCommand = new List<string>();
+                current = "";
+                currentIndex++;
+                while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
+                {
+                    currentIndex++;
+                }
+            }
+            else if (!inQuote && c == ';')
+            {
+                result.Add(currentCommand);
+                currentCommand = new List<string>();
+                current = "";
+                currentIndex++;
+                while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
+                {
+                    currentIndex++;
+                }
+            }
+            else if (!inQuote && char.IsWhiteSpace(c))
+            {
+                currentCommand.Add(current);
+                current = "";
+                while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
+                {
+                    currentIndex++;
+                }
+            }
+            else
+            {
+                current += c;
+            }
+            currentIndex++;
+        }
+        if (!string.IsNullOrWhiteSpace(current))
+        {
+            currentCommand.Add(current);
+        }
+        if (currentCommand.Count > 0)
+        {
+            result.Add(currentCommand);
+        }
+        return result;
     }
 
     public static IEnumerable<TSPlayer> ActivePlayers => TShockAPI.TShock.Players.Where(p => p?.Active == true);

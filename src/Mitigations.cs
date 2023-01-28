@@ -366,11 +366,7 @@ public partial class Plugin : TerrariaPlugin
                     if (cd.Limit.AddOrUpdate(i, (_k) => lb, (k, v) =>
                     {
                         var tat = lb = Math.Max(v + limiter.RateLimit, lb);
-                        if (tat > time + limiter.Maximum)
-                        {
-                            return v;
-                        }
-                        return tat;
+                        return tat > time + limiter.Maximum ? v : tat;
                     }) != lb)
                     {
                         Interlocked.Increment(ref this.Statistics.MitigationRejectedConnection);
@@ -388,7 +384,7 @@ public partial class Plugin : TerrariaPlugin
     private void CheckConnectionTimeout()
     {
         var count = 0;
-        for (int i = 0; i < Terraria.Main.maxNetPlayers; i++)
+        for (var i = 0; i < Terraria.Main.maxNetPlayers; i++)
         {
             if (Terraria.Netplay.Clients[i].IsConnected())
             {
@@ -401,7 +397,7 @@ public partial class Plugin : TerrariaPlugin
             return;
         }
 
-        for (int i = 0; i < Terraria.Main.maxNetPlayers; i++)
+        for (var i = 0; i < Terraria.Main.maxNetPlayers; i++)
         {
             if (Terraria.Netplay.Clients[i].IsConnected()
                 && Terraria.Netplay.Clients[i].Socket.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa)

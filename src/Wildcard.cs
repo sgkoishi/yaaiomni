@@ -23,7 +23,7 @@ public partial class Plugin : TerrariaPlugin
                 {
                     var newargs = args.Parameters.ToList();
                     newargs[i] = player.Name;
-                    TShockAPI.Commands.HandleCommand(args.Player, Utils.ToCommand(args.CommandPrefix, args.CommandName, newargs));
+                    TShockAPI.Commands.HandleCommand(args.Player, Utils.ToCommand($"{args.CommandPrefix}{args.CommandName}", newargs));
                 }
                 return;
             }

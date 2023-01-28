@@ -31,7 +31,6 @@ Yet another misc plugin for TShock
 | `/resetcharacter` | Reset character. | Hidden by default. | `chireiden.omni.resetcharacter` <br /> `chireiden.omni.admin.resetcharacter` <br /> `chireiden.omni.admin.resetcharacter.all` | For admin. |
 | `/_ping` | Ping. | Hidden by default. | `chireiden.omni.ping` | |
 | `/_chat` | Chat. | Hidden by default. | `chireiden.omni.chat` <br /> `tshock.canchat` | |
-| `/downloadcharacter` | Download SSC to this player. | | `chireiden.omni.admin.downloadcharacter` | For admin. |
 | `/exportcharacter` | Export SSC data (server side). | | `chireiden.omni.admin.exportcharacter` | For admin. |
 
 ### Defaults

@@ -75,7 +75,6 @@ public partial class Plugin : TerrariaPlugin
         na?.AddPermission(Consts.Permissions.IntervalCommand);
         na?.AddPermission(Consts.Permissions.ClearInterval);
         na?.AddPermission(Consts.Permissions.ShowTimeout);
-        na?.AddPermission(Consts.Permissions.Admin.DownloadCharacter);
         (preset.DebugForAdminOnly ? na : guest)?.AddPermission(Consts.Permissions.Whynot);
 
         var ta = Utils.ParentGroup(
