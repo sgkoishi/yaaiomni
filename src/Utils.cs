@@ -192,10 +192,11 @@ public static class Utils
         }
         if (pat == "*")
         {
-            foreach (var acc in TShockAPI.TShock.UserAccounts.GetUserAccounts())
+            foreach (var acc in Utils.ActivePlayers.Select(p => p.Account).Where(a => a != null))
             {
                 yield return acc;
             }
+
             yield break;
         }
         if (pat.StartsWith("tsp:"))
@@ -208,15 +209,14 @@ public static class Utils
                 yield break;
             }
 
-            foreach (var acc in TShockAPI.TShock.Players.Where(p => p?.Account != null && p.Active && p.Account.Name.StartsWith(pat) == true).Select(p => p!.Account))
+            foreach (var acc in TShockAPI.TShock.Players
+                .Where(p => p?.Account != null && p.Active && p.Account.Name.Contains(pat) == true)
+                .OrderBy(p => p.Account.Name.StartsWith(pat) ? 0 : 1)
+                .Select(p => p.Account))
             {
                 yield return acc;
             }
 
-            foreach (var acc in TShockAPI.TShock.Players.Where(p => p?.Account != null && p.Active && p.Account.Name.Contains(pat) == true).Select(p => p!.Account))
-            {
-                yield return acc;
-            }
             yield break;
         }
         else if (pat.StartsWith("tsi:"))
@@ -241,14 +241,14 @@ public static class Utils
                 yield return exact;
                 yield break;
             }
-            foreach (var acc in TShockAPI.TShock.UserAccounts.GetUserAccounts().Where(a => a.Name.StartsWith(pat)))
+
+            foreach (var acc in TShockAPI.TShock.UserAccounts.GetUserAccounts()
+                .Where(p => p != null && p.Name.Contains(pat) == true)
+                .OrderBy(p => p.Name.StartsWith(pat) ? 0 : 1))
             {
                 yield return acc;
             }
-            foreach (var acc in TShockAPI.TShock.UserAccounts.GetUserAccounts().Where(a => a.Name.Contains(pat)))
-            {
-                yield return acc;
-            }
+
             yield break;
         }
         else if (pat.StartsWith("usi:"))

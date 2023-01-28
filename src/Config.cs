@@ -12,36 +12,46 @@ public class Config
     /// Disable vanilla version check.
     /// </summary>
     public bool SyncVersion = true;
+
     /// <summary> Trim memory depends on the world. No side effect. </summary>
     public bool TrimMemory = true;
+
     /// <summary>
     /// Weather to show the config file on load/reload.
     /// </summary>
     public bool ShowConfig = false;
+
     /// <summary>
     /// Weather to log all exceptions.
     /// </summary>
     public bool LogFirstChance = false;
+
     /// <summary>
     /// Alternative command syntax implementation.
     /// Allow multiple commands in one line, quote inside text (e.g. te"x"t)
     /// Note: this is not fully compatible with TShock's command syntax.
     /// </summary>
     public bool AlternativeCommandSyntax = true;
+
     /// <summary>
     /// DateTime format for logging.
     /// </summary>
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
+
     /// <summary>
     /// Action for TShock's update
     /// </summary>
     public UpdateOptions SuppressUpdate = UpdateOptions.Preset;
+
     /// <summary>
     /// Socket Provider
     /// </summary>
     public SocketType Socket = SocketType.Preset;
+
     public NameCollisionAction NameCollision = NameCollisionAction.Preset;
+
     public TileProviderOptions TileProvider = TileProviderOptions.Preset;
+
     /// <summary>
     /// The wildcard of matching all players. Directly using "*" itself is not
     /// suggested as some commands might have special meaning for it.
@@ -49,6 +59,7 @@ public class Config
     public List<string> PlayerWildcardFormat = new List<string> {
         "*all*"
     };
+
     /// <summary>
     /// The pattern of matching the server itself.
     /// </summary>
@@ -56,6 +67,7 @@ public class Config
         "*server*",
         "*console*",
     };
+
     public List<string> HideCommands = new List<string> {
         Consts.Commands.Whynot,
         Consts.Commands.SetPvp,
@@ -65,14 +77,23 @@ public class Config
         Consts.Commands.ResetCharacter,
         Consts.Commands.Ping,
     };
+
     public List<string> StartupCommands = new List<string> { };
+
     public Dictionary<string, List<string>> CommandRenames = new();
+
     public LavaSettings LavaHandler = new();
+
     public DebugPacketSettings DebugPacket = new();
+
     public SoundnessSettings Soundness = new();
+
     public PermissionSettings Permission = new();
+
     public Modes Mode = new();
+
     public MitigationSettings Mitigation = new();
+
 
     [JsonConverter(typeof(StringEnumConverter))]
     public enum UpdateOptions
