@@ -69,6 +69,11 @@ public partial class Plugin : TerrariaPlugin
             typeof(TShockAPI.Commands)
                 .GetMethod(nameof(TShockAPI.Commands.HandleCommand), bfany)!,
             this.Detour_Command_Alternative);
+        this.ILHook(
+            nameof(this.ILHook_Mitigation_DisabledInvincible),
+            Utils.TShockType("Bouncer")
+                .GetMethod("OnPlayerDamage", bfany)!,
+            this.ILHook_Mitigation_DisabledInvincible);
     }
 
     private void OnReload(ReloadEventArgs? e)
@@ -166,6 +171,11 @@ public partial class Plugin : TerrariaPlugin
                 }
             }
         }
+        foreach (var hook in this._manipulators.Values)
+        {
+            hook.Undo();
+            hook.Apply();
+        }
         foreach (var command in this.config.StartupCommands)
         {
             TShockAPI.Commands.HandleCommand(TShockAPI.TSPlayer.Server, command);
@@ -237,8 +247,16 @@ public partial class Plugin : TerrariaPlugin
             Commands.ChatCommands.RemoveAll(c => c.CommandDelegate.Method?.DeclaringType?.Assembly == asm);
             foreach (var detour in this._detours.Values)
             {
+                detour.Undo();
                 detour.Dispose();
             }
+            this._detours.Clear();
+            foreach (var hook in this._manipulators.Values)
+            {
+                hook.Undo();
+                hook.Dispose();
+            }
+            this._manipulators.Clear();
         }
         base.Dispose(disposing);
     }

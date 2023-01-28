@@ -78,5 +78,5 @@ Yet another misc plugin for TShock
   * Don't use `Hacky*`.
 * `/_gc` triggers garbage collection.
 * `.TileProvider` in config can switch to a different tile provider.
-  * `CheckedTypedCollection` and `CheckedGenericCollection` might improve performance slightly but mayy cause NRE.
+  * `CheckedTypedCollection` and `CheckedGenericCollection` might improve performance slightly but may cause NRE.
 * `.DebugPacket` in config can log all packets and networking exceptions.

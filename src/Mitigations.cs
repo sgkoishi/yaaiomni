@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Runtime.CompilerServices;
 using TerrariaApi.Server;
@@ -424,5 +426,27 @@ public partial class Plugin : TerrariaPlugin
         }
 
         this._connPool.PurgeCache();
+    }
+
+    private void ILHook_Mitigation_DisabledInvincible(ILContext context)
+    {
+        var mitigation = this.config.Mitigation;
+        if (mitigation.Enabled)
+        {
+            var cursor = new ILCursor(context);
+            cursor.GotoNext(MoveType.After, (i) => i.MatchCallvirt<TShockAPI.TSPlayer>(nameof(TShockAPI.TSPlayer.IsBeingDisabled)));
+            switch (mitigation.DisabledDamageHandler)
+            {
+                case Config.MitigationSettings.DisabledDamageAction.AsIs:
+                    break;
+                case Config.MitigationSettings.DisabledDamageAction.Preset:
+                case Config.MitigationSettings.DisabledDamageAction.Hurt:
+                    cursor.Emit(OpCodes.Pop);
+                    cursor.Emit(OpCodes.Ldc_I4_0);
+                    break;
+                case Config.MitigationSettings.DisabledDamageAction.Ghost:
+                    break;
+            }
+        }
     }
 }

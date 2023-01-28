@@ -10,7 +10,7 @@ namespace Chireiden.TShock.Omni;
 public partial class Plugin : TerrariaPlugin
 {
     private CultureInfo? _targetCulture = null;
-    private readonly Type _tshockI18n = typeof(TShockAPI.TShock).Module.GetTypes().Single(t => t.Name == "I18n")!;
+    private readonly Type _tshockI18n = Utils.TShockType("I18n");
     private void Command_Lang(CommandArgs args)
     {
         var tscinfo = this._tshockI18n

@@ -408,6 +408,27 @@ public class Config
             { 0, 1 },
             { 1, 4 },
         };
+
+        /// <summary>
+        /// <para>
+        /// Disabled players are restricted from most actions including being hurt.
+        /// <see href="https://github.com/Pryaxis/TShock/issues/1151" />
+        /// </para>
+        /// <para>Cause imbalance.</para>
+        /// <para>
+        /// This will allow disabled players to be hurt.
+        /// </para>
+        /// </summary>
+        public DisabledDamageAction DisabledDamageHandler = DisabledDamageAction.Preset;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum DisabledDamageAction
+        {
+            AsIs,
+            Hurt,
+            Ghost,
+            Preset
+        }
     }
 
     public class Limiter

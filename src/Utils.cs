@@ -340,4 +340,16 @@ public static class Utils
         }
         return true;
     }
+
+    internal static Type TShockType(string name)
+    {
+        foreach (var type in typeof(TShockAPI.TShock).Module.GetTypes())
+        {
+            if (type.Name == name)
+            {
+                return type;
+            }
+        }
+        throw new TypeLoadException($"Could not find type {name} in TShock");
+    }
 }
