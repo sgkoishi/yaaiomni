@@ -307,7 +307,41 @@ public partial class Plugin : TerrariaPlugin
         orig(self, empty);
     }
 
-    private readonly ConditionalWeakTable<Terraria.Net.Sockets.ISocket, ConcurrentDictionary<int, double>> _connPool = new ConditionalWeakTable<Terraria.Net.Sockets.ISocket, ConcurrentDictionary<int, double>>();
+    internal class ConnectionStore
+    {
+        public ConcurrentDictionary<string, Connection> Connections { get; } = new ConcurrentDictionary<string, Connection>();
+        public ConditionalWeakTable<Terraria.Net.Sockets.ISocket, Float64Object> ConnectTime { get; } = new ConditionalWeakTable<Terraria.Net.Sockets.ISocket, Float64Object>();
+
+        internal class Connection
+        {
+            public required IPAddress Address { get; set; }
+            public ConcurrentDictionary<int, double> Limit { get; } = new ConcurrentDictionary<int, double>();
+        }
+
+        public void PurgeCache()
+        {
+            var alive = this.ConnectTime
+                .Select((kv) => kv.Key.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa ? tcpa.Address : null)
+                .Where((a) => a != null)
+                .Select(a => a!)
+                .ToArray();
+            var tbr = this.Connections
+                .Where((kv) => !alive.Any(a => a.Equals(kv.Value.Address)))
+                .Select((kv) => kv.Key)
+                .ToList();
+            foreach (var k in tbr)
+            {
+                this.Connections.TryRemove(k, out _);
+            }
+        }
+    }
+
+    internal class Float64Object
+    {
+        public double Value;
+    }
+
+    private readonly ConnectionStore _connPool = new ConnectionStore();
     private void Hook_Mitigation_OnConnectionAccepted(On.Terraria.Netplay.orig_OnConnectionAccepted orig, Terraria.Net.Sockets.ISocket client)
     {
         var mitigation = this.config.Mitigation;
@@ -315,31 +349,84 @@ public partial class Plugin : TerrariaPlugin
         {
             if (mitigation.ConnectionLimit.Count != 0 && Utils.PublicIPv4Address(tcpa.Address))
             {
-                var cd = this._connPool
-                    .Where(x => tcpa.Address.Equals(((Terraria.Net.TcpAddress) x.Key.GetRemoteAddress())?.Address))
-                    .Select(x => x.Value)
-                    .FirstOrDefault();
-                if (cd == null)
+                var addrs = tcpa.Address.ToString();
+                var cd = this._connPool.Connections.GetOrAdd(addrs, (_k) => new ConnectionStore.Connection
                 {
-                    cd = new ConcurrentDictionary<int, double>();
-                    this._connPool.Add(client, cd);
-                }
+                    Address = tcpa.Address,
+                });
+                var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
+                this._connPool.ConnectTime.Add(client, new Float64Object
+                {
+                    Value = time,
+                });
                 for (var i = 0; i < mitigation.ConnectionLimit.Count; i++)
                 {
                     var limiter = mitigation.ConnectionLimit[i];
-                    var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
-                    var tat = cd.AddOrUpdate(i, (_k) => time + limiter.RateLimit, (k, v) => Math.Max(v, time) + limiter.RateLimit);
-                    if (tat > time + limiter.Maximum)
+                    var lb = time + limiter.RateLimit;
+                    if (cd.Limit.AddOrUpdate(i, (_k) => lb, (k, v) =>
                     {
-                        cd.AddOrUpdate(i, (_k) => throw new NotImplementedException("Unreachable"), (k, v) => v - limiter.RateLimit);
-                        this.Statistics.MitigationRejectedConnection++;
+                        var tat = lb = Math.Max(v + limiter.RateLimit, lb);
+                        if (tat > time + limiter.Maximum)
+                        {
+                            return v;
+                        }
+                        return tat;
+                    }) != lb)
+                    {
+                        Interlocked.Increment(ref this.Statistics.MitigationRejectedConnection);
                         client.Close();
                         TShockAPI.TShock.Log.ConsoleInfo($"Connection from {tcpa.Address} ({tcpa.Port}) rejected due to connection limit.");
                         return;
                     }
                 }
+                this.CheckConnectionTimeout();
             }
         }
         orig(client);
+    }
+
+    private void CheckConnectionTimeout()
+    {
+        var count = 0;
+        for (int i = 0; i < Terraria.Main.maxNetPlayers; i++)
+        {
+            if (Terraria.Netplay.Clients[i].IsConnected())
+            {
+                count += 1;
+            }
+        }
+
+        if (count <= Terraria.Main.maxNetPlayers * 0.6)
+        {
+            return;
+        }
+
+        for (int i = 0; i < Terraria.Main.maxNetPlayers; i++)
+        {
+            if (Terraria.Netplay.Clients[i].IsConnected()
+                && Terraria.Netplay.Clients[i].Socket.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa)
+            {
+                if (!this._connPool.ConnectTime.TryGetValue(Terraria.Netplay.Clients[i].Socket, out var ct))
+                {
+                    throw new Exception("Connection time not found");
+                }
+
+                var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
+
+                foreach (var (state, timeout) in this.config.Mitigation.ConnectionStateTimeout)
+                {
+                    var elapsed = time - ct.Value;
+                    if (Terraria.Netplay.Clients[i].State == state && elapsed > timeout)
+                    {
+                        Interlocked.Increment(ref this.Statistics.MitigationTerminatedConnection);
+                        Terraria.Netplay.Clients[i].Socket.Close();
+                        TShockAPI.TShock.Log.ConsoleInfo($"Connection from {tcpa.Address} ({tcpa.Port}, state {state} for {Math.Round(time - ct.Value, 1):G}s) disconnected due to connection state timeout.");
+                        break;
+                    }
+                }
+            }
+        }
+
+        this._connPool.PurgeCache();
     }
 }

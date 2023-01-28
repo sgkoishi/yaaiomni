@@ -333,8 +333,8 @@ public class Config
 
         /// <summary>
         /// <para>
-        /// Restrict the rate of sending <see cref="PacketTypes.NpcUpdateBuff"/>.
-        /// In some cases, the client will send <see cref="PacketTypes.NpcAddBuff"/> frequently,
+        /// Restrict the rate of sending <seealso cref="PacketTypes.NpcUpdateBuff"/>.
+        /// In some cases, the client will send <seealso cref="PacketTypes.NpcAddBuff"/> frequently,
         /// and the server will boardcast in O(n^2) and cause network storm.
         /// </para>
         /// <para>Likely caused by shimmer.</para>
@@ -353,7 +353,7 @@ public class Config
         /// <para>
         /// linux should support OSC commands according to the implementation of <seealso cref="Console.Title"/>,
         /// but some doesn't.
-        /// https://source.dot.net/#System.Console/System/TerminalFormatStrings.cs,e0a3bdd93a9caf05,references
+        /// <see href="https://source.dot.net/#System.Console/System/TerminalFormatStrings.cs,e0a3bdd93a9caf05,references" />
         /// </para>
         /// <para>Cause spam in console.</para>
         /// <para>
@@ -380,6 +380,26 @@ public class Config
         public List<Limiter> ConnectionLimit = new List<Limiter> {
             new Limiter { RateLimit = 3, Maximum = 5 },
             new Limiter { RateLimit = 15, Maximum = 60 },
+        };
+
+        /// <summary>
+        /// <para>
+        /// Some script kiddies spam connection requests to the server and occupy the connection pool.
+        /// </para>
+        /// <para>Cause player unable to connect.</para>
+        /// <para>
+        /// This will disconnect the client if they are in the state for too long.
+        /// Also apply to local address.
+        /// </para>
+        /// <para>
+        /// The default limit:
+        ///   Socket created: 1 second
+        ///   <seealso cref="PacketTypes.ConnectRequest"> received: +3 seconds
+        /// </para>
+        /// </summary>
+        public Dictionary<int, double> ConnectionStateTimeout = new Dictionary<int, double> {
+            { 0, 1 },
+            { 1, 4 },
         };
     }
 

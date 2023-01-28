@@ -8,6 +8,7 @@
     <AssemblyName>Chireiden.TShock.Omni</AssemblyName>
     <RootNamespace>Chireiden.TShock.Omni</RootNamespace>
     <Deterministic>true</Deterministic>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
