@@ -278,21 +278,18 @@ public static class Utils
         l.EnterUpgradeableReadLock();
         try
         {
-            var value = player.GetData<T>(key);
-            if (value is null)
+            try
             {
-                l.EnterWriteLock();
-                try
+                var value = player.GetData<T>(key); 
+                if (value != null)
                 {
-                    value = factory();
-                    player.SetData(key, value);
-                }
-                finally
-                {
-                    l.ExitWriteLock();
+                    return value;
                 }
             }
-            return value;
+            catch (NullReferenceException)
+            {
+            }
+            return player.SetPlayerAttachedData(key, factory());
         }
         finally
         {
@@ -300,7 +297,7 @@ public static class Utils
         }
     }
 
-    public static void SetPlayerAttachedData<T>(this TSPlayer player, string key, T value)
+    public static T SetPlayerAttachedData<T>(this TSPlayer player, string key, T value)
     {
         var l = _playerDataLocks.GetOrCreateValue(player);
         l.EnterWriteLock();
@@ -312,6 +309,7 @@ public static class Utils
         {
             l.ExitWriteLock();
         }
+        return value;
     }
 
     internal static bool PublicIPv4Address(System.Net.IPAddress address)
