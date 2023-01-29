@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using Terraria.Localization;
@@ -99,11 +100,14 @@ public static class Utils
     /// </summary>
     public static string ToCommand(string command, List<string> args)
     {
+        // Theoretically there should be no space to trim
+        // but REST's rawcmd assume everything as command
+        // and the alt syntax parse and keep the first character
         return string.Join(" ", new List<string> { $"{command}" }.Concat(args.Select(arg =>
         {
             var parg = arg.Replace("\\", "\\\\").Replace("\"", "\\\"");
             return parg.Contains(' ') || parg.Contains('\\') ? $"\"{parg}\"" : parg;
-        })));
+        }))).Trim();
     }
 
     /// <summary>
@@ -263,53 +267,6 @@ public static class Utils
             }
             yield break;
         }
-    }
-
-    private static readonly ConditionalWeakTable<TSPlayer, ReaderWriterLockSlim> _playerDataLocks = new ConditionalWeakTable<TSPlayer, ReaderWriterLockSlim>();
-
-    public static T GetOrCreatePlayerAttachedData<T>(this TSPlayer player, string key) where T : new()
-    {
-        return player.GetOrCreatePlayerAttachedData(key, () => new T());
-    }
-
-    public static T GetOrCreatePlayerAttachedData<T>(this TSPlayer player, string key, Func<T> factory)
-    {
-        var l = _playerDataLocks.GetOrCreateValue(player);
-        l.EnterUpgradeableReadLock();
-        try
-        {
-            try
-            {
-                var value = player.GetData<T>(key); 
-                if (value != null)
-                {
-                    return value;
-                }
-            }
-            catch (NullReferenceException)
-            {
-            }
-            return player.SetPlayerAttachedData(key, factory());
-        }
-        finally
-        {
-            l.ExitUpgradeableReadLock();
-        }
-    }
-
-    public static T SetPlayerAttachedData<T>(this TSPlayer player, string key, T value)
-    {
-        var l = _playerDataLocks.GetOrCreateValue(player);
-        l.EnterWriteLock();
-        try
-        {
-            player.SetData(key, value);
-        }
-        finally
-        {
-            l.ExitWriteLock();
-        }
-        return value;
     }
 
     internal static bool PublicIPv4Address(System.Net.IPAddress address)

@@ -1,28 +1,10 @@
-﻿using System.Threading.Channels;
-using TerrariaApi.Server;
+﻿using TerrariaApi.Server;
 using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    public class PingData
-    {
-        internal class PingDetails
-        {
-            internal Channel<int> Channel = System.Threading.Channels.Channel.CreateBounded<int>(new BoundedChannelOptions(30)
-            {
-                SingleReader = true,
-                SingleWriter = true
-            });
-            internal DateTime Start = DateTime.Now;
-            internal DateTime? End = null;
-        }
-
-        public TimeSpan LastPing = TimeSpan.MaxValue;
-        internal PingDetails?[] RecentPings = new PingDetails?[Terraria.Main.item.Length];
-    }
-
     public async Task<TimeSpan> Ping(TSPlayer player)
     {
         return await this.Ping(player, new CancellationTokenSource(1000).Token);
@@ -30,7 +12,7 @@ public partial class Plugin : TerrariaPlugin
 
     public async Task<TimeSpan> Ping(TSPlayer player, CancellationToken token)
     {
-        var pingdata = player.GetOrCreatePlayerAttachedData<PingData>(Consts.DataKey.PingChannel);
+        var pingdata = this[player].PingChannel;
         var inv = -1;
         for (var i = 0; i < Terraria.Main.item.Length; i++)
         {
@@ -47,7 +29,7 @@ public partial class Plugin : TerrariaPlugin
         {
             return TimeSpan.MaxValue;
         }
-        var pd = new PingData.PingDetails();
+        var pd = new AttachedData.PingDetails();
         pingdata.RecentPings[inv] = pd;
         Terraria.NetMessage.TrySendData((int) PacketTypes.RemoveItemOwner, player.Index, -1, null, inv);
         await pd.Channel.Reader.ReadAsync(token);
@@ -70,7 +52,7 @@ public partial class Plugin : TerrariaPlugin
         }
 
         var whoami = args.Instance.whoAmI;
-        var pingresponse = TShockAPI.TShock.Players[whoami]?.GetOrCreatePlayerAttachedData<PingData>(Consts.DataKey.PingChannel);
+        var pingresponse = this[whoami].PingChannel;
         var index = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2));
         var ping = pingresponse?.RecentPings[index];
         if (ping != null)

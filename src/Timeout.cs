@@ -6,48 +6,30 @@ namespace Chireiden.TShock.Omni;
 public partial class Plugin : TerrariaPlugin
 {
     private int _updateCounter = 0;
-    public class DelayCommand
-    {
-        public string Command { get; set; }
-        public TSPlayer Player { get; set; }
-        public int Timeout { get; set; }
-        public int Start { get; set; }
-        public int Repeat { get; set; }
-        public DelayCommand(string command, TSPlayer player, int start = 0, int timeout = 60, int repeat = 1)
-        {
-            this.Command = command;
-            this.Player = player;
-            this.Timeout = timeout;
-            this.Start = this.Timeout;
-            this.Repeat = repeat;
-        }
-    }
 
     private void Hook_TimeoutInterval(EventArgs args)
     {
         this._updateCounter++;
         foreach (var player in Utils.ActivePlayers)
         {
-            var commands = player.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
-            this.ProcessDelayCommand(player, commands);
+            this.ProcessDelayCommand(this[player]);
         }
 
-        var serverCommands = TSPlayer.Server.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
-        this.ProcessDelayCommand(TSPlayer.Server, serverCommands);
+        this.ProcessDelayCommand(this[TSPlayer.Server]);
     }
 
-    private void ProcessDelayCommand(TSPlayer player, List<DelayCommand> command)
+    private void ProcessDelayCommand(AttachedData data)
     {
-        for (var i = 0; i < command.Count; i++)
+        for (var i = 0; i < data.DelayCommands.Count; i++)
         {
-            if ((this._updateCounter - command[i].Start) % command[i].Timeout == 0)
+            if ((this._updateCounter - data.DelayCommands[i].Start) % data.DelayCommands[i].Timeout == 0)
             {
-                TShockAPI.Commands.HandleCommand(player, command[i].Command);
-                command[i].Repeat -= 1;
+                TShockAPI.Commands.HandleCommand(data.Player, data.DelayCommands[i].Command);
+                data.DelayCommands[i].Repeat -= 1;
             }
-            if (command[i].Repeat == 0)
+            if (data.DelayCommands[i].Repeat == 0)
             {
-                command.RemoveAt(i);
+                data.DelayCommands.RemoveAt(i);
                 i--;
             }
         }
@@ -71,8 +53,8 @@ public partial class Plugin : TerrariaPlugin
             return;
         }
 
-        var commands = args.Player.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
-        var cmd = new DelayCommand(args.Parameters[0], args.Player, start: this._updateCounter, timeout: timeout);
+        var commands = this[args.Player].DelayCommands;
+        var cmd = new AttachedData.DelayCommand(args.Parameters[0], start: this._updateCounter, timeout: timeout);
         commands.Add(cmd);
         args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed once in the future (id: {(uint) cmd.GetHashCode()}).");
     }
@@ -94,8 +76,8 @@ public partial class Plugin : TerrariaPlugin
             args.Player.SendErrorMessage("Interval must be greater than 0!");
             return;
         }
-        var commands = args.Player.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
-        var cmd = new DelayCommand(args.Parameters[0], args.Player, start: this._updateCounter, timeout: interval, repeat: 0);
+        var commands = this[args.Player].DelayCommands;
+        var cmd = new AttachedData.DelayCommand(args.Parameters[0], start: this._updateCounter, timeout: interval, repeat: 0);
         commands.Add(cmd);
         args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed in the future (id: {(uint) cmd.GetHashCode()}).");
     }
@@ -112,7 +94,7 @@ public partial class Plugin : TerrariaPlugin
             args.Player.SendErrorMessage("Invalid id!");
             return;
         }
-        var commands = args.Player.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
+        var commands = this[args.Player].DelayCommands;
         if (commands.Count == 0)
         {
             args.Player.SendErrorMessage("No commands found!");
@@ -132,7 +114,7 @@ public partial class Plugin : TerrariaPlugin
 
     private void Command_ListDelay(CommandArgs args)
     {
-        var commands = args.Player.GetOrCreatePlayerAttachedData<List<DelayCommand>>(Consts.DataKey.DelayCommands);
+        var commands = this[args.Player].DelayCommands;
         if (commands.Count == 0)
         {
             args.Player.SendErrorMessage("No commands found!");

@@ -15,12 +15,12 @@ public partial class Plugin : TerrariaPlugin
                 {
                     continue;
                 }
-                var cmdName = command[0];
-                if (!cmdName.StartsWith(TShockAPI.Commands.Specifier) && !cmdName.StartsWith(TShockAPI.Commands.SilentSpecifier))
+                var cmd = Utils.ToCommand(command[0], command.GetRange(1, command.Count - 1));
+                if (!cmd.StartsWith(TShockAPI.Commands.Specifier) && !cmd.StartsWith(TShockAPI.Commands.SilentSpecifier))
                 {
-                    cmdName = TShockAPI.Commands.Specifier + cmdName;
+                    cmd = TShockAPI.Commands.Specifier + cmd;
                 }
-                orig(player, Utils.ToCommand(cmdName, command.GetRange(1, command.Count - 1)));
+                orig(player, cmd);
             }
             return true;
         }

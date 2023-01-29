@@ -167,10 +167,11 @@ public partial class Plugin : TerrariaPlugin
                     {
                         continue;
                     }
-                    player.SetPlayerAttachedData<object?>(key, null);
+                    player.SetData<object?>(key, null);
                 }
             }
         }
+        this._playerData.Clear();
         foreach (var hook in this._manipulators.Values)
         {
             hook.Undo();

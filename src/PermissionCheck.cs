@@ -6,15 +6,13 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    public record PermissionCheckHistory(string Permission, DateTime Time, bool Result, StackTrace? Trace);
-
     private bool Detour_HasPermission(Func<TSPlayer, string, bool> orig, TSPlayer player, string permission)
     {
         var result = orig(player, permission);
         var strgy = this.config.Permission.Log;
         if (strgy.Enabled)
         {
-            var history = player.GetOrCreatePlayerAttachedData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);
+            var history = this[player].PermissionHistory;
             var now = DateTime.Now;
             if (!strgy.LogDuplicate)
             {
@@ -29,7 +27,7 @@ public partial class Plugin : TerrariaPlugin
                     }
                 }
             }
-            var entry = new PermissionCheckHistory(permission, now, result, strgy.LogStackTrace ? new StackTrace() : null);
+            var entry = new AttachedData.PermissionCheckHistory(permission, now, result, strgy.LogStackTrace ? new StackTrace() : null);
             lock (history)
             {
                 if (strgy.LogCount > 0 && history.Count == strgy.LogCount)
@@ -44,12 +42,7 @@ public partial class Plugin : TerrariaPlugin
 
     private void Command_PermissionCheck(CommandArgs args)
     {
-        List<PermissionCheckHistory> list;
-        var existing = args.Player.GetOrCreatePlayerAttachedData<Queue<PermissionCheckHistory>>(Consts.DataKey.PermissionHistory);
-        lock (existing)
-        {
-            list = new List<PermissionCheckHistory>(existing);
-        }
+        var list = this[args.Player].PermissionHistory.ToList();
 
         if (args.Parameters.Contains("-t"))
         {

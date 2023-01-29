@@ -114,14 +114,14 @@ public partial class Plugin : TerrariaPlugin
                     {
                         return;
                     }
-                    var value = player.GetOrCreatePlayerAttachedData<int>(Consts.DataKey.DetectPE);
-                    player.SetPlayerAttachedData<int>(Consts.DataKey.DetectPE, value + 1);
+                    var value = this[player].DetectPE;
+                    this[player].DetectPE = value + 1;
                     if (value % 500 == 0)
                     {
                         var currentLoadoutIndex = Terraria.Main.player[index].CurrentLoadoutIndex;
                         Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, (currentLoadoutIndex + 1) % 3);
                         Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, currentLoadoutIndex);
-                        player.SetPlayerAttachedData<bool>(Consts.DataKey.IsPE, true);
+                        this[player].IsPE = true;
                     }
                 }
                 else
@@ -145,7 +145,7 @@ public partial class Plugin : TerrariaPlugin
                 if (Terraria.Main.player[index].inventory[Terraria.Main.player[index].selectedItem].potion)
                 {
                     var amount = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1, 2));
-                    TShockAPI.TShock.Players[index]?.SetPlayerAttachedData<int>(Consts.DataKey.PendingRevertHeal, amount);
+                    this[index].PendingRevertHeal = amount;
                 }
                 break;
             }
@@ -167,7 +167,7 @@ public partial class Plugin : TerrariaPlugin
                     var buff = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1 + (i * 2), 2));
                     if (buff == Terraria.ID.BuffID.PotionSickness)
                     {
-                        TShockAPI.TShock.Players[index]?.SetPlayerAttachedData<int>(Consts.DataKey.PendingRevertHeal, 0);
+                        this[index].PendingRevertHeal = 0;
                     }
                 }
                 break;
@@ -179,11 +179,11 @@ public partial class Plugin : TerrariaPlugin
                     break;
                 }
                 var index = args.Instance.whoAmI;
-                var pending = TShockAPI.TShock.Players[index].GetOrCreatePlayerAttachedData<int>(Consts.DataKey.PendingRevertHeal);
+                var pending = this[index].PendingRevertHeal;
                 if (pending > 0)
                 {
                     this.Statistics.MitigationRejectedSicknessHeal++;
-                    TShockAPI.TShock.Players[index]?.SetPlayerAttachedData<int>(Consts.DataKey.PendingRevertHeal, 0);
+                    this[index].PendingRevertHeal = 0;
                     Terraria.Main.player[index].statLife -= pending;
                     Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerHp, -1, -1, null, index);
                 }
@@ -228,7 +228,7 @@ public partial class Plugin : TerrariaPlugin
                     for (var i = 0; i < this.config.Mitigation.ChatSpamRestrict.Count; i++)
                     {
                         var limiter = this.config.Mitigation.ChatSpamRestrict[i];
-                        var tat = Math.Max(this._updateCounter, player.GetOrCreatePlayerAttachedData<double>(Consts.DataKey.ChatSpamRestrict + i)) + limiter.RateLimit;
+                        var tat = Math.Max(this._updateCounter, this[player].ChatSpamRestrict[i]) + limiter.RateLimit;
                         if (tat > this._updateCounter + limiter.Maximum)
                         {
                             this.Statistics.MitigationRejectedChat++;
@@ -237,7 +237,7 @@ public partial class Plugin : TerrariaPlugin
                             args.PacketId = byte.MaxValue;
                             break;
                         }
-                        player.SetPlayerAttachedData<double>(Consts.DataKey.ChatSpamRestrict + i, tat);
+                        this[player].ChatSpamRestrict[i] = tat;
                     }
                 }
                 break;

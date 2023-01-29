@@ -8,23 +8,16 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private int _globalPermissionBypass = 0;
-    internal class IntObject
-    {
-        public int Value;
-    }
-
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public void RunWithoutPermissionChecks(Action action, TSPlayer? player = null)
     {
         if (player != null && player.RealPlayer)
         {
-            var iobj = player.GetOrCreatePlayerAttachedData<IntObject>(Consts.DataKey.PermissionBypass);
-            Interlocked.Increment(ref iobj.Value);
+            Interlocked.Increment(ref this[player].PermissionBypass);
         }
         else
         {
-            Interlocked.Increment(ref this._globalPermissionBypass);
+            Interlocked.Increment(ref this[TSPlayer.Server].PermissionBypass);
         }
         try
         {
@@ -34,12 +27,11 @@ public partial class Plugin : TerrariaPlugin
         {
             if (player != null && player.RealPlayer)
             {
-                var iobj = player.GetOrCreatePlayerAttachedData<IntObject>(Consts.DataKey.PermissionBypass);
-                Interlocked.Decrement(ref iobj.Value);
+                Interlocked.Decrement(ref this[player].PermissionBypass);
             }
             else
             {
-                Interlocked.Decrement(ref this._globalPermissionBypass);
+                Interlocked.Decrement(ref this[TSPlayer.Server].PermissionBypass);
             }
         }
     }
@@ -47,12 +39,7 @@ public partial class Plugin : TerrariaPlugin
     private void Hook_Sudo_OnPlayerPermission(PlayerPermissionEventArgs args)
     {
         var flag = false;
-        if (args.Player.GetOrCreatePlayerAttachedData<IntObject>(Consts.DataKey.PermissionBypass).Value > 0)
-        {
-            flag = true;
-        }
-
-        if (this._globalPermissionBypass > 0)
+        if (this[args.Player].PermissionBypass <= 0 && this[TSPlayer.Server].PermissionBypass <= 0)
         {
             flag = true;
         }

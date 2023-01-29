@@ -11,7 +11,7 @@ public partial class Plugin : TerrariaPlugin
         {
             return false;
         }
-        var state = player.GetOrCreatePlayerAttachedData<bool?>(Consts.DataKey.Ghost);
+        var state = this[player].Ghost;
         return state == null ? orig(player) : !state.Value;
     }
 
@@ -25,7 +25,7 @@ public partial class Plugin : TerrariaPlugin
         var playerIndex = args.Data[3];
         if (args.RemoteClient != playerIndex)
         {
-            var state = TShockAPI.TShock.Players[playerIndex]?.GetOrCreatePlayerAttachedData<bool?>(Consts.DataKey.Ghost);
+            var state = this[playerIndex].Ghost;
             if (state == null)
             {
                 return;
@@ -48,12 +48,12 @@ public partial class Plugin : TerrariaPlugin
         {
             args.TPlayer.active = true;
             args.TPlayer.ghost = false;
-            args.Player.SetPlayerAttachedData<bool?>(Consts.DataKey.Ghost, null);
+            this[args.Player].Ghost = null;
         }
         else
         {
-            var state = args.Player.GetOrCreatePlayerAttachedData<bool?>(Consts.DataKey.Ghost) ?? false;
-            args.Player.SetPlayerAttachedData<bool?>(Consts.DataKey.Ghost, !state);
+            var state = this[args.Player].Ghost ?? false;
+            this[args.Player].Ghost = !state;
         }
         Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerInfo, -1, args.Player.Index, null, args.Player.Index);
         Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, args.Player.Index, null, args.Player.Index);

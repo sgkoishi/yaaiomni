@@ -65,15 +65,7 @@ public static class Consts
     }
     public static class DataKey
     {
-        public static readonly string Ghost = "chireiden.data.ghost";
-        public static readonly string PermissionHistory = "chireiden.data.permissionhistory";
-        public static readonly string DetectPE = "chireiden.data.ped";
         public static readonly string IsPE = "chireiden.data.ispe";
-        public static readonly string DelayCommands = "chireiden.data.delaycommands";
-        public static readonly string PendingRevertHeal = "chireiden.data.pendingheal";
-        public static readonly string ChatSpamRestrict = "chireiden.data.chatspam";
-        public static readonly string PingChannel = "chireiden.data.pingchannel";
-        public static readonly string PermissionBypass = "chireiden.data.permissionbypass";
     }
     public static readonly string ConfigFile = "chireiden.omni.json";
     public static readonly string VanillaGroup = "chireiden_vanilla";
