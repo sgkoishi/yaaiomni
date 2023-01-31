@@ -69,5 +69,6 @@ public static class Consts
         public static readonly string IsPE = "chireiden.data.ispe";
     }
     public static readonly string ConfigFile = "chireiden.omni.json";
+    public static readonly string PresetLock = "chireiden.omni.preset.lock";
     public static readonly string VanillaGroup = "chireiden_vanilla";
 }

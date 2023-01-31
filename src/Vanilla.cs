@@ -47,7 +47,12 @@ public partial class Plugin : TerrariaPlugin
     {
         var preset = this.config.Permission.Preset;
         var vanillaMode = this.config.Mode.Vanilla.Enabled;
-        if (!preset.Enabled && !vanillaMode)
+        if (!preset.Enabled && !vanillaMode && !preset.AlwaysApply)
+        {
+            return;
+        }
+
+        if (File.Exists(Path.Combine(TShockAPI.TShock.SavePath, Consts.PresetLock)) && !preset.AlwaysApply)
         {
             return;
         }
@@ -100,6 +105,8 @@ public partial class Plugin : TerrariaPlugin
         owner?.AddPermission(Consts.Permissions.Admin.ListClients);
         owner?.AddPermission(Consts.Permissions.Admin.DumpBuffer);
         owner?.AddPermission(Consts.Permissions.Admin.ResetCharacterAll);
+
+        File.WriteAllText(Path.Combine(TShockAPI.TShock.SavePath, Consts.PresetLock), string.Empty);
     }
 
     private void AliasPermission(string orig, string equiv)

@@ -230,6 +230,7 @@ public class Config
         public class PresetSettings
         {
             public bool Enabled = true;
+            public bool AlwaysApply = false;
             public bool DebugForAdminOnly = false;
             public bool AllowRestricted = true;
         }
