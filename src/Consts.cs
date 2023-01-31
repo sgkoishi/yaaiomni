@@ -17,6 +17,7 @@ public static class Consts
         public static readonly string ResetCharacter = "chireiden.omni.resetcharacter";
         public static readonly string Ping = "chireiden.omni.ping";
         public static readonly string Chat = "chireiden.omni.chat";
+        public static readonly string SummonBoss = "chireiden.omni.summonboss";
         public static class Admin
         {
             public static readonly string Ghost = "chireiden.omni.ghost";

@@ -195,9 +195,10 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.Netplay.OnConnectionAccepted += this.Hook_Mitigation_OnConnectionAccepted;
         OTAPI.Hooks.NetMessage.SendBytes += this.Hook_Ghost_SendBytes;
         OTAPI.Hooks.NetMessage.SendBytes += this.Hook_DebugPacket_SendBytes;
-        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Permission_SyncLoadout;
         OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Modded_GetData;
+        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Permission_SyncLoadout;
         OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Ping_GetData;
+        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Permission_SummonBoss;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.Hook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.Hook_TimeoutInterval);
@@ -231,6 +232,7 @@ public partial class Plugin : TerrariaPlugin
             OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Permission_SyncLoadout;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Modded_GetData;
             OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Ping_GetData;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Permission_SummonBoss;
             OTAPI.Hooks.Netplay.CreateTcpListener -= this.Hook_Socket_OnCreate;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.Hook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);

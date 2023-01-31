@@ -224,13 +224,14 @@ public class Config
             public bool ToggleTeam = true;
             public bool TogglePvP = true;
             public bool SyncLoadout = true;
+            public bool SummonBoss = true;
         }
 
         public class PresetSettings
         {
             public bool Enabled = true;
             public bool DebugForAdminOnly = false;
-            public bool Restrict = true;
+            public bool AllowRestricted = true;
         }
     }
 

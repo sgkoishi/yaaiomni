@@ -86,7 +86,56 @@ public partial class Plugin : TerrariaPlugin
 
         args.Result = OTAPI.HookResult.Cancel;
         // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet. Switch to Loadout 255 when only 3.
-        args.Instance.readBuffer[args.ReadOffset + 1] = 255;
+        args.PacketId = byte.MaxValue;
         Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, args.Instance.whoAmI, player.TPlayer.CurrentLoadoutIndex);
+    }
+
+    private void Hook_Permission_SummonBoss(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
+    {
+        if (args.Result == OTAPI.HookResult.Cancel)
+        {
+            return;
+        }
+
+        var restrict = this.config.Permission.Restrict;
+        if (!restrict.Enabled || !restrict.SummonBoss)
+        {
+            return;
+        }
+
+        if (args.PacketId == (int) PacketTypes.NpcStrike)
+        {
+            var index = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2));
+            if (index == Terraria.ID.NPCID.EmpressButterfly || index == Terraria.ID.NPCID.CultistDevote || index == Terraria.ID.NPCID.CultistArcherBlue)
+            {
+                if (!TShockAPI.TShock.Players[args.Instance.whoAmI].HasPermission($"{Consts.Permissions.SummonBoss}.{index}"))
+                {
+                    TShockAPI.TShock.Players[args.Instance.whoAmI].SendData(PacketTypes.NpcUpdate, "", index);
+                    args.Result = OTAPI.HookResult.Cancel;
+                }
+            }
+        }
+        else if (args.PacketId == (int) PacketTypes.SpawnBossorInvasion)
+        {
+            var id = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 2, 2));
+            if (!TShockAPI.TShock.Players[args.Instance.whoAmI].HasPermission($"{Consts.Permissions.SummonBoss}.{id}"))
+            {
+                args.Result = OTAPI.HookResult.Cancel;
+            }
+        }
+        else if (args.PacketId == (int) PacketTypes.FishOutNPC)
+        {
+            var id = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 4, 2));
+            if (id == Terraria.ID.NPCID.DukeFishron && !TShockAPI.TShock.Players[args.Instance.whoAmI].HasPermission($"{Consts.Permissions.SummonBoss}.{id}"))
+            {
+                args.Result = OTAPI.HookResult.Cancel;
+            }
+        }
+
+        if (args.Result == OTAPI.HookResult.Cancel)
+        {
+            // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
+            args.PacketId = byte.MaxValue;
+        }
     }
 }

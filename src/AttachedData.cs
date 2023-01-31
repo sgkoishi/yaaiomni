@@ -12,7 +12,7 @@ public partial class Plugin : TerrariaPlugin
     {
         get
         {
-            if (this._playerData.TryGetValue(player, out var data) && data != null)
+            if (this._playerData.TryGetValue(player, out var data))
             {
                 return data;
             }
@@ -24,6 +24,7 @@ public partial class Plugin : TerrariaPlugin
     public AttachedData this[int player] => this[TShockAPI.TShock.Players[player]];
     public AttachedData this[Terraria.Player player] => this[player.whoAmI];
 }
+
 public class AttachedData
 {
     internal TShockAPI.TSPlayer Player;
@@ -54,17 +55,13 @@ public class AttachedData
 
     public class PingData
     {
-        public TimeSpan LastPing = TimeSpan.MaxValue;
+        public TimeSpan? LastPing;
         internal PingDetails?[] RecentPings = new PingDetails?[Terraria.Main.item.Length];
     }
 
     internal class PingDetails
     {
-        internal Channel<int> Channel = System.Threading.Channels.Channel.CreateBounded<int>(new BoundedChannelOptions(30)
-        {
-            SingleReader = true,
-            SingleWriter = true
-        });
+        internal Channel<int>? Channel;
         internal DateTime Start = DateTime.Now;
         internal DateTime? End = null;
     }

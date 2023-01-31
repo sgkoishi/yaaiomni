@@ -53,14 +53,17 @@ public partial class Plugin : TerrariaPlugin
         }
 
         var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
-        if (preset.Restrict || vanillaMode)
+        if (preset.AllowRestricted || vanillaMode)
         {
             guest?.AddPermission(Consts.Permissions.TogglePvP);
             guest?.AddPermission(Consts.Permissions.ToggleTeam);
             guest?.AddPermission(Consts.Permissions.SyncLoadout);
         }
         guest?.AddPermission(Consts.Permissions.Ping);
-        guest?.AddPermission(Consts.Permissions.Chat);
+
+        this.AliasPermission(TShockAPI.Permissions.canchat, Consts.Permissions.Chat);
+        this.AliasPermission(TShockAPI.Permissions.summonboss, $"{Consts.Permissions.SummonBoss}.*");
+        this.AliasPermission(TShockAPI.Permissions.startinvasion, $"{Consts.Permissions.SummonBoss}.*");
 
         var na = Utils.ParentGroup(
             TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("newadmin"),
@@ -97,5 +100,16 @@ public partial class Plugin : TerrariaPlugin
         owner?.AddPermission(Consts.Permissions.Admin.ListClients);
         owner?.AddPermission(Consts.Permissions.Admin.DumpBuffer);
         owner?.AddPermission(Consts.Permissions.Admin.ResetCharacterAll);
+    }
+
+    private void AliasPermission(string orig, string equiv)
+    {
+        foreach (var group in TShockAPI.TShock.Groups.groups)
+        {
+            if (group.HasPermission(orig))
+            {
+                group.AddPermission(equiv);
+            }
+        }
     }
 }

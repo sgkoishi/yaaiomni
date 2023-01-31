@@ -1,10 +1,17 @@
-﻿using TerrariaApi.Server;
+﻿using System.Threading.Channels;
+using TerrariaApi.Server;
 using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
+    public TimeSpan? TryPing(TSPlayer player)
+    {
+        _ = this.Ping(player, new CancellationTokenSource(1000).Token);
+        return this[player].PingChannel.LastPing;
+    }
+
     public async Task<TimeSpan> Ping(TSPlayer player)
     {
         return await this.Ping(player, new CancellationTokenSource(1000).Token);
@@ -18,7 +25,7 @@ public partial class Plugin : TerrariaPlugin
         {
             if (!Terraria.Main.item[i].active || Terraria.Main.item[i].playerIndexTheItemIsReservedFor == 255)
             {
-                if (pingdata.RecentPings[inv] == null)
+                if (pingdata.RecentPings[inv]?.Channel == null)
                 {
                     inv = i;
                     break;
@@ -29,13 +36,16 @@ public partial class Plugin : TerrariaPlugin
         {
             return TimeSpan.MaxValue;
         }
-        var pd = new AttachedData.PingDetails();
-        pingdata.RecentPings[inv] = pd;
+        var pd = pingdata.RecentPings[inv] ??= new AttachedData.PingDetails();
+        pd.Channel ??= Channel.CreateBounded<int>(new BoundedChannelOptions(30)
+        {
+            SingleReader = true,
+            SingleWriter = true
+        });
         Terraria.NetMessage.TrySendData((int) PacketTypes.RemoveItemOwner, player.Index, -1, null, inv);
         await pd.Channel.Reader.ReadAsync(token);
-        pingdata.RecentPings[inv] = null;
-        pingdata.LastPing = pd.End!.Value - pd.Start;
-        return pingdata.LastPing;
+        pd.Channel = null;
+        return (pingdata.LastPing = pd.End!.Value - pd.Start).Value;
     }
 
     private void Hook_Ping_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
@@ -58,7 +68,7 @@ public partial class Plugin : TerrariaPlugin
         if (ping != null)
         {
             ping.End = DateTime.Now;
-            ping.Channel.Writer.TryWrite(index);
+            ping.Channel!.Writer.TryWrite(index);
         }
     }
 
