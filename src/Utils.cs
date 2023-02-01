@@ -1,7 +1,5 @@
-﻿using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using Terraria.Localization;
 using TShockAPI;
 using static Terraria.Utils;
@@ -125,53 +123,49 @@ public static class Utils
         var current = "";
         while (currentIndex < input.Length)
         {
-            var c = input[currentIndex];
-            if (c == '\"')
+            switch (input[currentIndex])
             {
-                inQuote = !inQuote;
-            }
-            else if (c == '\\')
-            {
-                if (currentIndex + 1 < input.Length)
-                {
+                case '\"':
+                    inQuote = !inQuote;
+                    break;
+                case '\\':
+                    if (currentIndex + 1 < input.Length)
+                    {
+                        currentIndex++;
+                    }
+                    current += input[currentIndex];
+                    break;
+                case '&' when !inQuote && currentIndex + 1 < input.Length && input[currentIndex + 1] == '&':
+                    result.Add(currentCommand);
+                    currentCommand = new List<string>();
+                    current = "";
                     currentIndex++;
-                }
-                current += input[currentIndex];
-            }
-            else if (!inQuote && c == '&' && currentIndex + 1 < input.Length && input[currentIndex + 1] == '&')
-            {
-                result.Add(currentCommand);
-                currentCommand = new List<string>();
-                current = "";
-                currentIndex++;
-                while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
-                {
+                    while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
+                    {
+                        currentIndex++;
+                    }
+                    break;
+                case ';' when !inQuote:
+                    result.Add(currentCommand);
+                    currentCommand = new List<string>();
+                    current = "";
                     currentIndex++;
-                }
-            }
-            else if (!inQuote && c == ';')
-            {
-                result.Add(currentCommand);
-                currentCommand = new List<string>();
-                current = "";
-                currentIndex++;
-                while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
-                {
-                    currentIndex++;
-                }
-            }
-            else if (!inQuote && char.IsWhiteSpace(c))
-            {
-                currentCommand.Add(current);
-                current = "";
-                while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
-                {
-                    currentIndex++;
-                }
-            }
-            else
-            {
-                current += c;
+                    while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
+                    {
+                        currentIndex++;
+                    }
+                    break;
+                case char c when !inQuote && char.IsWhiteSpace(c):
+                    currentCommand.Add(current);
+                    current = "";
+                    while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
+                    {
+                        currentIndex++;
+                    }
+                    break;
+                case char c:
+                    current += c;
+                    break;
             }
             currentIndex++;
         }
@@ -200,10 +194,8 @@ public static class Utils
             {
                 yield return acc;
             }
-
-            yield break;
         }
-        if (pat.StartsWith("tsp:"))
+        else if (pat.StartsWith("tsp:"))
         {
             pat = pat[4..];
             var exact = TShockAPI.TShock.Players.SingleOrDefault(p => p?.Name == pat)?.Account;
@@ -214,14 +206,12 @@ public static class Utils
             }
 
             foreach (var acc in TShockAPI.TShock.Players
-                .Where(p => p?.Account != null && p.Active && p.Account.Name.Contains(pat) == true)
+                .Where(p => p.Active && p?.Account.Name.Contains(pat) == true)
                 .OrderBy(p => p.Account.Name.StartsWith(pat) ? 0 : 1)
                 .Select(p => p.Account))
             {
                 yield return acc;
             }
-
-            yield break;
         }
         else if (pat.StartsWith("tsi:"))
         {
@@ -234,7 +224,6 @@ public static class Utils
                     yield break;
                 }
             }
-            yield break;
         }
         else if (pat.StartsWith("usr:"))
         {
@@ -247,13 +236,11 @@ public static class Utils
             }
 
             foreach (var acc in TShockAPI.TShock.UserAccounts.GetUserAccounts()
-                .Where(p => p != null && p.Name.Contains(pat) == true)
+                .Where(p => p?.Name.Contains(pat) == true)
                 .OrderBy(p => p.Name.StartsWith(pat) ? 0 : 1))
             {
                 yield return acc;
             }
-
-            yield break;
         }
         else if (pat.StartsWith("usi:"))
         {
@@ -265,7 +252,6 @@ public static class Utils
                     yield return exact;
                 }
             }
-            yield break;
         }
     }
 
@@ -276,24 +262,15 @@ public static class Utils
             return false;
         }
 
-        var bytes = address.GetAddressBytes();
-        if (bytes[0] == 10 || bytes[0] == 127)
+        return address.GetAddressBytes() switch
         {
-            return false;
-        }
-        if (bytes[0] == 192 && bytes[1] == 168)
-        {
-            return false;
-        }
-        if (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
-        {
-            return false;
-        }
-        if (bytes[0] == 169 && bytes[1] == 254)
-        {
-            return false;
-        }
-        return true;
+            [10, _, _, _] => true,
+            [127, _, _, _] => true,
+            [192, 168, _, _] => true,
+            [172, >= 16 and < 32, _, _] => true,
+            [169, 254, _, _] => true,
+            _ => false
+        };
     }
 
     internal static Type TShockType(string name)

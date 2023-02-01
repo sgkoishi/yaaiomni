@@ -60,63 +60,72 @@ public partial class Plugin : TerrariaPlugin
         var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
         if (preset.AllowRestricted || vanillaMode)
         {
-            guest?.AddPermission(Consts.Permissions.TogglePvP);
-            guest?.AddPermission(Consts.Permissions.ToggleTeam);
-            guest?.AddPermission(Consts.Permissions.SyncLoadout);
+            this.AddPermission(guest,
+                Consts.Permissions.TogglePvP,
+                Consts.Permissions.ToggleTeam,
+                Consts.Permissions.SyncLoadout);
         }
-        guest?.AddPermission(Consts.Permissions.Ping);
+        this.AddPermission(guest, Consts.Permissions.Ping);
 
         this.AliasPermission(TShockAPI.Permissions.canchat, Consts.Permissions.Chat);
         this.AliasPermission(TShockAPI.Permissions.summonboss, $"{Consts.Permissions.SummonBoss}.*");
         this.AliasPermission(TShockAPI.Permissions.startinvasion, $"{Consts.Permissions.SummonBoss}.*");
 
-        var na = Utils.ParentGroup(
-            TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("newadmin"),
-            g => g.HasPermission(TShockAPI.Permissions.kick));
+        if (preset.DebugForAdminOnly)
+        {
+            this.AliasPermission(TShockAPI.Permissions.kick, Consts.Permissions.Whynot);
+        }
+        else
+        {
+            this.AddPermission(guest, Consts.Permissions.Whynot);
+        }
 
-        na?.AddPermission(Consts.Permissions.Admin.Ghost);
-        na?.AddPermission(Consts.Permissions.Admin.SetLanguage);
-        na?.AddPermission(Consts.Permissions.Admin.DebugStat);
-        na?.AddPermission(Consts.Permissions.Admin.SetPvp);
-        na?.AddPermission(Consts.Permissions.Admin.SetTeam);
-        na?.AddPermission(Consts.Permissions.TimeoutCommand);
-        na?.AddPermission(Consts.Permissions.IntervalCommand);
-        na?.AddPermission(Consts.Permissions.ClearInterval);
-        na?.AddPermission(Consts.Permissions.ShowTimeout);
-        (preset.DebugForAdminOnly ? na : guest)?.AddPermission(Consts.Permissions.Whynot);
+        this.AliasPermission(TShockAPI.Permissions.kick,
+            Consts.Permissions.Admin.Ghost,
+            Consts.Permissions.Admin.SetLanguage,
+            Consts.Permissions.Admin.DebugStat,
+            Consts.Permissions.Admin.SetPvp,
+            Consts.Permissions.Admin.SetTeam,
+            Consts.Permissions.TimeoutCommand,
+            Consts.Permissions.IntervalCommand,
+            Consts.Permissions.ClearInterval,
+            Consts.Permissions.ShowTimeout);
 
-        var ta = Utils.ParentGroup(
-            TShockAPI.TShock.Groups.GetGroupByName("owner") ?? TShockAPI.TShock.Groups.GetGroupByName("trustedadmin"),
-            g => g.HasPermission(TShockAPI.Permissions.maintenance));
+        this.AliasPermission(TShockAPI.Permissions.maintenance,
+            Consts.Permissions.Admin.MaxPlayers,
+            Consts.Permissions.Admin.TileProvider,
+            Consts.Permissions.Admin.TriggerGarbageCollection,
+            Consts.Permissions.Admin.RawBroadcast,
+            Consts.Permissions.Admin.TerminateSocket,
+            Consts.Permissions.Admin.ResetCharacterOther,
+            Consts.Permissions.Admin.ExportCharacter);
 
-        ta?.AddPermission(Consts.Permissions.Admin.MaxPlayers);
-        ta?.AddPermission(Consts.Permissions.Admin.TileProvider);
-        ta?.AddPermission(Consts.Permissions.Admin.TriggerGarbageCollection);
-        ta?.AddPermission(Consts.Permissions.Admin.RawBroadcast);
-        ta?.AddPermission(Consts.Permissions.Admin.TerminateSocket);
-        ta?.AddPermission(Consts.Permissions.Admin.ResetCharacterOther);
-        ta?.AddPermission(Consts.Permissions.Admin.ExportCharacter);
-
-        var owner = Utils.ParentGroup(
-            TShockAPI.TShock.Groups.GetGroupByName("owner"),
-            g => g.HasPermission(TShockAPI.Permissions.su));
-
-        owner?.AddPermission(Consts.Permissions.Admin.Sudo);
-        owner?.AddPermission(Consts.Permissions.Admin.ListClients);
-        owner?.AddPermission(Consts.Permissions.Admin.DumpBuffer);
-        owner?.AddPermission(Consts.Permissions.Admin.ResetCharacterAll);
+        this.AliasPermission(TShockAPI.Permissions.su,
+            Consts.Permissions.Admin.Sudo,
+            Consts.Permissions.Admin.ListClients,
+            Consts.Permissions.Admin.DumpBuffer,
+            Consts.Permissions.Admin.ResetCharacterAll);
 
         File.WriteAllText(Path.Combine(TShockAPI.TShock.SavePath, Consts.PresetLock), string.Empty);
     }
 
-    private void AliasPermission(string orig, string equiv)
+    private void AliasPermission(string orig, params string[] equiv)
     {
         foreach (var group in TShockAPI.TShock.Groups.groups)
         {
-            if (group.HasPermission(orig))
+            if (group.HasPermission(orig) && (group.Parent?.HasPermission(orig) != true))
             {
-                group.AddPermission(equiv);
+                this.AddPermission(group, equiv);
             }
         }
+    }
+
+    private void AddPermission(TShockAPI.Group? group, params string[] perm)
+    {
+        if (group == null)
+        {
+            return;
+        }
+        TShockAPI.TShock.Groups.AddPermissions(group!.Name, perm.ToList());
     }
 }
