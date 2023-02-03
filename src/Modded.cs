@@ -4,7 +4,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void Hook_Modded_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
+    private void OTHook_Modded_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
         if (args.Result == OTAPI.HookResult.Cancel)
         {

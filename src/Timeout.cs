@@ -7,7 +7,7 @@ public partial class Plugin : TerrariaPlugin
 {
     private int _updateCounter = 0;
 
-    private void Hook_TimeoutInterval(EventArgs args)
+    private void TAHook_TimeoutInterval(EventArgs args)
     {
         this._updateCounter++;
         foreach (var player in Utils.ActivePlayers)

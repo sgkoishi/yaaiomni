@@ -10,7 +10,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void Hook_Socket_OnCreate(object? sender, OTAPI.Hooks.Netplay.CreateTcpListenerEventArgs args)
+    private void OTHook_Socket_OnCreate(object? sender, OTAPI.Hooks.Netplay.CreateTcpListenerEventArgs args)
     {
         switch (this.config.Socket)
         {

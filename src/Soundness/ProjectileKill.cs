@@ -6,7 +6,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void Hook_Soundness_ProjectileKill(On.Terraria.Projectile.orig_Kill orig, Projectile self)
+    private void MMHook_Soundness_ProjectileKill(On.Terraria.Projectile.orig_Kill orig, Projectile self)
     {
         if (this.config.Soundness.ProjectileKillMapEditRestriction)
         {

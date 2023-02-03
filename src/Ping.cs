@@ -48,7 +48,7 @@ public partial class Plugin : TerrariaPlugin
         return (pingdata.LastPing = pd.End!.Value - pd.Start).Value;
     }
 
-    private void Hook_Ping_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
+    private void OTHook_Ping_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
         if (args.PacketId != (byte) PacketTypes.ItemOwner)
         {

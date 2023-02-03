@@ -12,7 +12,7 @@ public partial class Plugin : TerrariaPlugin
     };
     private static readonly byte[] _versionCode = Main.curRelease.ToString().Select(Convert.ToByte).ToArray();
 
-    private void Hook_PatchVersion_GetData(On.Terraria.MessageBuffer.orig_GetData orig, MessageBuffer self, int start, int length, out int messageType)
+    private void MMHook_PatchVersion_GetData(On.Terraria.MessageBuffer.orig_GetData orig, MessageBuffer self, int start, int length, out int messageType)
     {
         if (self.readBuffer[start] == 1 && length == 13)
         {

@@ -30,7 +30,7 @@
     <PackageReference Include="TShock" Version="5.1.3">
       <ExcludeAssets>ContentFiles</ExcludeAssets>
     </PackageReference>
-    <None Include="../README.md" Pack="true" PackagePath="\"/>
+    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <Target Name="githash" BeforeTargets="PreBuildEvent">

@@ -5,7 +5,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void Hook_TileProvider_ClearWorld(On.Terraria.WorldGen.orig_clearWorld orig)
+    private void MMHook_TileProvider_ClearWorld(On.Terraria.WorldGen.orig_clearWorld orig)
     {
         if (Terraria.Main.tile is ModFramework.DefaultCollection<Terraria.ITile> dc)
         {

@@ -83,7 +83,7 @@ public partial class Plugin : TerrariaPlugin
 
     private readonly bool[] _BuffUpdateNPC = new bool[Terraria.Main.npc.Length];
 
-    private void Hook_Mitigation_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
+    private void OTHook_Mitigation_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
         if (args.Result == OTAPI.HookResult.Cancel)
         {
@@ -247,7 +247,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
-    private void Hook_Mitigation_NpcAddBuff(object? sender, TShockAPI.GetDataHandlers.NPCAddBuffEventArgs args)
+    private void GDHook_Mitigation_NpcAddBuff(object? sender, TShockAPI.GetDataHandlers.NPCAddBuffEventArgs args)
     {
         if (args.Handled)
         {
@@ -270,7 +270,7 @@ public partial class Plugin : TerrariaPlugin
         args.Handled = true;
     }
 
-    private void Hook_Mitigation_GameUpdate(EventArgs args)
+    private void TAHook_Mitigation_GameUpdate(EventArgs args)
     {
         var mitigation = this.config.Mitigation;
         if (!mitigation.Enabled)
@@ -344,7 +344,7 @@ public partial class Plugin : TerrariaPlugin
     }
 
     private readonly ConnectionStore _connPool = new ConnectionStore();
-    private void Hook_Mitigation_OnConnectionAccepted(On.Terraria.Netplay.orig_OnConnectionAccepted orig, Terraria.Net.Sockets.ISocket client)
+    private void MMHook_Mitigation_OnConnectionAccepted(On.Terraria.Netplay.orig_OnConnectionAccepted orig, Terraria.Net.Sockets.ISocket client)
     {
         var mitigation = this.config.Mitigation;
         if (mitigation.Enabled && client.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa)

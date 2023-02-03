@@ -6,7 +6,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void Hook_Wildcard_PlayerCommand(PlayerCommandEventArgs args)
+    private void TSHook_Wildcard_PlayerCommand(PlayerCommandEventArgs args)
     {
         if (args.Handled)
         {

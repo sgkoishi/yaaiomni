@@ -8,7 +8,7 @@ public partial class Plugin : TerrariaPlugin
 {
     private List<Command> _hiddenCommands = new();
 
-    private void Hook_HideCommand_PlayerCommand(PlayerCommandEventArgs args)
+    private void TSHook_HideCommand_PlayerCommand(PlayerCommandEventArgs args)
     {
         var hc = this._hiddenCommands.FindAll(c => c.HasAlias(args.CommandName) && c.CanRun(args.Player));
         if (hc.Count > 0)

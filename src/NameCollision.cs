@@ -8,7 +8,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void Hook_NameCollision(NameCollisionEventArgs args)
+    private void TAHook_NameCollision(NameCollisionEventArgs args)
     {
         if (args.Handled)
         {

@@ -185,67 +185,67 @@ public partial class Plugin : TerrariaPlugin
 
     public override void Initialize()
     {
-        On.Terraria.MessageBuffer.GetData += this.Hook_PatchVersion_GetData;
-        On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor += this.Hook_MemoryTrim_DisplayDoll;
-        On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor += this.Hook_MemoryTrim_HatRack;
-        On.Terraria.NetMessage.SendData += this.Hook_DebugPacket_SendData;
-        On.Terraria.MessageBuffer.GetData += this.Hook_DebugPacket_GetData;
-        On.Terraria.Projectile.Kill += this.Hook_Soundness_ProjectileKill;
-        On.Terraria.WorldGen.clearWorld += this.Hook_TileProvider_ClearWorld;
-        On.Terraria.Netplay.OnConnectionAccepted += this.Hook_Mitigation_OnConnectionAccepted;
-        OTAPI.Hooks.NetMessage.SendBytes += this.Hook_Ghost_SendBytes;
-        OTAPI.Hooks.NetMessage.SendBytes += this.Hook_DebugPacket_SendBytes;
-        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Modded_GetData;
-        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Permission_SyncLoadout;
-        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Ping_GetData;
-        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Permission_SummonBoss;
-        TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.Hook_NameCollision);
+        On.Terraria.MessageBuffer.GetData += this.MMHook_PatchVersion_GetData;
+        On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor += this.MMHook_MemoryTrim_DisplayDoll;
+        On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor += this.MMHook_MemoryTrim_HatRack;
+        On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_SendData;
+        On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_GetData;
+        On.Terraria.Projectile.Kill += this.MMHook_Soundness_ProjectileKill;
+        On.Terraria.WorldGen.clearWorld += this.MMHook_TileProvider_ClearWorld;
+        On.Terraria.Netplay.OnConnectionAccepted += this.MMHook_Mitigation_OnConnectionAccepted;
+        OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_Ghost_SendBytes;
+        OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_DebugPacket_SendBytes;
+        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
+        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SyncLoadout;
+        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Ping_GetData;
+        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SummonBoss;
+        TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.TAHook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
-        TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.Hook_TimeoutInterval);
-        TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.Hook_Mitigation_GameUpdate);
-        TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.Hook_HideCommand_PlayerCommand;
-        TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.Hook_Wildcard_PlayerCommand;
-        TShockAPI.Hooks.PlayerHooks.PlayerPermission += this.Hook_Sudo_OnPlayerPermission;
+        TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.TAHook_TimeoutInterval);
+        TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.TAHook_Mitigation_GameUpdate);
+        TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.TSHook_HideCommand_PlayerCommand;
+        TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.TSHook_Wildcard_PlayerCommand;
+        TShockAPI.Hooks.PlayerHooks.PlayerPermission += this.TSHook_Sudo_OnPlayerPermission;
         TShockAPI.Hooks.GeneralHooks.ReloadEvent += this.OnReload;
         TShockAPI.TShock.Initialized += this.PostTShockInitialize;
-        TShockAPI.GetDataHandlers.TogglePvp.Register(this.Hook_Permission_TogglePvp);
-        TShockAPI.GetDataHandlers.PlayerTeam.Register(this.Hook_Permission_PlayerTeam);
+        TShockAPI.GetDataHandlers.TogglePvp.Register(this.GDHook_Permission_TogglePvp);
+        TShockAPI.GetDataHandlers.PlayerTeam.Register(this.GDHook_Permission_PlayerTeam);
     }
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            On.Terraria.MessageBuffer.GetData -= this.Hook_PatchVersion_GetData;
-            On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor -= this.Hook_MemoryTrim_DisplayDoll;
-            On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor -= this.Hook_MemoryTrim_HatRack;
-            On.Terraria.NetMessage.SendData -= this.Hook_DebugPacket_SendData;
-            On.Terraria.MessageBuffer.GetData -= this.Hook_DebugPacket_GetData;
-            On.Terraria.NetMessage.SendData -= this.Hook_DebugPacket_CatchSend;
-            On.Terraria.MessageBuffer.GetData -= this.Hook_DebugPacket_CatchGet;
-            On.Terraria.Projectile.Kill -= this.Hook_Soundness_ProjectileKill;
-            On.Terraria.WorldGen.clearWorld -= this.Hook_TileProvider_ClearWorld;
-            On.Terraria.Netplay.OnConnectionAccepted -= this.Hook_Mitigation_OnConnectionAccepted;
-            OTAPI.Hooks.NetMessage.SendBytes -= this.Hook_Ghost_SendBytes;
-            OTAPI.Hooks.NetMessage.SendBytes -= this.Hook_DebugPacket_SendBytes;
-            OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Mitigation_GetData;
-            OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Permission_SyncLoadout;
-            OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Modded_GetData;
-            OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Ping_GetData;
-            OTAPI.Hooks.MessageBuffer.GetData -= this.Hook_Permission_SummonBoss;
-            OTAPI.Hooks.Netplay.CreateTcpListener -= this.Hook_Socket_OnCreate;
-            TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.Hook_NameCollision);
+            On.Terraria.MessageBuffer.GetData -= this.MMHook_PatchVersion_GetData;
+            On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor -= this.MMHook_MemoryTrim_DisplayDoll;
+            On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor -= this.MMHook_MemoryTrim_HatRack;
+            On.Terraria.NetMessage.SendData -= this.MMHook_DebugPacket_SendData;
+            On.Terraria.MessageBuffer.GetData -= this.MMHook_DebugPacket_GetData;
+            On.Terraria.NetMessage.SendData -= this.MMHook_DebugPacket_CatchSend;
+            On.Terraria.MessageBuffer.GetData -= this.MMHook_DebugPacket_CatchGet;
+            On.Terraria.Projectile.Kill -= this.MMHook_Soundness_ProjectileKill;
+            On.Terraria.WorldGen.clearWorld -= this.MMHook_TileProvider_ClearWorld;
+            On.Terraria.Netplay.OnConnectionAccepted -= this.MMHook_Mitigation_OnConnectionAccepted;
+            OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_Ghost_SendBytes;
+            OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_DebugPacket_SendBytes;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Mitigation_GetData;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Permission_SyncLoadout;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Modded_GetData;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Ping_GetData;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Permission_SummonBoss;
+            OTAPI.Hooks.Netplay.CreateTcpListener -= this.OTHook_Socket_OnCreate;
+            TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.TAHook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
-            TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.Hook_TimeoutInterval);
-            TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.Hook_Mitigation_GameUpdate);
-            TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.Hook_HideCommand_PlayerCommand;
-            TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.Hook_Wildcard_PlayerCommand;
-            TShockAPI.Hooks.PlayerHooks.PlayerPermission -= this.Hook_Sudo_OnPlayerPermission;
+            TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.TAHook_TimeoutInterval);
+            TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.TAHook_Mitigation_GameUpdate);
+            TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.TSHook_HideCommand_PlayerCommand;
+            TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.TSHook_Wildcard_PlayerCommand;
+            TShockAPI.Hooks.PlayerHooks.PlayerPermission -= this.TSHook_Sudo_OnPlayerPermission;
             TShockAPI.Hooks.GeneralHooks.ReloadEvent -= this.OnReload;
             TShockAPI.TShock.Initialized -= this.PostTShockInitialize;
-            TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.Hook_Permission_TogglePvp);
-            TShockAPI.GetDataHandlers.PlayerTeam.UnRegister(this.Hook_Permission_PlayerTeam);
-            TShockAPI.GetDataHandlers.NPCAddBuff.UnRegister(this.Hook_Mitigation_NpcAddBuff);
+            TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.GDHook_Permission_TogglePvp);
+            TShockAPI.GetDataHandlers.PlayerTeam.UnRegister(this.GDHook_Permission_PlayerTeam);
+            TShockAPI.GetDataHandlers.NPCAddBuff.UnRegister(this.GDHook_Mitigation_NpcAddBuff);
             var asm = Assembly.GetExecutingAssembly();
             Commands.ChatCommands.RemoveAll(c => c.CommandDelegate.Method?.DeclaringType?.Assembly == asm);
             foreach (var detour in this._detours.Values)
@@ -266,15 +266,15 @@ public partial class Plugin : TerrariaPlugin
 
     private void OnGamePostInitialize(EventArgs args)
     {
-        OTAPI.Hooks.MessageBuffer.GetData += this.Hook_Mitigation_GetData;
-        On.Terraria.NetMessage.SendData += this.Hook_DebugPacket_CatchSend;
-        On.Terraria.MessageBuffer.GetData += this.Hook_DebugPacket_CatchGet;
-        TShockAPI.GetDataHandlers.NPCAddBuff.Register(this.Hook_Mitigation_NpcAddBuff);
+        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Mitigation_GetData;
+        On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_CatchSend;
+        On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_CatchGet;
+        TShockAPI.GetDataHandlers.NPCAddBuff.Register(this.GDHook_Mitigation_NpcAddBuff);
     }
 
     private void PostTShockInitialize()
     {
-        OTAPI.Hooks.Netplay.CreateTcpListener += this.Hook_Socket_OnCreate;
+        OTAPI.Hooks.Netplay.CreateTcpListener += this.OTHook_Socket_OnCreate;
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Whynot, this.Command_PermissionCheck, Consts.Commands.Whynot)
         {
             AllowServer = false,

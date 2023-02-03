@@ -15,7 +15,7 @@ public partial class Plugin : TerrariaPlugin
         return state == null ? orig(player) : !state.Value;
     }
 
-    private void Hook_Ghost_SendBytes(object? sender, OTAPI.Hooks.NetMessage.SendBytesEventArgs args)
+    private void OTHook_Ghost_SendBytes(object? sender, OTAPI.Hooks.NetMessage.SendBytesEventArgs args)
     {
         if (args.Data[2] != (int) PacketTypes.PlayerActive)
         {

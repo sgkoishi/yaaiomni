@@ -6,7 +6,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    private void Hook_Permission_TogglePvp(object? sender, TogglePvpEventArgs args)
+    private void GDHook_Permission_TogglePvp(object? sender, TogglePvpEventArgs args)
     {
         if (args.Handled)
         {
@@ -33,7 +33,7 @@ public partial class Plugin : TerrariaPlugin
         Terraria.NetMessage.TrySendData((int) PacketTypes.TogglePvp, -1, -1, NetworkText.Empty, args.PlayerId);
     }
 
-    private void Hook_Permission_PlayerTeam(object? sender, PlayerTeamEventArgs args)
+    private void GDHook_Permission_PlayerTeam(object? sender, PlayerTeamEventArgs args)
     {
         if (args.Handled)
         {
@@ -60,7 +60,7 @@ public partial class Plugin : TerrariaPlugin
         Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.PlayerId);
     }
 
-    private void Hook_Permission_SyncLoadout(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
+    private void OTHook_Permission_SyncLoadout(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
         if (args.Result == OTAPI.HookResult.Cancel)
         {
@@ -90,7 +90,7 @@ public partial class Plugin : TerrariaPlugin
         Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, args.Instance.whoAmI, player.TPlayer.CurrentLoadoutIndex);
     }
 
-    private void Hook_Permission_SummonBoss(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
+    private void OTHook_Permission_SummonBoss(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
         if (args.Result == OTAPI.HookResult.Cancel)
         {
