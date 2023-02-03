@@ -193,6 +193,8 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.Projectile.Kill += this.MMHook_Soundness_ProjectileKill;
         On.Terraria.WorldGen.clearWorld += this.MMHook_TileProvider_ClearWorld;
         On.Terraria.Netplay.OnConnectionAccepted += this.MMHook_Mitigation_OnConnectionAccepted;
+        On.Terraria.Main.ReadLineInput += this.MMHook_CliConfig_ReadLine;
+        On.Terraria.Localization.Language.GetTextValue_string += this.MMHook_CliConfig_LanguageText;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_Ghost_SendBytes;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_DebugPacket_SendBytes;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
@@ -226,6 +228,8 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.Projectile.Kill -= this.MMHook_Soundness_ProjectileKill;
             On.Terraria.WorldGen.clearWorld -= this.MMHook_TileProvider_ClearWorld;
             On.Terraria.Netplay.OnConnectionAccepted -= this.MMHook_Mitigation_OnConnectionAccepted;
+            On.Terraria.Main.ReadLineInput -= this.MMHook_CliConfig_ReadLine;
+            On.Terraria.Localization.Language.GetTextValue_string -= this.MMHook_CliConfig_LanguageText;
             OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_Ghost_SendBytes;
             OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_DebugPacket_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Mitigation_GetData;

@@ -34,6 +34,11 @@ public class Config
     public bool AlternativeCommandSyntax = true;
 
     /// <summary>
+    /// Override config file with CLI input (port, maxplayers)
+    /// </summary>
+    public bool CLIoverConfig = true;
+
+    /// <summary>
     /// DateTime format for logging.
     /// </summary>
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
