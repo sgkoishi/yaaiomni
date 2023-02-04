@@ -173,12 +173,15 @@ public partial class Plugin : TerrariaPlugin
             return;
         }
 
-        var player = TSPlayer.FindByNameOrID(args.Parameters[0]);
+        var withoutcheck = args.Parameters.Count == 3 && args.Parameters.Contains("-f");
+        var parm = args.Parameters.Except(new string[] { "-f" }).ToArray();
+
+        var player = TSPlayer.FindByNameOrID(parm[0]);
         if (player.Count == 1)
         {
             // Right one
         }
-        else if (args.Parameters[0] == "*" || this.config.PlayerWildcardFormat.Contains(args.Parameters[0]))
+        else if (parm[0] == "*" || this.config.PlayerWildcardFormat.Contains(parm[0]))
         {
             player = Utils.ActivePlayers.ToList();
         }
@@ -196,20 +199,18 @@ public partial class Plugin : TerrariaPlugin
             }
         }
 
-        var withoutcheck = args.Parameters.Count > 2 && args.Parameters[2] == "-f";
-
         if (withoutcheck)
         {
             foreach (var p in player)
             {
-                this.RunWithoutPermissionChecks(() => TShockAPI.Commands.HandleCommand(p, args.Parameters[1]), p);
+                this.RunWithoutPermissionChecks(() => TShockAPI.Commands.HandleCommand(p, parm[1]), p);
             }
         }
         else
         {
             foreach (var p in player)
             {
-                TShockAPI.Commands.HandleCommand(p, args.Parameters[1]);
+                TShockAPI.Commands.HandleCommand(p, parm[1]);
             }
         }
     }

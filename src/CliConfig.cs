@@ -8,7 +8,7 @@ public partial class Plugin : TerrariaPlugin
     private PendingConfig _pendingConfig = PendingConfig.None;
     private string MMHook_CliConfig_LanguageText(On.Terraria.Localization.Language.orig_GetTextValue_string orig, string key)
     {
-        if (this.config.CLIoverConfig)
+        if (this.config.CLIoverConfig && this._pendingConfig != PendingConfig.Done)
         {
             if (key == "CLI.SetInitialMaxPlayers")
             {
@@ -77,7 +77,7 @@ public partial class Plugin : TerrariaPlugin
                     }
                     case PendingConfig.Password:
                     {
-                        this._pendingConfig = PendingConfig.None;
+                        this._pendingConfig = PendingConfig.Done;
                         TShockAPI.TShock.Config.Settings.ServerPassword = this._pendingDefault;
                         this._pendingDefault = null;
                         break;
@@ -94,5 +94,6 @@ public partial class Plugin : TerrariaPlugin
         MaxPlayers,
         Port,
         Password,
+        Done,
     }
 }
