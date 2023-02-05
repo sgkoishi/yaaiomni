@@ -27,7 +27,7 @@ public partial class Plugin : TerrariaPlugin
                 this._pendingDefault = $"{TShockAPI.TShock.Config.Settings.ServerPassword}";
                 this._pendingConfig = PendingConfig.Password;
                 var o = orig(key);
-                return $"{o[..o.IndexOf('(')]}(Enter -> config.json):";
+                return $"{(o.Contains('(') ? o[..o.IndexOf('(')] : o)}(Enter -> config.json):";
             }
         }
         return orig(key);
