@@ -17,7 +17,7 @@ public partial class Plugin : TerrariaPlugin
         }
 
         var tp = TShockAPI.TShock.Players[args.Player.whoAmI];
-        if (tp == null || !tp.HasBuildPermission(args.Chest.x, args.Chest.y))
+        if (tp == null || !tp.HasBuildPermission(args.Chest.x, args.Chest.y, false))
         {
             args.Handled = true;
         }
