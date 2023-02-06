@@ -6,7 +6,7 @@ public partial class Plugin : TerrariaPlugin
 {
     private bool Detour_Command_Alternative(Func<TShockAPI.TSPlayer, string, bool> orig, TShockAPI.TSPlayer player, string text)
     {
-        if (this.config.AlternativeCommandSyntax)
+        if (this.config.Enhancements.AlternativeCommandSyntax)
         {
             var commands = Utils.ParseCommands(text);
             foreach (var command in commands)

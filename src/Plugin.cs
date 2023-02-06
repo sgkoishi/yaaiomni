@@ -113,16 +113,16 @@ public partial class Plugin : TerrariaPlugin
         {
             e?.Player?.SendInfoMessage(JsonConvert.SerializeObject(this.config, Formatting.Indented));
         }
-        switch (this.config.TileProvider)
+        switch (this.config.Enhancements.TileProvider)
         {
-            case Config.TileProviderOptions.CheckedGenericCollection:
+            case Config.EnhancementsSettings.TileProviderOptions.CheckedGenericCollection:
                 Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile, new CheckedGenericCollection());
                 break;
-            case Config.TileProviderOptions.CheckedTypedCollection:
+            case Config.EnhancementsSettings.TileProviderOptions.CheckedTypedCollection:
                 Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile, new CheckedTypedCollection());
                 break;
-            case Config.TileProviderOptions.AsIs:
-            case Config.TileProviderOptions.Preset:
+            case Config.EnhancementsSettings.TileProviderOptions.AsIs:
+            case Config.EnhancementsSettings.TileProviderOptions.Preset:
                 break;
         }
         this.PermissionSetup();
@@ -205,6 +205,7 @@ public partial class Plugin : TerrariaPlugin
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.TAHook_TimeoutInterval);
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.TAHook_Mitigation_GameUpdate);
+        TerrariaApi.Server.ServerApi.Hooks.ItemForceIntoChest.Register(this, this.TAHook_Permission_ItemForceIntoChest);
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.TSHook_HideCommand_PlayerCommand;
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.TSHook_Wildcard_PlayerCommand;
         TShockAPI.Hooks.PlayerHooks.PlayerPermission += this.TSHook_Sudo_OnPlayerPermission;

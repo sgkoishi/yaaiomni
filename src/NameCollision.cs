@@ -20,25 +20,25 @@ public partial class Plugin : TerrariaPlugin
         var knownIPs = JsonConvert.DeserializeObject<List<string>>(account?.KnownIps ?? "[]")!;
         var first = false;
         var second = false;
-        switch (this.config.NameCollision)
+        switch (this.config.Enhancements.NameCollision)
         {
-            case Config.NameCollisionAction.First:
+            case Config.EnhancementsSettings.NameCollisionAction.First:
                 first = true;
                 args.Handled = true;
                 break;
-            case Config.NameCollisionAction.Second:
+            case Config.EnhancementsSettings.NameCollisionAction.Second:
                 second = true;
                 args.Handled = true;
                 break;
-            case Config.NameCollisionAction.Both:
+            case Config.EnhancementsSettings.NameCollisionAction.Both:
                 first = true;
                 second = true;
                 args.Handled = true;
                 break;
-            case Config.NameCollisionAction.None:
+            case Config.EnhancementsSettings.NameCollisionAction.None:
                 args.Handled = true;
                 break;
-            case Config.NameCollisionAction.Known:
+            case Config.EnhancementsSettings.NameCollisionAction.Known:
                 if (!knownIPs.Contains(ip))
                 {
                     second = true;
@@ -53,11 +53,11 @@ public partial class Plugin : TerrariaPlugin
                 }
                 args.Handled = true;
                 break;
-            case Config.NameCollisionAction.Unhandled:
-            case Config.NameCollisionAction.Preset:
+            case Config.EnhancementsSettings.NameCollisionAction.Unhandled:
+            case Config.EnhancementsSettings.NameCollisionAction.Preset:
                 return;
             default:
-                throw new SwitchExpressionException($"Unexpected option {this.config.NameCollision}");
+                throw new SwitchExpressionException($"Unexpected option {this.config.Enhancements.NameCollision}");
         }
         if (first)
         {

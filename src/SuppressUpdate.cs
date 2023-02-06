@@ -7,7 +7,7 @@ public partial class Plugin : TerrariaPlugin
 {
     private async Task Detour_UpdateCheckAsync(Func<UpdateManager, object, Task> orig, UpdateManager um, object state)
     {
-        if (this.config.SuppressUpdate == Config.UpdateOptions.Disabled)
+        if (this.config.Enhancements.SuppressUpdate == Config.EnhancementsSettings.UpdateOptions.Disabled)
         {
             return;
         }
@@ -16,7 +16,9 @@ public partial class Plugin : TerrariaPlugin
             await orig(um, state);
             return;
         }
-        catch when (this.config.SuppressUpdate is Config.UpdateOptions.Silent or Config.UpdateOptions.Preset)
+        catch when (this.config.Enhancements.SuppressUpdate
+            is Config.EnhancementsSettings.UpdateOptions.Silent
+                or Config.EnhancementsSettings.UpdateOptions.Preset)
         {
             return;
         }

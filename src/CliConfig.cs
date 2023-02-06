@@ -8,7 +8,7 @@ public partial class Plugin : TerrariaPlugin
     private PendingConfig _pendingConfig = PendingConfig.None;
     private string MMHook_CliConfig_LanguageText(On.Terraria.Localization.Language.orig_GetTextValue_string orig, string key)
     {
-        if (this.config.CLIoverConfig && this._pendingConfig != PendingConfig.Done)
+        if (this.config.Enhancements.CLIoverConfig && this._pendingConfig != PendingConfig.Done)
         {
             if (key == "CLI.SetInitialMaxPlayers")
             {
@@ -36,7 +36,7 @@ public partial class Plugin : TerrariaPlugin
     private string MMHook_CliConfig_ReadLine(On.Terraria.Main.orig_ReadLineInput orig)
     {
         var o = orig();
-        if (this.config.CLIoverConfig)
+        if (this.config.Enhancements.CLIoverConfig)
         {
             if (this._pendingDefault != null)
             {

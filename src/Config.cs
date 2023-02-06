@@ -9,14 +9,6 @@ namespace Chireiden.TShock.Omni;
 public class Config
 {
     /// <summary>
-    /// Disable vanilla version check.
-    /// </summary>
-    public bool SyncVersion = true;
-
-    /// <summary> Trim memory depends on the world. No side effect. </summary>
-    public bool TrimMemory = true;
-
-    /// <summary>
     /// Weather to show the config file on load/reload.
     /// </summary>
     public bool ShowConfig = false;
@@ -27,35 +19,9 @@ public class Config
     public bool LogFirstChance = false;
 
     /// <summary>
-    /// Alternative command syntax implementation.
-    /// Allow multiple commands in one line, quote inside text (e.g. te"x"t)
-    /// Note: this is not fully compatible with TShock's command syntax.
-    /// </summary>
-    public bool AlternativeCommandSyntax = true;
-
-    /// <summary>
-    /// Override config file with CLI input (port, maxplayers)
-    /// </summary>
-    public bool CLIoverConfig = true;
-
-    /// <summary>
     /// DateTime format for logging.
     /// </summary>
     public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
-
-    /// <summary>
-    /// Action for TShock's update
-    /// </summary>
-    public UpdateOptions SuppressUpdate = UpdateOptions.Preset;
-
-    /// <summary>
-    /// Socket Provider
-    /// </summary>
-    public SocketType Socket = SocketType.Preset;
-
-    public NameCollisionAction NameCollision = NameCollisionAction.Preset;
-
-    public TileProviderOptions TileProvider = TileProviderOptions.Preset;
 
     /// <summary>
     /// The wildcard of matching all players. Directly using "*" itself is not
@@ -87,6 +53,8 @@ public class Config
 
     public Dictionary<string, List<string>> CommandRenames = new();
 
+    public EnhancementsSettings Enhancements = new();
+
     public LavaSettings LavaHandler = new();
 
     public DebugPacketSettings DebugPacket = new();
@@ -99,80 +67,120 @@ public class Config
 
     public MitigationSettings Mitigation = new();
 
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum UpdateOptions
+    public class EnhancementsSettings
     {
-        Silent,
-        Disabled,
-        AsIs,
-        Preset,
-    }
+        /// <summary> 
+        /// Remove unused client-side objects to save memory.
+        /// </summary>
+        public bool TrimMemory = true;
 
-    /// <summary>
-    /// We found 'memory leak', from the memory dump it seems that the async networking is using much more memory than expected.
-    /// <code>
-    /// System.Threading.ThreadPool.s_workQueue
-    /// -> System.Net.Sockets.SocketAsyncContext+BufferMemorySendOperation
-    ///   -> System.Action&lt;System.Int32, System.Byte[], System.Int32, System.Net.Sockets.SocketFlags, System.Net.Sockets.SocketError&gt;
-    ///     -> System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs
-    /// -> System.Threading.QueueUserWorkItemCallbackDefaultContext
-    ///   -> System.Net.Sockets.SocketAsyncContext+BufferMemorySendOperation
-    ///     -> System.Action&lt;System.Int32, System.Byte[], System.Int32, System.Net.Sockets.SocketFlags, System.Net.Sockets.SocketError&gt;
-    ///       -> System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs
-    /// </code>
-    /// This 'memory leak' is now confirmed to be related to <seealso cref="Chireiden.TShock.Omni.Config.MitigationSettings.InventorySlotPE"/>.
-    /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum SocketType
-    {
-        Vanilla,
-        TShock,
-        AsIs,
-        Unset,
-        HackyBlocked,
-        HackyAsync,
-        AnotherAsyncSocket,
-        Preset
-    }
+        /// <summary>
+        /// Alternative command syntax implementation.
+        /// Allow multiple commands in one line, quote inside text (e.g. te"x"t)
+        /// <para>
+        /// Note: this is not fully compatible with TShock's command syntax.
+        /// </para>
+        /// </summary>
+        public bool AlternativeCommandSyntax = true;
 
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum NameCollisionAction
-    {
         /// <summary>
-        /// Kick the first player
+        /// Override config file with CLI input (port, maxplayers)
         /// </summary>
-        First,
-        /// <summary>
-        /// Kick the second player
-        /// </summary>
-        Second,
-        /// <summary>
-        /// Kick both players
-        /// </summary>
-        Both,
-        /// <summary>
-        /// Kick neither player
-        /// </summary>
-        None,
-        /// <summary>
-        /// Kick whoever does not using a known ip and not logged in, fallback to <see cref="Second"/>
-        /// </summary>
-        Known,
-        /// <summary>
-        /// Do nothing
-        /// </summary>
-        Unhandled,
-        Preset,
-    }
+        public bool CLIoverConfig = true;
 
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum TileProviderOptions
-    {
-        AsIs,
-        CheckedTypedCollection,
-        CheckedGenericCollection,
-        Preset,
+        /// <summary>
+        /// Disable vanilla version check.
+        /// </summary>
+        public bool SyncVersion = true;
+
+        /// <summary>
+        /// Action for TShock's update
+        /// </summary>
+        public UpdateOptions SuppressUpdate = UpdateOptions.Preset;
+
+        /// <summary>
+        /// Socket Provider
+        /// </summary>
+        public SocketType Socket = SocketType.Preset;
+
+        public NameCollisionAction NameCollision = NameCollisionAction.Preset;
+
+        public TileProviderOptions TileProvider = TileProviderOptions.Preset;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum UpdateOptions
+        {
+            Silent,
+            Disabled,
+            AsIs,
+            Preset,
+        }
+
+        /// <summary>
+        /// We found 'memory leak', from the memory dump it seems that the async networking is using much more memory than expected.
+        /// <code>
+        /// System.Threading.ThreadPool.s_workQueue
+        /// -> System.Net.Sockets.SocketAsyncContext+BufferMemorySendOperation
+        ///   -> System.Action&lt;System.Int32, System.Byte[], System.Int32, System.Net.Sockets.SocketFlags, System.Net.Sockets.SocketError&gt;
+        ///     -> System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs
+        /// -> System.Threading.QueueUserWorkItemCallbackDefaultContext
+        ///   -> System.Net.Sockets.SocketAsyncContext+BufferMemorySendOperation
+        ///     -> System.Action&lt;System.Int32, System.Byte[], System.Int32, System.Net.Sockets.SocketFlags, System.Net.Sockets.SocketError&gt;
+        ///       -> System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs
+        /// </code>
+        /// This 'memory leak' is now confirmed to be related to <seealso cref="Chireiden.TShock.Omni.Config.MitigationSettings.InventorySlotPE"/>.
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum SocketType
+        {
+            Vanilla,
+            TShock,
+            AsIs,
+            Unset,
+            HackyBlocked,
+            HackyAsync,
+            AnotherAsyncSocket,
+            Preset
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum NameCollisionAction
+        {
+            /// <summary>
+            /// Kick the first player
+            /// </summary>
+            First,
+            /// <summary>
+            /// Kick the second player
+            /// </summary>
+            Second,
+            /// <summary>
+            /// Kick both players
+            /// </summary>
+            Both,
+            /// <summary>
+            /// Kick neither player
+            /// </summary>
+            None,
+            /// <summary>
+            /// Kick whoever does not using a known ip and not logged in, fallback to <see cref="Second"/>
+            /// </summary>
+            Known,
+            /// <summary>
+            /// Do nothing
+            /// </summary>
+            Unhandled,
+            Preset,
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum TileProviderOptions
+        {
+            AsIs,
+            CheckedTypedCollection,
+            CheckedGenericCollection,
+            Preset,
+        }
     }
 
     public class LavaSettings
@@ -204,8 +212,15 @@ public class Config
 
     public class SoundnessSettings
     {
-        /// <summary> Permission restrict server-side tile modification projectiles like liquid bombs &amp; rockets, dirt bombs. </summary>
+        /// <summary> 
+        /// Permission restrict server-side tile modification projectiles like liquid bombs &amp; rockets, dirt bombs. 
+        /// </summary>
         public bool ProjectileKillMapEditRestriction = true;
+
+        /// <summary>
+        /// Restrict quick stack to have build permission.
+        /// </summary>
+        public bool QuickStackRestriction = true;
     }
 
     public class PermissionSettings

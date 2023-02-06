@@ -18,7 +18,7 @@ public partial class Plugin : TerrariaPlugin
         {
             if (self.readBuffer.AsSpan(start, 11).SequenceEqual(_versionPacket))
             {
-                if (this.config.SyncVersion)
+                if (this.config.Enhancements.SyncVersion)
                 {
                     Buffer.BlockCopy(_versionCode, 0, self.readBuffer, start + 11, 3);
                 }
