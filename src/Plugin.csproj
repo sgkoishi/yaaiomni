@@ -23,6 +23,7 @@
     <!-- https://github.com/Pryaxis/TShock/issues/2895 -->
     <!-- <GenerateDocumentationFile>true</GenerateDocumentationFile> -->
     <EmbedAllSources>true</EmbedAllSources>
+    <PrivateRepositoryUrl>https://github.com/sgkoishi/yaaiomni</PrivateRepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
 
@@ -44,6 +45,7 @@
     <PropertyGroup>
       <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
       <PackageVersion>0.0.$(CommitVersionValue)-ci</PackageVersion>
+      <Version>0.0.$(CommitVersionValue)</Version>
       <RepositoryCommit>$(CommitHashValue)</RepositoryCommit>
     </PropertyGroup>
     <ItemGroup>

@@ -68,6 +68,8 @@ public partial class Plugin : TerrariaPlugin
         this.AddPermission(guest, Consts.Permissions.Ping);
 
         this.AliasPermission(TShockAPI.Permissions.canchat, Consts.Permissions.Chat);
+        this.AliasPermission(Consts.Permissions.TogglePvP, $"{Consts.Permissions.TogglePvP}.*");
+        this.AliasPermission(Consts.Permissions.ToggleTeam, $"{Consts.Permissions.ToggleTeam}.*");
         this.AliasPermission(TShockAPI.Permissions.summonboss, $"{Consts.Permissions.SummonBoss}.*");
         this.AliasPermission(TShockAPI.Permissions.startinvasion, $"{Consts.Permissions.SummonBoss}.*");
 

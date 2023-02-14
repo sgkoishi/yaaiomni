@@ -12,6 +12,11 @@ public partial class Plugin : TerrariaPlugin
 {
     public override string Name => Assembly.GetExecutingAssembly().GetName().Name!;
     public override string Author => "SGKoishi";
+    public override Version Version => Assembly.GetExecutingAssembly().GetName().Version!;
+    public override string Description => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description!;
+    public override string UpdateURL => Assembly.GetExecutingAssembly()
+        .GetCustomAttributes<AssemblyMetadataAttribute>()
+        .FirstOrDefault(x => x.Key == "RepositoryUrl")?.Value!;
 
     public string ConfigPath = Path.Combine(TShockAPI.TShock.SavePath, Consts.ConfigFile);
 
