@@ -98,12 +98,8 @@ public partial class Plugin : TerrariaPlugin
 
         switch (args.PacketId)
         {
-            case (int) PacketTypes.PlayerSlot:
+            case (int) PacketTypes.PlayerSlot when mitigation.InventorySlotPE:
             {
-                if (!mitigation.InventorySlotPE)
-                {
-                    break;
-                }
                 var index = args.Instance.whoAmI;
                 if (Mitigations.HandleInventorySlotPE((byte) index, args.Instance.readBuffer.AsSpan(args.ReadOffset, args.Length - 1)))
                 {
@@ -130,12 +126,8 @@ public partial class Plugin : TerrariaPlugin
                 }
                 break;
             }
-            case (int) PacketTypes.EffectHeal:
+            case (int) PacketTypes.EffectHeal when mitigation.PotionSicknessPE:
             {
-                if (!mitigation.PotionSicknessPE)
-                {
-                    break;
-                }
                 var index = args.Instance.whoAmI;
                 if (args.Instance.readBuffer[args.ReadOffset] != index)
                 {
@@ -149,12 +141,8 @@ public partial class Plugin : TerrariaPlugin
                 }
                 break;
             }
-            case (int) PacketTypes.PlayerBuff:
+            case (int) PacketTypes.PlayerBuff when mitigation.PotionSicknessPE:
             {
-                if (!mitigation.PotionSicknessPE)
-                {
-                    break;
-                }
                 var index = args.Instance.whoAmI;
                 if (args.Instance.readBuffer[args.ReadOffset] != index)
                 {
@@ -172,12 +160,8 @@ public partial class Plugin : TerrariaPlugin
                 }
                 break;
             }
-            case (int) PacketTypes.ClientSyncedInventory:
+            case (int) PacketTypes.ClientSyncedInventory when mitigation.PotionSicknessPE:
             {
-                if (!mitigation.PotionSicknessPE)
-                {
-                    break;
-                }
                 var index = args.Instance.whoAmI;
                 var pending = this[index].PendingRevertHeal;
                 if (pending > 0)
@@ -189,12 +173,8 @@ public partial class Plugin : TerrariaPlugin
                 }
                 break;
             }
-            case (int) PacketTypes.PlayerUpdate:
+            case (int) PacketTypes.PlayerUpdate when mitigation.SwapWhileUsePE:
             {
-                if (!mitigation.SwapWhileUsePE)
-                {
-                    break;
-                }
                 var index = args.Instance.whoAmI;
                 if (args.Instance.readBuffer[args.ReadOffset] != index)
                 {
@@ -242,8 +222,30 @@ public partial class Plugin : TerrariaPlugin
                 }
                 break;
             }
-            default:
+            case (int) PacketTypes.SyncExtraValue:
+            {
+                switch (mitigation.ExpertExtraCoin)
+                {
+                    case Config.MitigationSettings.ExpertCoinHandler.AsIs:
+                    case Config.MitigationSettings.ExpertCoinHandler.Preset:
+                    {
+                        break;
+                    }
+                    case Config.MitigationSettings.ExpertCoinHandler.DisableValue:
+                    case Config.MitigationSettings.ExpertCoinHandler.ServerSide:
+                    {
+                        args.Result = OTAPI.HookResult.Cancel;
+                        // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
+                        args.PacketId = byte.MaxValue;
+                        break;
+                    }
+                }
                 break;
+            }
+            default:
+            {
+                break;
+            }
         }
     }
 
@@ -289,6 +291,32 @@ public partial class Plugin : TerrariaPlugin
                         Terraria.NetMessage.TrySendData((int) PacketTypes.NpcUpdateBuff, -1, -1, null, i);
                         this._BuffUpdateNPC[i] = false;
                     }
+                }
+            }
+        }
+
+        if (Terraria.Main.expertMode)
+        {
+            switch (mitigation.ExpertExtraCoin)
+            {
+                case Config.MitigationSettings.ExpertCoinHandler.AsIs:
+                case Config.MitigationSettings.ExpertCoinHandler.Preset:
+                case Config.MitigationSettings.ExpertCoinHandler.DisableValue:
+                {
+                    break;
+                }
+                case Config.MitigationSettings.ExpertCoinHandler.ServerSide:
+                {
+                    foreach (var item in Terraria.Main.item)
+                    {
+                        if (item == null || !item.active || item.instanced || !item.IsACoin || item.timeLeftInWhichTheItemCannotBeTakenByEnemies != 0)
+                        {
+                            continue;
+                        }
+
+                        item.GetPickedUpByMonsters_Money(item.whoAmI);
+                    }
+                    break;
                 }
             }
         }

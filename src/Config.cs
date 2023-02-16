@@ -69,7 +69,7 @@ public class Config
 
     public class EnhancementsSettings
     {
-        /// <summary> 
+        /// <summary>
         /// Remove unused client-side objects to save memory.
         /// </summary>
         public bool TrimMemory = true;
@@ -212,8 +212,8 @@ public class Config
 
     public class SoundnessSettings
     {
-        /// <summary> 
-        /// Permission restrict server-side tile modification projectiles like liquid bombs &amp; rockets, dirt bombs. 
+        /// <summary>
+        /// Permission restrict server-side tile modification projectiles like liquid bombs &amp; rockets, dirt bombs.
         /// </summary>
         public bool ProjectileKillMapEditRestriction = true;
 
@@ -464,12 +464,45 @@ public class Config
         /// </summary>
         public DisabledDamageAction DisabledDamageHandler = DisabledDamageAction.Preset;
 
+        /// <summary>
+        /// <para>
+        /// In expert mode enemies can pick up coins.
+        /// Each client will attempts to pick up coins, causing the NPC picking up multiple times,
+        /// and grows exponentially as the iteration goes.
+        /// </para>
+        /// <para>Cause imbalance.</para>
+        /// <para>
+        /// This will try to change the behavior of the coin pickup.
+        /// </para>
+        /// </summary>
+        public ExpertCoinHandler ExpertExtraCoin = ExpertCoinHandler.Preset;
+
         [JsonConverter(typeof(StringEnumConverter))]
         public enum DisabledDamageAction
         {
             AsIs,
             Hurt,
             Ghost,
+            Preset
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum ExpertCoinHandler
+        {
+            /// <summary>
+            /// Disable the picked up coin value. Some coins may vanish.
+            /// <para>
+            DisableValue,
+            /// <summary>
+            /// Server side coin pickup.
+            /// <para>
+            ServerSide,
+            /// <summary>
+            /// Untouched like vanilla.
+            /// <para>
+            AsIs,
+            /// <summary>
+            /// The suggested behavior (by the author, which is AsIs for now).
             Preset
         }
     }
