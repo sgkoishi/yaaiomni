@@ -19,6 +19,7 @@ public partial class Plugin : TerrariaPlugin
         .FirstOrDefault(x => x.Key == "RepositoryUrl")?.Value!;
 
     public string ConfigPath = Path.Combine(TShockAPI.TShock.SavePath, Consts.ConfigFile);
+    private static readonly BindingFlags _bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
     public Config config;
 
@@ -27,57 +28,56 @@ public partial class Plugin : TerrariaPlugin
         AppDomain.CurrentDomain.FirstChanceException += this.FirstChanceExceptionHandler;
         this.Order = int.MinValue;
         this.config = new Config();
-        var bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
         this.Detour(
             nameof(this.Detour_UpdateCheckAsync),
             typeof(UpdateManager)
-                .GetMethod(nameof(UpdateManager.UpdateCheckAsync), bfany)!,
+                .GetMethod(nameof(UpdateManager.UpdateCheckAsync), _bfany)!,
             this.Detour_UpdateCheckAsync);
         this.Detour(
             nameof(this.Detour_HasPermission),
             typeof(TSPlayer)
-                .GetMethod(nameof(TSPlayer.HasPermission), bfany, new[] { typeof(string) })!,
+                .GetMethod(nameof(TSPlayer.HasPermission), _bfany, new[] { typeof(string) })!,
             this.Detour_HasPermission);
         this.Detour(
             nameof(this.Detour_PlayerActive),
             typeof(TSPlayer)
-                .GetProperty(nameof(TSPlayer.Active), bfany)!
+                .GetProperty(nameof(TSPlayer.Active), _bfany)!
                 .GetMethod!,
             this.Detour_PlayerActive);
         this.Detour(
             nameof(this.Detour_Lava_HitEffect),
             typeof(NPC)
-                .GetMethod(nameof(NPC.HitEffect), bfany)!,
+                .GetMethod(nameof(NPC.HitEffect), _bfany)!,
             this.Detour_Lava_HitEffect);
         this.Detour(
             nameof(this.Detour_Lava_KillTile),
             typeof(WorldGen)
-                .GetMethod(nameof(WorldGen.KillTile), bfany)!,
+                .GetMethod(nameof(WorldGen.KillTile), _bfany)!,
             this.Detour_Lava_KillTile);
         this.Detour(
             nameof(this.Detour_Wildcard_GetPlayers),
             typeof(TSPlayer)
-                .GetMethod(nameof(TSPlayer.FindByNameOrID), bfany)!,
+                .GetMethod(nameof(TSPlayer.FindByNameOrID), _bfany)!,
             this.Detour_Wildcard_GetPlayers);
         this.Detour(
             nameof(this.Detour_Backport_2894),
             typeof(TShockAPI.DB.CharacterManager)
-                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), bfany)!,
+                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), _bfany)!,
             this.Detour_Backport_2894);
         this.Detour(
             nameof(this.Detour_Mitigation_SetTitle),
             typeof(TShockAPI.Utils)
-                .GetMethod("SetConsoleTitle", bfany)!,
+                .GetMethod("SetConsoleTitle", _bfany)!,
             this.Detour_Mitigation_SetTitle);
         this.Detour(
             nameof(this.Detour_Command_Alternative),
             typeof(TShockAPI.Commands)
-                .GetMethod(nameof(TShockAPI.Commands.HandleCommand), bfany)!,
+                .GetMethod(nameof(TShockAPI.Commands.HandleCommand), _bfany)!,
             this.Detour_Command_Alternative);
         this.ILHook(
             nameof(this.ILHook_Mitigation_DisabledInvincible),
             Utils.TShockType("Bouncer")
-                .GetMethod("OnPlayerDamage", bfany)!,
+                .GetMethod("OnPlayerDamage", _bfany)!,
             this.ILHook_Mitigation_DisabledInvincible);
     }
 
@@ -218,6 +218,7 @@ public partial class Plugin : TerrariaPlugin
         TShockAPI.TShock.Initialized += this.PostTShockInitialize;
         TShockAPI.GetDataHandlers.TogglePvp.Register(this.GDHook_Permission_TogglePvp);
         TShockAPI.GetDataHandlers.PlayerTeam.Register(this.GDHook_Permission_PlayerTeam);
+        TShockAPI.GetDataHandlers.Sign.Register(this.GDHook_Permission_Sign);
     }
 
     protected override void Dispose(bool disposing)
@@ -256,6 +257,7 @@ public partial class Plugin : TerrariaPlugin
             TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.GDHook_Permission_TogglePvp);
             TShockAPI.GetDataHandlers.PlayerTeam.UnRegister(this.GDHook_Permission_PlayerTeam);
             TShockAPI.GetDataHandlers.NPCAddBuff.UnRegister(this.GDHook_Mitigation_NpcAddBuff);
+            TShockAPI.GetDataHandlers.Sign.UnRegister(this.GDHook_Permission_Sign);
             var asm = Assembly.GetExecutingAssembly();
             Commands.ChatCommands.RemoveAll(c => c.CommandDelegate.Method?.DeclaringType?.Assembly == asm);
             foreach (var detour in this._detours.Values)
@@ -284,6 +286,7 @@ public partial class Plugin : TerrariaPlugin
 
     private void PostTShockInitialize()
     {
+        this.Backports();
         OTAPI.Hooks.Netplay.CreateTcpListener += this.OTHook_Socket_OnCreate;
         Commands.ChatCommands.Add(new Command(Consts.Permissions.Whynot, this.Command_PermissionCheck, Consts.Commands.Whynot)
         {

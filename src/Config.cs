@@ -221,6 +221,11 @@ public class Config
         /// Restrict quick stack to have build permission.
         /// </summary>
         public bool QuickStackRestriction = true;
+
+        /// <summary>
+        /// Restrict sign edit to have build permission.
+        /// </summary>
+        public bool SignEditRestriction = true;
     }
 
     public class PermissionSettings

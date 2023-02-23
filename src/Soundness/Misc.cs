@@ -22,4 +22,23 @@ public partial class Plugin : TerrariaPlugin
             args.Handled = true;
         }
     }
+
+    private void GDHook_Permission_Sign(object? sender, TShockAPI.GetDataHandlers.SignEventArgs args)
+    {
+        if (args.Handled)
+        {
+            return;
+        }
+
+        if (!this.config.Soundness.SignEditRestriction)
+        {
+            return;
+        }
+
+        var tp = TShockAPI.TShock.Players[args.Player.Index];
+        if (tp == null || !tp.HasBuildPermission(args.X, args.Y, false))
+        {
+            args.Handled = true;
+        }
+    }
 }
