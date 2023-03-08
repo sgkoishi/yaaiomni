@@ -482,6 +482,18 @@ public class Config
         /// </summary>
         public ExpertCoinHandler ExpertExtraCoin = ExpertCoinHandler.Preset;
 
+        /// <summary>
+        /// <para>
+        /// The legacy HttpServer.dll from .NET Framework 2.0 era is not responding correctly if
+        /// the request is too long.
+        /// </para>
+        /// <para>Cause broken REST endpoint.</para>
+        /// <para>
+        /// This will try to remove the Connection header from the request.
+        /// </para>
+        /// </summary>
+        public bool KeepRestAlive = true;
+
         [JsonConverter(typeof(StringEnumConverter))]
         public enum DisabledDamageAction
         {

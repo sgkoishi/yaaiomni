@@ -477,4 +477,20 @@ public partial class Plugin : TerrariaPlugin
             }
         }
     }
+
+    private void ILHook_Mitigation_KeepRestAlive(ILContext context)
+    {
+        // FIXME: This is a backport of Pryaxis/TShock#2925
+        var mitigation = this.config.Mitigation;
+        if (mitigation.Enabled)
+        {
+            var cursor = new ILCursor(context);
+            cursor.GotoNext(MoveType.Before, (i) => i.MatchCallvirt("HttpServer.Headers.ConnectionHeader", "set_Type"));
+            if (mitigation.KeepRestAlive)
+            {
+                cursor.Emit(OpCodes.Pop);
+                cursor.Emit(OpCodes.Ldc_I4_1);
+            }
+        }
+    }
 }

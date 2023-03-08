@@ -79,6 +79,11 @@ public partial class Plugin : TerrariaPlugin
             Utils.TShockType("Bouncer")
                 .GetMethod("OnPlayerDamage", _bfany)!,
             this.ILHook_Mitigation_DisabledInvincible);
+        this.ILHook(
+            nameof(this.ILHook_Mitigation_KeepRestAlive),
+            typeof(Rests.Rest)
+                .GetMethod("OnRequest", _bfany)!,
+            this.ILHook_Mitigation_KeepRestAlive);
     }
 
     private void OnReload(ReloadEventArgs? e)
