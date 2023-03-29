@@ -38,13 +38,7 @@ public partial class Plugin : TerrariaPlugin
 
     private void TSHook_Sudo_OnPlayerPermission(PlayerPermissionEventArgs args)
     {
-        var flag = false;
         if (this[args.Player].PermissionBypass <= 0 && this[TSPlayer.Server].PermissionBypass <= 0)
-        {
-            flag = true;
-        }
-
-        if (!flag)
         {
             return;
         }

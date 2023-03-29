@@ -115,10 +115,12 @@ public partial class Plugin : TerrariaPlugin
             Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.Player.Index);
         }
     }
+
     private void Command_GC(CommandArgs args)
     {
         if (args.Parameters.Contains("-f"))
         {
+            System.Runtime.GCSettings.LargeObjectHeapCompactionMode = System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
             GC.Collect();
         }
         else
