@@ -18,6 +18,7 @@ public static class Consts
         public static readonly string Ping = "chireiden.omni.ping";
         public static readonly string Chat = "chireiden.omni.chat";
         public static readonly string SummonBoss = "chireiden.omni.summonboss";
+        public static readonly string Echo = "chireiden.omni.echo";
         public static class Admin
         {
             public static readonly string Ghost = "chireiden.omni.ghost";
@@ -63,6 +64,7 @@ public static class Consts
         public static readonly string Ping = "_ping";
         public static readonly string Chat = "_chat";
         public static readonly string ExportCharacter = "exportcharacter";
+        public static readonly string Echo = "_echo";
     }
     public static class DataKey
     {

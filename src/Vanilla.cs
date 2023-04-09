@@ -66,6 +66,7 @@ public partial class Plugin : TerrariaPlugin
                 Consts.Permissions.SyncLoadout);
         }
         this.AddPermission(guest, Consts.Permissions.Ping);
+        this.AddPermission(guest, Consts.Permissions.Echo);
 
         this.AliasPermission(TShockAPI.Permissions.canchat, Consts.Permissions.Chat);
         this.AliasPermission(Consts.Permissions.TogglePvP, $"{Consts.Permissions.TogglePvP}.*");

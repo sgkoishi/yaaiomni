@@ -465,4 +465,9 @@ public partial class Plugin : TerrariaPlugin
             }
         }
     }
+
+    private void Command_Echo(CommandArgs args)
+    {
+        args.Player.SendInfoMessage(string.Join(" ", args.Parameters));
+    }
 }
