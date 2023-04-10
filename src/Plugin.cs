@@ -10,7 +10,7 @@ namespace Chireiden.TShock.Omni;
 [ApiVersion(2, 1)]
 public partial class Plugin : TerrariaPlugin
 {
-    public override string Name => Assembly.GetExecutingAssembly().GetName().Name!;
+    public override string Name => $"{Assembly.GetExecutingAssembly().GetName().Name} {CommitHashAttribute.GetCommitHash()}";
     public override string Author => "SGKoishi";
     public override Version Version => Assembly.GetExecutingAssembly().GetName().Version!;
     public override string Description => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description!;
@@ -59,11 +59,6 @@ public partial class Plugin : TerrariaPlugin
             typeof(TSPlayer)
                 .GetMethod(nameof(TSPlayer.FindByNameOrID), _bfany)!,
             this.Detour_Wildcard_GetPlayers);
-        this.Detour(
-            nameof(this.Detour_Backport_2894),
-            typeof(TShockAPI.DB.CharacterManager)
-                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), _bfany)!,
-            this.Detour_Backport_2894);
         this.Detour(
             nameof(this.Detour_Mitigation_SetTitle),
             typeof(TShockAPI.Utils)
