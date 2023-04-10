@@ -6,14 +6,32 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
+    [Obsolete]
+    private void ILHook_Backport_2892(ILContext context)
+    {
+        if ((context.Body?.Instructions[0]?.Operand?.ToString() ?? "").Contains(@"(?:\/s(?<Stack>\d{1,4}))"))
+        {
+            context.Body!.Instructions[0].Operand = @"\[i(tem)?(?:\/s(?<Stack>\d{1,4}))?(?:\/p(?<Prefix>\d{1,3}))?:(?<NetID>-?\d{1,4})\]";
+        }
+    }
+
+    [Obsolete]
     private bool Detour_Backport_2894(Func<TShockAPI.DB.CharacterManager, TShockAPI.TSPlayer, bool, bool> orig,
         TShockAPI.DB.CharacterManager self, TShockAPI.TSPlayer player, bool fromCommand)
     {
-        // FIXME: This is a backport of Pryaxis/TShock#2894
         return player.State >= 10 && orig(self, player, fromCommand);
     }
 
-    private void Backports()
+    private void Detour_Backport_2934(Action orig)
+    {
+        orig();
+        if (ServerApi.ForceUpdate)
+        {
+            Terraria.Netplay.HasClients = true;
+        }
+    }
+
+    private void Backport_Inferno()
     {
         var bouncer = Utils.TShockType("Bouncer");
         if (bouncer?.GetField("NPCAddBuffTimeMax", _bfany)?.GetValue(null) is Dictionary<int, int> npcAddBuffTimeMax)
@@ -23,19 +41,26 @@ public partial class Plugin : TerrariaPlugin
                 npcAddBuffTimeMax[Terraria.ID.BuffID.CursedInferno] = 600;
             }
         }
+    }
 
-        // FIXME: This is a backport of Pryaxis/TShock#2892
+    private void Backports()
+    {
+        this.Backport_Inferno();
+
+        this.Detour(
+            nameof(this.Detour_Backport_2894),
+            typeof(TShockAPI.DB.CharacterManager)
+                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), _bfany)!,
+            this.Detour_Backport_2894);
+
         this.ILHook(
             nameof(this.ILHook_Backport_2892),
             typeof(TShockAPI.Utils).GetMethod(nameof(TShockAPI.Utils.GetItemFromTag), _bfany)!,
             this.ILHook_Backport_2892);
-    }
 
-    private void ILHook_Backport_2892(ILContext context)
-    {
-        if ((context.Body?.Instructions[0]?.Operand?.ToString() ?? "").Contains(@"(?:\/s(?<Stack>\d{1,4}))"))
-        {
-            context.Body!.Instructions[0].Operand = @"\[i(tem)?(?:\/s(?<Stack>\d{1,4}))?(?:\/p(?<Prefix>\d{1,3}))?:(?<NetID>-?\d{1,4})\]";
-        }
+        this.Detour(
+            nameof(this.Detour_Backport_2934),
+            typeof(Terraria.Netplay).GetMethod(nameof(Terraria.Netplay.UpdateConnectedClients), _bfany)!,
+            this.Detour_Backport_2934);
     }
 }
