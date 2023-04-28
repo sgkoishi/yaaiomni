@@ -114,13 +114,12 @@ public static class Utils
     /// <c>command [args] [; command [args]] ..</c>.
     /// Similar but not fully compatible with the syntax of <seealso cref="TShockAPI.Commands.ParseParameters(string)"/>.
     /// </summary>
-    public static List<List<string>> ParseCommands(string input)
+    public static List<Plugin.ParsedCommand> ParseCommands(string input)
     {
-        var result = new List<List<string>>();
+        var result = new List<Plugin.ParsedCommand>();
         var currentIndex = 0;
         var inQuote = false;
-        var currentCommand = new List<string>();
-        var current = "";
+        var currentCommand = new Plugin.ParsedCommand();
         while (currentIndex < input.Length)
         {
             switch (input[currentIndex])
@@ -133,47 +132,35 @@ public static class Utils
                     {
                         currentIndex++;
                     }
-                    current += input[currentIndex];
+                    currentCommand.AppendChar(input[currentIndex]);
                     break;
                 case '&' when !inQuote && currentIndex + 1 < input.Length && input[currentIndex + 1] == '&':
-                    result.Add(currentCommand);
-                    currentCommand = new List<string>();
-                    current = "";
-                    currentIndex++;
-                    while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
-                    {
-                        currentIndex++;
-                    }
-                    break;
                 case ';' when !inQuote:
+                    currentCommand.EndSegment();
+                    currentCommand.ContinueOnError = input[currentIndex] == ';';
                     result.Add(currentCommand);
-                    currentCommand = new List<string>();
-                    current = "";
-                    currentIndex++;
+                    currentCommand = new Plugin.ParsedCommand();
+                    currentIndex += currentCommand.ContinueOnError ? 0 : 1;
                     while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
                     {
                         currentIndex++;
                     }
                     break;
                 case char c when !inQuote && char.IsWhiteSpace(c):
-                    currentCommand.Add(current);
-                    current = "";
+                    currentCommand.EndSegment();
                     while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
                     {
                         currentIndex++;
                     }
                     break;
                 case char c:
-                    current += c;
+                    currentCommand.AppendChar(c);
                     break;
             }
             currentIndex++;
         }
-        if (!string.IsNullOrWhiteSpace(current))
-        {
-            currentCommand.Add(current);
-        }
-        if (currentCommand.Count > 0)
+        currentCommand.EndSegment();
+        if (!currentCommand.IsEmpty)
         {
             result.Add(currentCommand);
         }

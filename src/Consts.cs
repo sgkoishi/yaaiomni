@@ -4,73 +4,73 @@ public static class Consts
 {
     public static class Permissions
     {
-        public static readonly string Whynot = "chireiden.omni.whynot";
-        public static readonly string TogglePvP = "chireiden.omni.togglepvp";
-        public static readonly string ToggleTeam = "chireiden.omni.toggleteam";
-        public static readonly string PvPCommand = "chireiden.omni.setpvp";
-        public static readonly string TeamCommand = "chireiden.omni.setteam";
-        public static readonly string SyncLoadout = "chireiden.omni.syncloadout";
-        public static readonly string TimeoutCommand = "chireiden.omni.timeout";
-        public static readonly string IntervalCommand = "chireiden.omni.interval";
-        public static readonly string ClearInterval = "chireiden.omni.cleartimeout";
-        public static readonly string ShowTimeout = "chireiden.omni.showtimeout";
-        public static readonly string ResetCharacter = "chireiden.omni.resetcharacter";
-        public static readonly string Ping = "chireiden.omni.ping";
-        public static readonly string Chat = "chireiden.omni.chat";
-        public static readonly string SummonBoss = "chireiden.omni.summonboss";
-        public static readonly string Echo = "chireiden.omni.echo";
+        public static string Whynot => "chireiden.omni.whynot";
+        public static string TogglePvP => "chireiden.omni.togglepvp";
+        public static string ToggleTeam => "chireiden.omni.toggleteam";
+        public static string PvPCommand => "chireiden.omni.setpvp";
+        public static string TeamCommand => "chireiden.omni.setteam";
+        public static string SyncLoadout => "chireiden.omni.syncloadout";
+        public static string TimeoutCommand => "chireiden.omni.timeout";
+        public static string IntervalCommand => "chireiden.omni.interval";
+        public static string ClearInterval => "chireiden.omni.cleartimeout";
+        public static string ShowTimeout => "chireiden.omni.showtimeout";
+        public static string ResetCharacter => "chireiden.omni.resetcharacter";
+        public static string Ping => "chireiden.omni.ping";
+        public static string Chat => "chireiden.omni.chat";
+        public static string SummonBoss => "chireiden.omni.summonboss";
+        public static string Echo => "chireiden.omni.echo";
         public static class Admin
         {
-            public static readonly string Ghost = "chireiden.omni.ghost";
-            public static readonly string SetLanguage = "chireiden.omni.setlang";
-            public static readonly string SetPvp = "chireiden.omni.admin.setpvp";
-            public static readonly string SetTeam = "chireiden.omni.admin.setteam";
-            public static readonly string TriggerGarbageCollection = "chireiden.omni.admin.gc";
-            public static readonly string DebugStat = "chireiden.omni.admin.debugstat";
-            public static readonly string MaxPlayers = "chireiden.omni.admin.maxplayers";
-            public static readonly string TileProvider = "chireiden.omni.admin.tileprovider";
-            public static readonly string RawBroadcast = "chireiden.omni.admin.rawbroadcast";
-            public static readonly string Sudo = "chireiden.omni.admin.sudo";
-            public static readonly string DetailedPermissionStackTrace = "chireiden.omni.whynot.detailed";
-            public static readonly string ListClients = "chireiden.omni.admin.listclients";
-            public static readonly string DumpBuffer = "chireiden.omni.admin.dumpbuffer";
-            public static readonly string TerminateSocket = "chireiden.omni.admin.terminatesocket";
-            public static readonly string ResetCharacterOther = "chireiden.omni.admin.resetcharacter";
-            public static readonly string ResetCharacterAll = "chireiden.omni.admin.resetcharacter.all";
-            public static readonly string ExportCharacter = "chireiden.omni.admin.exportcharacter";
+            public static string Ghost => "chireiden.omni.ghost";
+            public static string SetLanguage => "chireiden.omni.setlang";
+            public static string SetPvp => "chireiden.omni.admin.setpvp";
+            public static string SetTeam => "chireiden.omni.admin.setteam";
+            public static string TriggerGarbageCollection => "chireiden.omni.admin.gc";
+            public static string DebugStat => "chireiden.omni.admin.debugstat";
+            public static string MaxPlayers => "chireiden.omni.admin.maxplayers";
+            public static string TileProvider => "chireiden.omni.admin.tileprovider";
+            public static string RawBroadcast => "chireiden.omni.admin.rawbroadcast";
+            public static string Sudo => "chireiden.omni.admin.sudo";
+            public static string DetailedPermissionStackTrace => "chireiden.omni.whynot.detailed";
+            public static string ListClients => "chireiden.omni.admin.listclients";
+            public static string DumpBuffer => "chireiden.omni.admin.dumpbuffer";
+            public static string TerminateSocket => "chireiden.omni.admin.terminatesocket";
+            public static string ResetCharacterOther => "chireiden.omni.admin.resetcharacter";
+            public static string ResetCharacterAll => "chireiden.omni.admin.resetcharacter.all";
+            public static string ExportCharacter => "chireiden.omni.admin.exportcharacter";
         }
     }
     public static class Commands
     {
-        public static readonly string Whynot = "whynot";
-        public static readonly string Ghost = "ghost";
-        public static readonly string SetLanguage = "setlang";
-        public static readonly string SetPvp = "_pvp";
-        public static readonly string SetTeam = "_team";
-        public static readonly string TriggerGarbageCollection = "_gc";
-        public static readonly string DebugStat = "_debugstat";
-        public static readonly string MaxPlayers = "maxplayers";
-        public static readonly string TileProvider = "tileprovider";
-        public static readonly string Timeout = "settimeout";
-        public static readonly string Interval = "setinterval";
-        public static readonly string ClearInterval = "clearinterval";
-        public static readonly string ShowTimeout = "showdelay";
-        public static readonly string RawBroadcast = "rbc";
-        public static readonly string Sudo = "runas";
-        public static readonly string ListClients = "listclients";
-        public static readonly string DumpBuffer = "dumpbuffer";
-        public static readonly string TerminateSocket = "kc";
-        public static readonly string ResetCharacter = "resetcharacter";
-        public static readonly string Ping = "_ping";
-        public static readonly string Chat = "_chat";
-        public static readonly string ExportCharacter = "exportcharacter";
-        public static readonly string Echo = "_echo";
+        public static string Whynot => "whynot";
+        public static string Ghost => "ghost";
+        public static string SetLanguage => "setlang";
+        public static string SetPvp => "_pvp";
+        public static string SetTeam => "_team";
+        public static string TriggerGarbageCollection => "_gc";
+        public static string DebugStat => "_debugstat";
+        public static string MaxPlayers => "maxplayers";
+        public static string TileProvider => "tileprovider";
+        public static string Timeout => "settimeout";
+        public static string Interval => "setinterval";
+        public static string ClearInterval => "clearinterval";
+        public static string ShowTimeout => "showdelay";
+        public static string RawBroadcast => "rbc";
+        public static string Sudo => "runas";
+        public static string ListClients => "listclients";
+        public static string DumpBuffer => "dumpbuffer";
+        public static string TerminateSocket => "kc";
+        public static string ResetCharacter => "resetcharacter";
+        public static string Ping => "_ping";
+        public static string Chat => "_chat";
+        public static string ExportCharacter => "exportcharacter";
+        public static string Echo => "_echo";
     }
     public static class DataKey
     {
-        public static readonly string IsPE = "chireiden.data.ispe";
+        public static string IsPE => "chireiden.data.ispe";
     }
-    public static readonly string ConfigFile = "chireiden.omni.json";
-    public static readonly string PresetLock = "chireiden.omni.preset.lock";
-    public static readonly string VanillaGroup = "chireiden_vanilla";
+    public static string ConfigFile => "chireiden.omni.json";
+    public static string PresetLock => "chireiden.omni.preset.lock";
+    public static string VanillaGroup => "chireiden_vanilla";
 }

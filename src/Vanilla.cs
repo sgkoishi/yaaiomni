@@ -60,30 +60,32 @@ public partial class Plugin : TerrariaPlugin
         var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
         if (preset.AllowRestricted || vanillaMode)
         {
-            this.AddPermission(guest,
+            AddPermission(guest,
                 Consts.Permissions.TogglePvP,
                 Consts.Permissions.ToggleTeam,
-                Consts.Permissions.SyncLoadout);
+                Consts.Permissions.SyncLoadout,
+                Consts.Permissions.PvPCommand,
+                Consts.Permissions.TeamCommand);
         }
-        this.AddPermission(guest, Consts.Permissions.Ping);
-        this.AddPermission(guest, Consts.Permissions.Echo);
+        AddPermission(guest, Consts.Permissions.Ping);
+        AddPermission(guest, Consts.Permissions.Echo);
 
-        this.AliasPermission(TShockAPI.Permissions.canchat, Consts.Permissions.Chat);
-        this.AliasPermission(Consts.Permissions.TogglePvP, $"{Consts.Permissions.TogglePvP}.*");
-        this.AliasPermission(Consts.Permissions.ToggleTeam, $"{Consts.Permissions.ToggleTeam}.*");
-        this.AliasPermission(TShockAPI.Permissions.summonboss, $"{Consts.Permissions.SummonBoss}.*");
-        this.AliasPermission(TShockAPI.Permissions.startinvasion, $"{Consts.Permissions.SummonBoss}.*");
+        AliasPermission(TShockAPI.Permissions.canchat, Consts.Permissions.Chat);
+        AliasPermission(Consts.Permissions.TogglePvP, $"{Consts.Permissions.TogglePvP}.*");
+        AliasPermission(Consts.Permissions.ToggleTeam, $"{Consts.Permissions.ToggleTeam}.*");
+        AliasPermission(TShockAPI.Permissions.summonboss, $"{Consts.Permissions.SummonBoss}.*");
+        AliasPermission(TShockAPI.Permissions.startinvasion, $"{Consts.Permissions.SummonBoss}.*");
 
         if (preset.DebugForAdminOnly)
         {
-            this.AliasPermission(TShockAPI.Permissions.kick, Consts.Permissions.Whynot);
+            AliasPermission(TShockAPI.Permissions.kick, Consts.Permissions.Whynot);
         }
         else
         {
-            this.AddPermission(guest, Consts.Permissions.Whynot);
+            AddPermission(guest, Consts.Permissions.Whynot);
         }
 
-        this.AliasPermission(TShockAPI.Permissions.kick,
+        AliasPermission(TShockAPI.Permissions.kick,
             Consts.Permissions.Admin.Ghost,
             Consts.Permissions.Admin.SetLanguage,
             Consts.Permissions.Admin.DebugStat,
@@ -92,9 +94,10 @@ public partial class Plugin : TerrariaPlugin
             Consts.Permissions.TimeoutCommand,
             Consts.Permissions.IntervalCommand,
             Consts.Permissions.ClearInterval,
-            Consts.Permissions.ShowTimeout);
+            Consts.Permissions.ShowTimeout,
+            Consts.Permissions.ResetCharacter);
 
-        this.AliasPermission(TShockAPI.Permissions.maintenance,
+        AliasPermission(TShockAPI.Permissions.maintenance,
             Consts.Permissions.Admin.MaxPlayers,
             Consts.Permissions.Admin.TileProvider,
             Consts.Permissions.Admin.TriggerGarbageCollection,
@@ -103,7 +106,7 @@ public partial class Plugin : TerrariaPlugin
             Consts.Permissions.Admin.ResetCharacterOther,
             Consts.Permissions.Admin.ExportCharacter);
 
-        this.AliasPermission(TShockAPI.Permissions.su,
+        AliasPermission(TShockAPI.Permissions.su,
             Consts.Permissions.Admin.Sudo,
             Consts.Permissions.Admin.ListClients,
             Consts.Permissions.Admin.DumpBuffer,
@@ -112,18 +115,18 @@ public partial class Plugin : TerrariaPlugin
         File.WriteAllText(Path.Combine(TShockAPI.TShock.SavePath, Consts.PresetLock), string.Empty);
     }
 
-    private void AliasPermission(string orig, params string[] equiv)
+    private static void AliasPermission(string orig, params string[] equiv)
     {
         foreach (var group in TShockAPI.TShock.Groups.groups)
         {
             if (group.HasPermission(orig) && (group.Parent?.HasPermission(orig) != true))
             {
-                this.AddPermission(group, equiv);
+                AddPermission(group, equiv);
             }
         }
     }
 
-    private void AddPermission(TShockAPI.Group? group, params string[] perm)
+    private static void AddPermission(TShockAPI.Group? group, params string[] perm)
     {
         if (group == null)
         {
