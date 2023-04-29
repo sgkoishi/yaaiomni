@@ -69,6 +69,11 @@ public partial class Plugin : TerrariaPlugin
             typeof(TShockAPI.Commands)
                 .GetMethod(nameof(TShockAPI.Commands.HandleCommand), _bfany)!,
             this.Detour_Command_Alternative);
+        this.Detour(
+            nameof(this.Detour_Mitigation_I18nCommand),
+            typeof(Terraria.Initializers.ChatInitializer)
+                .GetMethod(nameof(Terraria.Initializers.ChatInitializer.Load), _bfany)!,
+            this.Detour_Mitigation_I18nCommand);
         this.ILHook(
             nameof(this.ILHook_Mitigation_DisabledInvincible),
             Utils.TShockType("Bouncer")
@@ -186,6 +191,7 @@ public partial class Plugin : TerrariaPlugin
         {
             TShockAPI.Commands.HandleCommand(TShockAPI.TSPlayer.Server, command);
         }
+        Terraria.Initializers.ChatInitializer.Load();
     }
 
     public override void Initialize()

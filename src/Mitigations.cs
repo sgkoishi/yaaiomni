@@ -493,4 +493,23 @@ public partial class Plugin : TerrariaPlugin
             }
         }
     }
+
+    private void Detour_Mitigation_I18nCommand(On.Terraria.Initializers.ChatInitializer.orig_Load orig)
+    {
+        // Pryaxis/TShock#2914
+        Terraria.UI.Chat.ChatManager.Commands._localizedCommands.Clear();
+        orig();
+        if (this.config.Mitigation.Enabled && this.config.Mitigation.UseEnglishCommand)
+        {
+            var currentLanguage = Terraria.Localization.LanguageManager.Instance.ActiveCulture;
+            Terraria.Localization.LanguageManager.Instance.LoadLanguage(Terraria.Localization.GameCulture.FromCultureName(Terraria.Localization.GameCulture.CultureName.English));
+            var items = Terraria.UI.Chat.ChatManager.Commands._localizedCommands.ToList();
+            Terraria.UI.Chat.ChatManager.Commands._localizedCommands.Clear();
+            foreach (var (key, value) in items)
+            {
+                Terraria.UI.Chat.ChatManager.Commands._localizedCommands[new Terraria.Localization.LocalizedText(key.Key, key.Value)] = value;
+            }
+            Terraria.Localization.LanguageManager.Instance.LoadLanguage(currentLanguage);
+        }
+    }
 }

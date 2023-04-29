@@ -47,9 +47,11 @@ public class Config
         Consts.Commands.DebugStat,
         Consts.Commands.ResetCharacter,
         Consts.Commands.Ping,
+        Consts.Commands.Chat,
+        Consts.Commands.Echo,
     };
 
-    public List<string> StartupCommands = new List<string> { };
+    public List<string> StartupCommands = new List<string>();
 
     public Dictionary<string, List<string>> CommandRenames = new();
 
@@ -493,6 +495,25 @@ public class Config
         /// </para>
         /// </summary>
         public bool KeepRestAlive = true;
+
+        /// <summary>
+        /// <para>
+        /// Terraria will translate chat commands into command id. TShock
+        /// translate them back to keep the command working.
+        /// However, when the server and the client have different locale,
+        /// a enUS player send `/help` will be sent as `CommandId: Help`
+        /// and a deDE server will translate it back to `/hilfe`, thus the
+        /// command is broken.
+        /// </para>
+        /// <para>Cause some commands broken.</para>
+        /// <para>
+        /// This will try to change the translate target to enUS, so that
+        /// the command will be translated back to `/help`. A deDE player
+        /// may run `/help` (CommandId: Say, Content: /help) or
+        /// `/hilfe` (CommandId: Help), and both works.
+        /// </para>
+        /// </summary>
+        public bool UseEnglishCommand = true;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public enum DisabledDamageAction
