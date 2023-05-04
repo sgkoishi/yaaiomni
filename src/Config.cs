@@ -109,6 +109,11 @@ public class Config
 
         public TileProviderOptions TileProvider = TileProviderOptions.Preset;
 
+        /// <summary>
+        /// Support regex (`namea:player.*`) and IP mask (`ipa:1.1.0.0/16`).
+        /// </summary>
+        public bool BanPattern = true;
+
         [JsonConverter(typeof(StringEnumConverter))]
         public enum UpdateOptions
         {

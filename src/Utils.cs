@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Net;
+using System.Runtime.InteropServices;
 using Terraria.Localization;
 using TShockAPI;
 using static Terraria.Utils;
@@ -104,7 +106,7 @@ public static class Utils
         return string.Join(" ", new List<string> { $"{command}" }.Concat(args.Select(arg =>
         {
             var parg = arg.Replace("\\", "\\\\").Replace("\"", "\\\"");
-            return parg.Contains(' ') || parg.Contains('\\') ? $"\"{parg}\"" : parg;
+            return string.IsNullOrWhiteSpace(parg) || parg.Contains(' ') || parg.Contains('\\') ? $"\"{parg}\"" : parg;
         }))).Trim();
     }
 
@@ -249,6 +251,7 @@ public static class Utils
             return false;
         }
 
+        // IPv4 local addr
         return address.GetAddressBytes() switch
         {
             [10, _, _, _] => true,
@@ -270,5 +273,10 @@ public static class Utils
             }
         }
         throw new TypeLoadException($"Could not find type {name} in TShock");
+    }
+
+    public static int ToInt(IPAddress addr)
+    {
+        return MemoryMarshal.Cast<byte, int>(addr.GetAddressBytes().Reverse().ToArray().AsSpan())[0];
     }
 }

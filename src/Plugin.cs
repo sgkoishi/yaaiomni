@@ -3,6 +3,7 @@ using System.Reflection;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
+using TShockAPI.DB;
 using TShockAPI.Hooks;
 
 namespace Chireiden.TShock.Omni;
@@ -74,6 +75,13 @@ public partial class Plugin : TerrariaPlugin
             typeof(Terraria.Initializers.ChatInitializer)
                 .GetMethod(nameof(Terraria.Initializers.ChatInitializer.Load), _bfany)!,
             this.Detour_Mitigation_I18nCommand);
+        this.Detour(
+            nameof(this.Detour_CheckBan_IP),
+            typeof(BanManager)
+                .GetNestedTypes(_bfany)
+                .SelectMany(i => i.GetMethods(_bfany).Where(m => m.Name.Contains("CheckBan")))
+                .First(),
+            this.Detour_CheckBan_IP);
         this.ILHook(
             nameof(this.ILHook_Mitigation_DisabledInvincible),
             Utils.TShockType("Bouncer")
