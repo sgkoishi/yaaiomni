@@ -204,9 +204,7 @@ public partial class Plugin : TerrariaPlugin
                     {
                         break;
                     }
-                    var data = this[player];
-                    data.ChatSpamRestrict ??= this.config.Mitigation.ChatSpamRestrict.Select(lc => (Limiter) lc).ToArray();
-                    foreach (var limiter in data.ChatSpamRestrict)
+                    foreach (var limiter in this[player].ChatSpamRestrict)
                     {
                         if (!limiter.Allowed)
                         {

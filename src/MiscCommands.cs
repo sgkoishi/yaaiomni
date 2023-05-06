@@ -19,7 +19,7 @@ public partial class Plugin : TerrariaPlugin
 
         if (args.Parameters.Count > 1)
         {
-            if (!args.Player.HasPermission(LegacyConsts.Permissions.Admin.SetPvp))
+            if (!args.Player.HasPermission(DefinedConsts.Permissions.Admin.PvPStatus))
             {
                 args.Player.SendErrorMessage("You don't have permission to set other players' PvP status.");
                 return;
@@ -59,6 +59,8 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("TeamStatus", "chireiden.omni.setteam", "_team")]
+    [RelatedPermission("Admin.TeamStatus", "chireiden.omni.admin.setteam")]
     private void Command_Team(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -78,7 +80,7 @@ public partial class Plugin : TerrariaPlugin
 
         if (args.Parameters.Count > 1)
         {
-            if (!args.Player.HasPermission(LegacyConsts.Permissions.Admin.SetTeam))
+            if (!args.Player.HasPermission(DefinedConsts.Permissions.Admin.TeamStatus))
             {
                 args.Player.SendErrorMessage("You don't have permission to set other players' team.");
                 return;
@@ -118,6 +120,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("Admin.GarbageCollect", "chireiden.omni.admin.gc", "_gc")]
     private void Command_GC(CommandArgs args)
     {
         if (args.Parameters.Contains("-f"))
@@ -132,6 +135,7 @@ public partial class Plugin : TerrariaPlugin
         args.Player.SendSuccessMessage("GC Triggered.");
     }
 
+    [Command("Admin.MaxPlayers", "chireiden.omni.admin.maxplayers", "maxplayers")]
     private void Command_MaxPlayers(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -151,6 +155,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("Admin.RawBroadcast", "chireiden.omni.admin.rawbroadcast", "rbc", "rawbroadcast")]
     private void Command_RawBroadcast(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -163,6 +168,7 @@ public partial class Plugin : TerrariaPlugin
         TSPlayer.All.SendMessage(args.Parameters[0], 0, 0, 0);
     }
 
+    [Command("Admin.Sudo", "chireiden.omni.admin.sudo", "runas")]
     private void Command_Sudo(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -219,6 +225,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("Admin.ListClients", "chireiden.omni.admin.listclients", "listclients")]
     private void Command_ListConnected(CommandArgs args)
     {
         foreach (var client in Terraria.Netplay.Clients)
@@ -232,6 +239,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("Admin.DumpBuffer", "chireiden.omni.admin.dumpbuffer", "dumpbuffer")]
     private void Command_DumpBuffer(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -252,6 +260,7 @@ public partial class Plugin : TerrariaPlugin
         File.WriteAllBytes(path, Terraria.NetMessage.buffer[index].readBuffer[..Terraria.NetMessage.buffer[index].totalData]);
     }
 
+    [Command("Admin.TerminateSocket", "chireiden.omni.admin.terminatesocket", "kc")]
     private void Command_TerminateSocket(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -296,6 +305,9 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("ResetCharacter", "chireiden.omni.resetcharacter", "resetcharacter")]
+    [RelatedPermission("Admin.ResetCharacterOther", "chireiden.omni.admin.resetcharacter")]
+    [RelatedPermission("Admin.ResetCharacterAll", "chireiden.omni.admin.resetcharacter.all")]
     private void Command_ResetCharacter(CommandArgs args)
     {
         var account = new List<int>();
@@ -308,7 +320,7 @@ public partial class Plugin : TerrariaPlugin
         }
         else if (args.Parameters[0] == "*")
         {
-            if (args.Player.HasPermission(LegacyConsts.Permissions.Admin.ResetCharacterAll))
+            if (args.Player.HasPermission(DefinedConsts.Permissions.Admin.ResetCharacterAll))
             {
                 account = Utils.SearchUserAccounts(args.Parameters[0]).Select(a => a.ID).ToList();
             }
@@ -322,7 +334,7 @@ public partial class Plugin : TerrariaPlugin
             || args.Parameters[0].StartsWith("usr:")
             || args.Parameters[0].StartsWith("usi:"))
         {
-            if (args.Player.HasPermission(LegacyConsts.Permissions.Admin.ResetCharacterOther))
+            if (args.Player.HasPermission(DefinedConsts.Permissions.Admin.ResetCharacterOther))
             {
                 account = Utils.SearchUserAccounts(args.Parameters[0]).Select(a => a.ID).ToList();
             }
@@ -410,6 +422,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("Chat", "chireiden.omni.chat", "_chat")]
     private void Command_Chat(CommandArgs args)
     {
         var index = args.Player.Index;
@@ -422,6 +435,7 @@ public partial class Plugin : TerrariaPlugin
         TerrariaApi.Server.ServerApi.Hooks.ServerChat.Invoke(scea);
     }
 
+    [Command("Admin.ExportCharacter", "chireiden.omni.admin.exportcharacter", "exportcharacter")]
     private void Command_ExportCharacter(CommandArgs args)
     {
         var accounts = args.Parameters.Count == 0
@@ -468,6 +482,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("Echo", "chireiden.omni.echo", "echo", AllowServer = false)]
     private void Command_Echo(CommandArgs args)
     {
         args.Player.SendInfoMessage(string.Join(" ", args.Parameters));

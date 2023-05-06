@@ -19,7 +19,7 @@ public partial class Plugin : TerrariaPlugin
         .GetCustomAttributes<AssemblyMetadataAttribute>()
         .FirstOrDefault(x => x.Key == "RepositoryUrl")?.Value!;
 
-    public string ConfigPath = Path.Combine(TShockAPI.TShock.SavePath, LegacyConsts.ConfigFile);
+    public string ConfigPath = Path.Combine(TShockAPI.TShock.SavePath, DefinedConsts.Misc.ConfigFile);
     private const BindingFlags _bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
     public Config config;
@@ -175,7 +175,7 @@ public partial class Plugin : TerrariaPlugin
                 e?.Player?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} connections per IP per {Math.Round(limiter.Maximum, 1):G} seconds");
             }
         }
-        foreach (var field in typeof(LegacyConsts.DataKey).GetFields())
+        foreach (var field in typeof(DefinedConsts.DataKey).GetFields())
         {
             if (field.GetValue(null) is string key)
             {
@@ -303,33 +303,6 @@ public partial class Plugin : TerrariaPlugin
         this.Backports();
         OTAPI.Hooks.Netplay.CreateTcpListener += this.OTHook_Socket_OnCreate;
         this.InitCommands();
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.PvPCommand, this.Command_PvP, LegacyConsts.Commands.SetPvp));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.TeamCommand, this.Command_Team, LegacyConsts.Commands.SetTeam));
-        Commands.ChatCommands.Add(new Command(new List<string> { LegacyConsts.Permissions.Admin.TriggerGarbageCollection, Permissions.maintenance },
-            this.Command_GC, LegacyConsts.Commands.TriggerGarbageCollection));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Admin.DebugStat, this.Command_DebugStat, LegacyConsts.Commands.DebugStat));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Admin.MaxPlayers, this.Command_MaxPlayers, LegacyConsts.Commands.MaxPlayers));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Admin.TileProvider, this.Command_TileProvider, LegacyConsts.Commands.TileProvider));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.TimeoutCommand, this.Command_SetTimeout, LegacyConsts.Commands.Timeout));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.IntervalCommand, this.Command_SetInterval, LegacyConsts.Commands.Interval));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.ClearInterval, this.Command_ClearInterval, LegacyConsts.Commands.ClearInterval));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.ShowTimeout, this.Command_ListDelay, LegacyConsts.Commands.ShowTimeout));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Admin.RawBroadcast, this.Command_RawBroadcast, LegacyConsts.Commands.RawBroadcast));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Admin.Sudo, this.Command_Sudo, LegacyConsts.Commands.Sudo));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Admin.ListClients, this.Command_ListConnected, LegacyConsts.Commands.ListClients));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Admin.DumpBuffer, this.Command_DumpBuffer, LegacyConsts.Commands.DumpBuffer));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Admin.TerminateSocket, this.Command_TerminateSocket, LegacyConsts.Commands.TerminateSocket));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.ResetCharacter, this.Command_ResetCharacter, LegacyConsts.Commands.ResetCharacter));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Ping, this.Command_Ping, LegacyConsts.Commands.Ping)
-        {
-            AllowServer = false,
-        });
-        Commands.ChatCommands.Add(new Command(new List<string> { LegacyConsts.Permissions.Chat, Permissions.canchat }, this.Command_Chat, LegacyConsts.Commands.Chat)
-        {
-            AllowServer = false,
-        });
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Admin.ExportCharacter, this.Command_ExportCharacter, LegacyConsts.Commands.ExportCharacter));
-        Commands.ChatCommands.Add(new Command(LegacyConsts.Permissions.Echo, this.Command_Echo, LegacyConsts.Commands.Echo));
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
     }
 }

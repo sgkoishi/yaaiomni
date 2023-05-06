@@ -1,4 +1,6 @@
-﻿using System.Threading.Channels;
+﻿using MySqlX.XDevAPI.Common;
+using System.Linq;
+using System.Threading.Channels;
 using TerrariaApi.Server;
 using TShockAPI;
 
@@ -6,46 +8,43 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
-    public TimeSpan? TryPing(TSPlayer player)
+    public void Ping(TSPlayer player, Action<TSPlayer, TimeSpan> callback)
     {
-        _ = this.Ping(player, new CancellationTokenSource(1000).Token);
-        return this[player].PingChannel.LastPing;
+        var pingdata = this[player].RecentPings;
+        var items = Terraria.Main.item
+            .Select((item, index) => (item, index))
+            .Where(value => !value.item.active || value.item.playerIndexTheItemIsReservedFor == 255)
+            .Select(value => value.index)
+            .ToArray();
+
+        if (items.Length == 0)
+        {
+            items = Terraria.Main.item.Select((_item, index) => index).ToArray();
+        }
+
+        var preferred = items.Where(i => pingdata[i]?.Start == null).ToArray();
+        if (preferred.Length == 0)
+        {
+            preferred = items.OrderBy(i => pingdata[i].Start!.Value).ToArray();
+        }
+
+        var index = items[0];
+        pingdata[index].Start = DateTime.Now;
+        pingdata[index].Callback = callback;
+        Terraria.NetMessage.TrySendData((int) PacketTypes.RemoveItemOwner, player.Index, -1, null, index);
     }
 
-    public async Task<TimeSpan> Ping(TSPlayer player)
+    private void OTHook_Ping_SendBytes(object? sender, OTAPI.Hooks.NetMessage.SendBytesEventArgs args)
     {
-        return await this.Ping(player, new CancellationTokenSource(1000).Token);
-    }
+        if (args.Data[2] != (int) PacketTypes.RemoveItemOwner)
+        {
+            return;
+        }
 
-    public async Task<TimeSpan> Ping(TSPlayer player, CancellationToken token)
-    {
-        var pingdata = this[player].PingChannel;
-        var inv = -1;
-        for (var i = 0; i < Terraria.Main.item.Length; i++)
-        {
-            if (!Terraria.Main.item[i].active || Terraria.Main.item[i].playerIndexTheItemIsReservedFor == 255)
-            {
-                if (pingdata.RecentPings[inv]?.Channel == null)
-                {
-                    inv = i;
-                    break;
-                }
-            }
-        }
-        if (inv == -1)
-        {
-            return TimeSpan.MaxValue;
-        }
-        var pd = pingdata.RecentPings[inv] ??= new AttachedData.PingDetails();
-        pd.Channel ??= Channel.CreateBounded<int>(new BoundedChannelOptions(30)
-        {
-            SingleReader = true,
-            SingleWriter = true
-        });
-        Terraria.NetMessage.TrySendData((int) PacketTypes.RemoveItemOwner, player.Index, -1, null, inv);
-        await pd.Channel.Reader.ReadAsync(token);
-        pd.Channel = null;
-        return (pingdata.LastPing = pd.End!.Value - pd.Start).Value;
+        var whoami = args.RemoteClient;
+        var index = BitConverter.ToInt16(args.Data.AsSpan(3, 2));
+        var ping = this[whoami].RecentPings[index];
+        ping.Start = DateTime.Now;
     }
 
     private void OTHook_Ping_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
@@ -61,24 +60,40 @@ public partial class Plugin : TerrariaPlugin
             return;
         }
 
-        var whoami = args.Instance.whoAmI;
-        var pingresponse = this[whoami].PingChannel;
-        var index = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2));
-        var ping = pingresponse?.RecentPings[index];
-        if (ping != null)
+        var whoami = TShockAPI.TShock.Players[args.Instance.whoAmI];
+        var ping = this[whoami].RecentPings[BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2))];
+
+        if (ping.Start.HasValue)
         {
             ping.End = DateTime.Now;
-            ping.Channel!.Writer.TryWrite(index);
+            try
+            {
+                this[whoami].OnPingUpdated?.Invoke(DateTime.Now - ping.Start.Value);
+            }
+            catch
+            {
+            }
+            try
+            {
+                ping.Callback?.Invoke(whoami, DateTime.Now - ping.Start.Value);
+            }
+            catch
+            {
+            }
+            finally
+            {
+                ping.Callback = null;
+            }
         }
     }
 
-    private async void Command_Ping(CommandArgs args)
+    [Command("Ping", "chireiden.omni.ping", "_ping", AllowServer = false)]
+    private void Command_Ping(CommandArgs args)
     {
         try
         {
             var player = args.Player;
-            var result = await this.Ping(player);
-            player.SendSuccessMessage($"Ping: {result.TotalMilliseconds:F1}ms");
+            this.Ping(player, (p, t) => p.SendSuccessMessage($"Ping: {t.TotalMilliseconds:F1}ms"));
         }
         catch (Exception e)
         {

@@ -4,9 +4,9 @@
 using System.Data;
 using System.Runtime.CompilerServices;
 
-#if !NET7_0_OR_GREATER
 namespace System.Runtime.CompilerServices
 {
+#if !NET7_0_OR_GREATER
     /// <summary>
     /// Indicates that compiler support for a particular feature is required for the location where this attribute is applied.
     /// </summary>
@@ -44,12 +44,9 @@ namespace System.Runtime.CompilerServices
     internal sealed class RequiredMemberAttribute : Attribute
     {
     }
-}
 #endif
 
 #if !NET5_0_OR_GREATER
-namespace System.Runtime.CompilerServices
-{
     /// <summary>
     /// Reserved to be used by the compiler for tracking metadata.
     /// This class should not be used by developers in source code.
@@ -58,12 +55,45 @@ namespace System.Runtime.CompilerServices
     internal static class IsExternalInit
     {
     }
-}
 #endif
 
 #if NETSTANDARD2_0
+    internal static class RuntimeHelpers
+    {
+        public static T[] GetSubArray<T>(T[] array, Range range)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            (var offset, var length) = range.GetOffsetAndLength(array.Length);
+
+            if (default(T)! != null || typeof(T[]) == array.GetType())
+            {
+                if (length == 0)
+                {
+                    return Array.Empty<T>();
+                }
+
+                var dest = new T[length];
+                Array.Copy(array, offset, dest, 0, length);
+                return dest;
+            }
+            else
+            {
+                var dest = (T[]) Array.CreateInstance(array.GetType().GetElementType()!, length);
+                Array.Copy(array, offset, dest, 0, length);
+                return dest;
+            }
+        }
+    }
+#endif
+}
+
 namespace System
 {
+#if NETSTANDARD2_0
     public readonly struct Index : IEquatable<Index>
     {
         private readonly int _value;
@@ -209,39 +239,5 @@ namespace System
             value = kvp.Value;
         }
     }
-}
-
-namespace System.Runtime.CompilerServices
-{
-    internal static class RuntimeHelpers
-    {
-        public static T[] GetSubArray<T>(T[] array, Range range)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            (var offset, var length) = range.GetOffsetAndLength(array.Length);
-
-            if (default(T)! != null || typeof(T[]) == array.GetType())
-            {
-                if (length == 0)
-                {
-                    return Array.Empty<T>();
-                }
-
-                var dest = new T[length];
-                Array.Copy(array, offset, dest, 0, length);
-                return dest;
-            }
-            else
-            {
-                var dest = (T[]) Array.CreateInstance(array.GetType().GetElementType()!, length);
-                Array.Copy(array, offset, dest, 0, length);
-                return dest;
-            }
-        }
-    }
-}
 #endif
+}

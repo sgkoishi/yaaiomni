@@ -40,15 +40,15 @@ public class Config
     };
 
     public List<string> HideCommands = new List<string> {
-        Plugin.PluginConsts.Commands.Whynot,
-        LegacyConsts.Commands.SetPvp,
-        LegacyConsts.Commands.SetTeam,
-        LegacyConsts.Commands.TriggerGarbageCollection,
-        LegacyConsts.Commands.DebugStat,
-        LegacyConsts.Commands.ResetCharacter,
-        LegacyConsts.Commands.Ping,
-        LegacyConsts.Commands.Chat,
-        LegacyConsts.Commands.Echo,
+        DefinedConsts.Commands.Whynot,
+        DefinedConsts.Commands.PvPStatus,
+        DefinedConsts.Commands.TeamStatus,
+        DefinedConsts.Commands.Admin.GarbageCollect,
+        DefinedConsts.Commands.Admin.DebugStat,
+        DefinedConsts.Commands.ResetCharacter,
+        DefinedConsts.Commands.Ping,
+        DefinedConsts.Commands.Chat,
+        DefinedConsts.Commands.Echo,
     };
 
     public List<string> StartupCommands = new List<string>();
@@ -317,10 +317,10 @@ public class Config
                 TShockAPI.Permissions.canchat,
                 TShockAPI.Permissions.synclocalarea,
                 TShockAPI.Permissions.sendemoji,
-                LegacyConsts.Permissions.TogglePvP,
-                LegacyConsts.Permissions.ToggleTeam,
-                LegacyConsts.Permissions.SyncLoadout,
-                LegacyConsts.Permissions.Ping
+                DefinedConsts.Permissions.TogglePvP,
+                DefinedConsts.Permissions.ToggleTeam,
+                DefinedConsts.Permissions.SyncLoadout,
+                DefinedConsts.Permissions.Ping
             };
             public bool AllowJourney = false;
             public bool IgnoreAntiCheat = false;

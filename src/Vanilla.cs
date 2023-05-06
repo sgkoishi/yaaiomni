@@ -1,4 +1,5 @@
-﻿using TerrariaApi.Server;
+﻿using Chireiden.TShock.Omni.DefinedConsts;
+using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
 
@@ -12,27 +13,27 @@ public partial class Plugin : TerrariaPlugin
             return;
         }
 
-        if (!TShockAPI.TShock.Groups.GroupExists(LegacyConsts.VanillaGroup))
+        if (!TShockAPI.TShock.Groups.GroupExists(Misc.VanillaGroup))
         {
-            TShockAPI.TShock.Groups.AddGroup(LegacyConsts.VanillaGroup, null, "", "255,255,255");
+            TShockAPI.TShock.Groups.AddGroup(Misc.VanillaGroup, null, "", "255,255,255");
         }
 
-        var addperm = TShockAPI.TShock.Groups.AddPermissions(LegacyConsts.VanillaGroup, vanillaMode.Permissions);
+        var addperm = TShockAPI.TShock.Groups.AddPermissions(Misc.VanillaGroup, vanillaMode.Permissions);
         if (vanillaMode.AllowJourney)
         {
-            addperm += TShockAPI.TShock.Groups.AddPermissions(LegacyConsts.VanillaGroup, new List<string> { "tshock.journey.*" });
+            addperm += TShockAPI.TShock.Groups.AddPermissions(Misc.VanillaGroup, new List<string> { "tshock.journey.*" });
         }
         if (vanillaMode.IgnoreAntiCheat)
         {
-            addperm += TShockAPI.TShock.Groups.AddPermissions(LegacyConsts.VanillaGroup, new List<string> { "tshock.ignore.*", "!tshock.ignore.ssc" });
+            addperm += TShockAPI.TShock.Groups.AddPermissions(Misc.VanillaGroup, new List<string> { "tshock.ignore.*", "!tshock.ignore.ssc" });
         }
         if (addperm.Length > 0)
         {
-            TShockAPI.TSPlayer.Server.SendInfoMessage($"Failed to add permissions to group {LegacyConsts.VanillaGroup}.");
+            TShockAPI.TSPlayer.Server.SendInfoMessage($"Failed to add permissions to group {Misc.VanillaGroup}.");
         }
 
-        var vg = TShockAPI.TShock.Groups.GetGroupByName(LegacyConsts.VanillaGroup);
-        TShockAPI.TShock.Groups.UpdateGroup(LegacyConsts.VanillaGroup, null, vg.Permissions, vg.ChatColor, vg.Suffix, vg.Prefix);
+        var vg = TShockAPI.TShock.Groups.GetGroupByName(Misc.VanillaGroup);
+        TShockAPI.TShock.Groups.UpdateGroup(Misc.VanillaGroup, null, vg.Permissions, vg.ChatColor, vg.Suffix, vg.Prefix);
         var group = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultRegistrationGroupName);
         group = Utils.ParentGroup(group, _ => true);
         if (group == null)
@@ -40,7 +41,7 @@ public partial class Plugin : TerrariaPlugin
             TShockAPI.TSPlayer.Server.SendErrorMessage($"Failed to find group {TShockAPI.TShock.Config.Settings.DefaultRegistrationGroupName}.");
             return;
         }
-        TShockAPI.TShock.Groups.UpdateGroup(group.Name, LegacyConsts.VanillaGroup, group.Permissions, group.ChatColor, group.Suffix, group.Prefix);
+        TShockAPI.TShock.Groups.UpdateGroup(group.Name, Misc.VanillaGroup, group.Permissions, group.ChatColor, group.Suffix, group.Prefix);
     }
 
     private void PermissionSetup()
@@ -52,7 +53,7 @@ public partial class Plugin : TerrariaPlugin
             return;
         }
 
-        if (File.Exists(Path.Combine(TShockAPI.TShock.SavePath, LegacyConsts.PresetLock)) && !preset.AlwaysApply)
+        if (File.Exists(Path.Combine(TShockAPI.TShock.SavePath, Misc.PresetLock)) && !preset.AlwaysApply)
         {
             return;
         }
@@ -61,58 +62,59 @@ public partial class Plugin : TerrariaPlugin
         if (preset.AllowRestricted || vanillaMode)
         {
             AddPermission(guest,
-                LegacyConsts.Permissions.TogglePvP,
-                LegacyConsts.Permissions.ToggleTeam,
-                LegacyConsts.Permissions.SyncLoadout,
-                LegacyConsts.Permissions.PvPCommand,
-                LegacyConsts.Permissions.TeamCommand);
+                Permissions.TogglePvP,
+                Permissions.ToggleTeam,
+                Permissions.SyncLoadout,
+                Permissions.PvPStatus,
+                Permissions.TeamStatus);
         }
-        AddPermission(guest, LegacyConsts.Permissions.Ping);
-        AddPermission(guest, LegacyConsts.Permissions.Echo);
 
-        AliasPermission(TShockAPI.Permissions.canchat, LegacyConsts.Permissions.Chat);
-        AliasPermission(LegacyConsts.Permissions.TogglePvP, $"{LegacyConsts.Permissions.TogglePvP}.*");
-        AliasPermission(LegacyConsts.Permissions.ToggleTeam, $"{LegacyConsts.Permissions.ToggleTeam}.*");
-        AliasPermission(TShockAPI.Permissions.summonboss, $"{LegacyConsts.Permissions.SummonBoss}.*");
-        AliasPermission(TShockAPI.Permissions.startinvasion, $"{LegacyConsts.Permissions.SummonBoss}.*");
+        AddPermission(guest, Permissions.Ping);
+        AddPermission(guest, Permissions.Echo);
+
+        AliasPermission(TShockAPI.Permissions.canchat, Permissions.Chat);
+        AliasPermission(Permissions.TogglePvP, $"{Permissions.TogglePvP}.*");
+        AliasPermission(Permissions.ToggleTeam, $"{Permissions.ToggleTeam}.*");
+        AliasPermission(TShockAPI.Permissions.summonboss, $"{Permissions.SummonBoss}.*");
+        AliasPermission(TShockAPI.Permissions.startinvasion, $"{Permissions.SummonBoss}.*");
 
         if (preset.DebugForAdminOnly)
         {
-            AliasPermission(TShockAPI.Permissions.kick, PluginConsts.Permissions.Whynot);
+            AliasPermission(TShockAPI.Permissions.kick, Permissions.Whynot);
         }
         else
         {
-            AddPermission(guest, PluginConsts.Permissions.Whynot);
+            AddPermission(guest, Permissions.Whynot);
         }
 
         AliasPermission(TShockAPI.Permissions.kick,
-            LegacyConsts.Permissions.Admin.Ghost,
-            LegacyConsts.Permissions.Admin.SetLanguage,
-            LegacyConsts.Permissions.Admin.DebugStat,
-            LegacyConsts.Permissions.Admin.SetPvp,
-            LegacyConsts.Permissions.Admin.SetTeam,
-            LegacyConsts.Permissions.TimeoutCommand,
-            LegacyConsts.Permissions.IntervalCommand,
-            LegacyConsts.Permissions.ClearInterval,
-            LegacyConsts.Permissions.ShowTimeout,
-            LegacyConsts.Permissions.ResetCharacter);
+            Permissions.Admin.Ghost,
+            Permissions.Admin.ManageLanguage,
+            Permissions.Admin.DebugStat,
+            Permissions.Admin.PvPStatus,
+            Permissions.Admin.TeamStatus,
+            Permissions.SetTimeout,
+            Permissions.SetInterval,
+            Permissions.ClearInterval,
+            Permissions.ShowTimeout,
+            Permissions.ResetCharacter);
 
         AliasPermission(TShockAPI.Permissions.maintenance,
-            LegacyConsts.Permissions.Admin.MaxPlayers,
-            LegacyConsts.Permissions.Admin.TileProvider,
-            LegacyConsts.Permissions.Admin.TriggerGarbageCollection,
-            LegacyConsts.Permissions.Admin.RawBroadcast,
-            LegacyConsts.Permissions.Admin.TerminateSocket,
-            LegacyConsts.Permissions.Admin.ResetCharacterOther,
-            LegacyConsts.Permissions.Admin.ExportCharacter);
+            Permissions.Admin.MaxPlayers,
+            Permissions.Admin.TileProvider,
+            Permissions.Admin.GarbageCollect,
+            Permissions.Admin.RawBroadcast,
+            Permissions.Admin.TerminateSocket,
+            Permissions.Admin.ResetCharacterOther,
+            Permissions.Admin.ExportCharacter);
 
         AliasPermission(TShockAPI.Permissions.su,
-            LegacyConsts.Permissions.Admin.Sudo,
-            LegacyConsts.Permissions.Admin.ListClients,
-            LegacyConsts.Permissions.Admin.DumpBuffer,
-            LegacyConsts.Permissions.Admin.ResetCharacterAll);
+            Permissions.Admin.Sudo,
+            Permissions.Admin.ListClients,
+            Permissions.Admin.DumpBuffer,
+            Permissions.Admin.ResetCharacterAll);
 
-        File.WriteAllText(Path.Combine(TShockAPI.TShock.SavePath, LegacyConsts.PresetLock), string.Empty);
+        File.WriteAllText(Path.Combine(TShockAPI.TShock.SavePath, Misc.PresetLock), string.Empty);
     }
 
     private static void AliasPermission(string orig, params string[] equiv)

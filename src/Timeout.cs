@@ -35,6 +35,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("SetTimeout", "chireiden.omni.timeout", "settimeout")]
     private void Command_SetTimeout(CommandArgs args)
     {
         if (args.Parameters.Count < 2)
@@ -59,6 +60,7 @@ public partial class Plugin : TerrariaPlugin
         args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed once in the future (id: {(uint) cmd.GetHashCode()}).");
     }
 
+    [Command("SetInterval", "chireiden.omni.interval", "setinterval")]
     private void Command_SetInterval(CommandArgs args)
     {
         if (args.Parameters.Count < 2)
@@ -82,6 +84,7 @@ public partial class Plugin : TerrariaPlugin
         args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed in the future (id: {(uint) cmd.GetHashCode()}).");
     }
 
+    [Command("ClearInterval", "chireiden.omni.cleartimeout", "clearinterval")]
     private void Command_ClearInterval(CommandArgs args)
     {
         if (args.Parameters.Count < 1)
@@ -112,6 +115,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("ShowTimeout", "chireiden.omni.showtimeout", "showdelay")]
     private void Command_ListDelay(CommandArgs args)
     {
         var commands = this[args.Player].DelayCommands;

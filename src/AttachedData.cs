@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Chireiden.TShock.Omni.DefinedConsts;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Threading.Channels;
 using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
@@ -16,7 +16,7 @@ public partial class Plugin : TerrariaPlugin
             {
                 return data;
             }
-            data = new AttachedData(player, this.config.Mitigation.ChatSpamRestrict.Count);
+            data = new AttachedData(player, this.config.Mitigation.ChatSpamRestrict);
             this._playerData.Add(player, data);
             return data;
         }
@@ -29,40 +29,46 @@ public class AttachedData
 {
     internal TShockAPI.TSPlayer Player;
     public bool? Ghost;
-    public bool IsPE
-    {
-        get => this.DetectPE >= 500;
-        internal set => this.Player.SetData(LegacyConsts.DataKey.IsPE, true);
-    }
     internal int DetectPE = 1;
     internal int PendingRevertHeal;
-    internal Limiter[]? ChatSpamRestrict;
+    public Limiter[] ChatSpamRestrict;
     public Queue<PermissionCheckHistory> PermissionHistory;
-    public PingData PingChannel;
+    internal PendingAck[] RecentPings;
+    public Action<TimeSpan>? OnPingUpdated;
     public List<DelayCommand> DelayCommands;
     public int PermissionBypass;
 
-    public AttachedData(TShockAPI.TSPlayer player, int chatLimiter)
+    public bool IsPE
+    {
+        get => this.DetectPE >= 500;
+        internal set => this.Player.SetData(DataKey.IsPE, true);
+    }
+
+    public TimeSpan LastPing
+    {
+        get
+        {
+            var last = this.RecentPings.Where(p => p.Start != null && p.End != null).OrderBy(p => p.Start).Last();
+            return last.End!.Value - last.Start!.Value;
+        }
+    }
+
+    public AttachedData(TShockAPI.TSPlayer player, List<Config.LimiterConfig> chatLimiter)
     {
         this.Player = player;
         this.PermissionHistory = new Queue<PermissionCheckHistory>();
-        this.PingChannel = new PingData();
+        this.RecentPings = Terraria.Main.item.Select(_ => new PendingAck()).ToArray();
         this.DelayCommands = new List<DelayCommand>();
+        this.ChatSpamRestrict = chatLimiter.Select(lc => (Limiter) lc).ToArray();
     }
 
     public record PermissionCheckHistory(string Permission, DateTime Time, bool Result, StackTrace? Trace);
 
-    public class PingData
+    internal class PendingAck
     {
-        public TimeSpan? LastPing;
-        internal PingDetails?[] RecentPings = new PingDetails?[Terraria.Main.item.Length];
-    }
-
-    internal class PingDetails
-    {
-        internal Channel<int>? Channel;
-        internal DateTime Start = DateTime.Now;
-        internal DateTime? End = null;
+        internal DateTime? Start;
+        internal DateTime? End;
+        internal Action<TShockAPI.TSPlayer, TimeSpan>? Callback;
     }
 
     public class DelayCommand
@@ -75,7 +81,7 @@ public class AttachedData
         {
             this.Command = command;
             this.Timeout = timeout;
-            this.Start = this.Timeout;
+            this.Start = start;
             this.Repeat = repeat;
         }
     }

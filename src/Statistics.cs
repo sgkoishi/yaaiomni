@@ -19,6 +19,7 @@ public partial class Plugin : TerrariaPlugin
         public int MitigationTerminatedConnection;
     }
 
+    [Command("Admin.DebugStat", "chireiden.omni.admin.debugstat", "_debugstat")]
     private void Command_DebugStat(CommandArgs args)
     {
         args.Player.SendInfoMessage(JsonConvert.SerializeObject(this.Statistics, Formatting.Indented));

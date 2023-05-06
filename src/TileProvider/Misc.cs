@@ -23,6 +23,7 @@ public partial class Plugin : TerrariaPlugin
         orig();
     }
 
+    [Command("Admin.TileProvider", "chireiden.omni.admin.tileprovider", "tileprovider")]
     private void Command_TileProvider(CommandArgs args)
     {
         var opt = args.Parameters.Count == 0 ? string.Empty : args.Parameters[0].ToLower();
