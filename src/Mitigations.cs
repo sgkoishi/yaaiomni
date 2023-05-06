@@ -204,12 +204,11 @@ public partial class Plugin : TerrariaPlugin
                     {
                         break;
                     }
-
-                    for (var i = 0; i < this.config.Mitigation.ChatSpamRestrict.Count; i++)
+                    var data = this[player];
+                    data.ChatSpamRestrict ??= this.config.Mitigation.ChatSpamRestrict.Select(lc => (Limiter) lc).ToArray();
+                    foreach (var limiter in data.ChatSpamRestrict)
                     {
-                        var limiter = this.config.Mitigation.ChatSpamRestrict[i];
-                        var tat = Math.Max(this._updateCounter, this[player].ChatSpamRestrict[i]) + limiter.RateLimit;
-                        if (tat > this._updateCounter + limiter.Maximum)
+                        if (!limiter.Allowed)
                         {
                             this.Statistics.MitigationRejectedChat++;
                             args.Result = OTAPI.HookResult.Cancel;
@@ -217,7 +216,6 @@ public partial class Plugin : TerrariaPlugin
                             args.PacketId = byte.MaxValue;
                             break;
                         }
-                        this[player].ChatSpamRestrict[i] = tat;
                     }
                 }
                 break;
@@ -345,7 +343,7 @@ public partial class Plugin : TerrariaPlugin
         internal class Connection
         {
             public required IPAddress Address { get; set; }
-            public ConcurrentDictionary<int, double> Limit { get; } = new ConcurrentDictionary<int, double>();
+            public required ConcurrentBag<Limiter> Limit { init; get; }
         }
 
         public void PurgeCache()
@@ -383,21 +381,16 @@ public partial class Plugin : TerrariaPlugin
                 var cd = this._connPool.Connections.GetOrAdd(addrs, (_k) => new ConnectionStore.Connection
                 {
                     Address = tcpa.Address,
+                    Limit = new ConcurrentBag<Limiter>(mitigation.ConnectionLimit.Select(lc => (Limiter) lc)),
                 });
                 var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
                 this._connPool.ConnectTime.Add(client, new Float64Object
                 {
                     Value = time,
                 });
-                for (var i = 0; i < mitigation.ConnectionLimit.Count; i++)
+                foreach (var limiter in cd.Limit)
                 {
-                    var limiter = mitigation.ConnectionLimit[i];
-                    var lb = time + limiter.RateLimit;
-                    if (cd.Limit.AddOrUpdate(i, (_k) => lb, (k, v) =>
-                    {
-                        var tat = lb = Math.Max(v + limiter.RateLimit, lb);
-                        return tat > time + limiter.Maximum ? v : tat;
-                    }) != lb)
+                    if (!limiter.Allowed)
                     {
                         Interlocked.Increment(ref this.Statistics.MitigationRejectedConnection);
                         client.Close();

@@ -32,11 +32,11 @@ public class AttachedData
     public bool IsPE
     {
         get => this.DetectPE >= 500;
-        internal set => this.Player.SetData(Consts.DataKey.IsPE, true);
+        internal set => this.Player.SetData(LegacyConsts.DataKey.IsPE, true);
     }
     internal int DetectPE = 1;
     internal int PendingRevertHeal;
-    internal double[] ChatSpamRestrict;
+    internal Limiter[]? ChatSpamRestrict;
     public Queue<PermissionCheckHistory> PermissionHistory;
     public PingData PingChannel;
     public List<DelayCommand> DelayCommands;
@@ -45,7 +45,6 @@ public class AttachedData
     public AttachedData(TShockAPI.TSPlayer player, int chatLimiter)
     {
         this.Player = player;
-        this.ChatSpamRestrict = new double[chatLimiter];
         this.PermissionHistory = new Queue<PermissionCheckHistory>();
         this.PingChannel = new PingData();
         this.DelayCommands = new List<DelayCommand>();

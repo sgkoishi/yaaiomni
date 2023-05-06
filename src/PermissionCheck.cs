@@ -40,6 +40,7 @@ public partial class Plugin : TerrariaPlugin
         return result;
     }
 
+    [Command("Whynot", "chireiden.omni.whynot", "whynot", AllowServer = false)]
     private void Command_PermissionCheck(CommandArgs args)
     {
         var list = this[args.Player].PermissionHistory.ToList();
@@ -60,7 +61,7 @@ public partial class Plugin : TerrariaPlugin
         }
 
         args.Player.SendInfoMessage("Permission check history:");
-        var detailed = args.Parameters.Contains("-v") && args.Player.HasPermission(Consts.Permissions.Admin.DetailedPermissionStackTrace);
+        var detailed = args.Parameters.Contains("-v") && args.Player.HasPermission(LegacyConsts.Permissions.Admin.DetailedPermissionStackTrace);
 
         foreach (var item in list)
         {

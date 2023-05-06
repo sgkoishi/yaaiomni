@@ -46,8 +46,7 @@ public partial class Plugin : TerrariaPlugin
                     return false;
                 }
 
-                var smask = 2 << subnetMask;
-                if ((Utils.ToInt(ip) & smask) != (Utils.ToInt(subnetAddr) & smask))
+                if ((Utils.ToInt(ip) ^ Utils.ToInt(subnetAddr)) < (1 << (32 - subnetMask)))
                 {
                     return false;
                 }

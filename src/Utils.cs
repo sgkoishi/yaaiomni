@@ -277,6 +277,6 @@ public static class Utils
 
     public static int ToInt(IPAddress addr)
     {
-        return MemoryMarshal.Cast<byte, int>(addr.GetAddressBytes().Reverse().ToArray().AsSpan())[0];
+        return MemoryMarshal.Cast<byte, int>(addr.GetAddressBytes().AsSpan())[0];
     }
 }

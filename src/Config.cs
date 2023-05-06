@@ -40,15 +40,15 @@ public class Config
     };
 
     public List<string> HideCommands = new List<string> {
-        Consts.Commands.Whynot,
-        Consts.Commands.SetPvp,
-        Consts.Commands.SetTeam,
-        Consts.Commands.TriggerGarbageCollection,
-        Consts.Commands.DebugStat,
-        Consts.Commands.ResetCharacter,
-        Consts.Commands.Ping,
-        Consts.Commands.Chat,
-        Consts.Commands.Echo,
+        Plugin.PluginConsts.Commands.Whynot,
+        LegacyConsts.Commands.SetPvp,
+        LegacyConsts.Commands.SetTeam,
+        LegacyConsts.Commands.TriggerGarbageCollection,
+        LegacyConsts.Commands.DebugStat,
+        LegacyConsts.Commands.ResetCharacter,
+        LegacyConsts.Commands.Ping,
+        LegacyConsts.Commands.Chat,
+        LegacyConsts.Commands.Echo,
     };
 
     public List<string> StartupCommands = new List<string>();
@@ -317,10 +317,10 @@ public class Config
                 TShockAPI.Permissions.canchat,
                 TShockAPI.Permissions.synclocalarea,
                 TShockAPI.Permissions.sendemoji,
-                Consts.Permissions.TogglePvP,
-                Consts.Permissions.ToggleTeam,
-                Consts.Permissions.SyncLoadout,
-                Consts.Permissions.Ping
+                LegacyConsts.Permissions.TogglePvP,
+                LegacyConsts.Permissions.ToggleTeam,
+                LegacyConsts.Permissions.SyncLoadout,
+                LegacyConsts.Permissions.Ping
             };
             public bool AllowJourney = false;
             public bool IgnoreAntiCheat = false;
@@ -388,9 +388,9 @@ public class Config
         ///   5 messages per 20 seconds
         /// </para>
         /// </summary>
-        public List<Limiter> ChatSpamRestrict = new List<Limiter> {
-            new Limiter { RateLimit = 100, Maximum = 300 },
-            new Limiter { RateLimit = 240, Maximum = 1200 }
+        public List<LimiterConfig> ChatSpamRestrict = new List<LimiterConfig> {
+            new LimiterConfig { RateLimit = 1.6, Maximum = 5 },
+            new LimiterConfig { RateLimit = 4, Maximum = 20 }
         };
 
         /// <summary>
@@ -439,9 +439,9 @@ public class Config
         ///   4 connections per 60 seconds
         /// </para>
         /// </summary>
-        public List<Limiter> ConnectionLimit = new List<Limiter> {
-            new Limiter { RateLimit = 3, Maximum = 5 },
-            new Limiter { RateLimit = 15, Maximum = 60 },
+        public List<LimiterConfig> ConnectionLimit = new List<LimiterConfig> {
+            new LimiterConfig { RateLimit = 3, Maximum = 5 },
+            new LimiterConfig { RateLimit = 15, Maximum = 60 },
         };
 
         /// <summary>
@@ -550,14 +550,14 @@ public class Config
         }
     }
 
-    public class Limiter
+    public class LimiterConfig
     {
         public double RateLimit { get; set; }
         public double Maximum { get; set; }
 
-        public class LimiterConverter : JsonConverter<Limiter>
+        public class LimiterConverter : JsonConverter<LimiterConfig>
         {
-            public override void WriteJson(JsonWriter writer, Limiter? value, JsonSerializer serializer)
+            public override void WriteJson(JsonWriter writer, LimiterConfig? value, JsonSerializer serializer)
             {
                 if (value == null)
                 {
@@ -572,16 +572,44 @@ public class Config
                 }
             }
 
-            public override Limiter ReadJson(JsonReader reader, Type objectType, Limiter? existingValue, bool hasExistingValue, JsonSerializer serializer)
+            public override LimiterConfig ReadJson(JsonReader reader, Type objectType, LimiterConfig? existingValue, bool hasExistingValue, JsonSerializer serializer)
             {
                 var s = reader?.Value?.ToString() ?? "0/1";
                 var split = s.Split('/');
-                return new Limiter
+                return new LimiterConfig
                 {
                     RateLimit = double.Parse(split[0]),
                     Maximum = double.Parse(split[1])
                 };
             }
+        }
+
+        public static explicit operator Limiter(LimiterConfig config)
+        {
+            return new Limiter
+            {
+                Config = config
+            };
+        }
+    }
+}
+
+public class Limiter
+{
+    public required Config.LimiterConfig Config { get; set; }
+    public double Counter { get; set; }
+    public bool Allowed
+    {
+        get
+        {
+            var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
+            var tat = Math.Max(this.Counter, time) + this.Config.RateLimit;
+            if (tat > time + this.Config.Maximum)
+            {
+                return false;
+            }
+            this.Counter = tat;
+            return true;
         }
     }
 }

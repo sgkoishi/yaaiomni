@@ -34,6 +34,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    [Command("Admin.Ghost", "chireiden.omni.ghost", "ghost", AllowServer = false)]
     private void Command_Ghost(CommandArgs args)
     {
         if (args.Parameters.Contains("-v"))

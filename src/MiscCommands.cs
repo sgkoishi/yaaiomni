@@ -7,6 +7,8 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin : TerrariaPlugin
 {
+    [Command("PvPStatus", "chireiden.omni.setpvp", "_pvp")]
+    [RelatedPermission("Admin.PvPStatus", "chireiden.omni.admin.setpvp")]
     private void Command_PvP(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -17,7 +19,7 @@ public partial class Plugin : TerrariaPlugin
 
         if (args.Parameters.Count > 1)
         {
-            if (!args.Player.HasPermission(Consts.Permissions.Admin.SetPvp))
+            if (!args.Player.HasPermission(LegacyConsts.Permissions.Admin.SetPvp))
             {
                 args.Player.SendErrorMessage("You don't have permission to set other players' PvP status.");
                 return;
@@ -76,7 +78,7 @@ public partial class Plugin : TerrariaPlugin
 
         if (args.Parameters.Count > 1)
         {
-            if (!args.Player.HasPermission(Consts.Permissions.Admin.SetTeam))
+            if (!args.Player.HasPermission(LegacyConsts.Permissions.Admin.SetTeam))
             {
                 args.Player.SendErrorMessage("You don't have permission to set other players' team.");
                 return;
@@ -306,7 +308,7 @@ public partial class Plugin : TerrariaPlugin
         }
         else if (args.Parameters[0] == "*")
         {
-            if (args.Player.HasPermission(Consts.Permissions.Admin.ResetCharacterAll))
+            if (args.Player.HasPermission(LegacyConsts.Permissions.Admin.ResetCharacterAll))
             {
                 account = Utils.SearchUserAccounts(args.Parameters[0]).Select(a => a.ID).ToList();
             }
@@ -320,7 +322,7 @@ public partial class Plugin : TerrariaPlugin
             || args.Parameters[0].StartsWith("usr:")
             || args.Parameters[0].StartsWith("usi:"))
         {
-            if (args.Player.HasPermission(Consts.Permissions.Admin.ResetCharacterOther))
+            if (args.Player.HasPermission(LegacyConsts.Permissions.Admin.ResetCharacterOther))
             {
                 account = Utils.SearchUserAccounts(args.Parameters[0]).Select(a => a.ID).ToList();
             }

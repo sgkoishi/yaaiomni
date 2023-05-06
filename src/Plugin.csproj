@@ -34,6 +34,10 @@
     <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SourceGen\SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
   <Target Name="githash" BeforeTargets="PreBuildEvent">
     <Exec Command="git rev-list --count HEAD" ContinueOnError="true" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="CommitVersionValue" />

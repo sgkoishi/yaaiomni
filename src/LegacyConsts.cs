@@ -1,10 +1,10 @@
 ﻿namespace Chireiden.TShock.Omni;
 
-public static class Consts
+[Obsolete("Migrate to source generator")]
+public static class LegacyConsts
 {
     public static class Permissions
     {
-        public static string Whynot => "chireiden.omni.whynot";
         public static string TogglePvP => "chireiden.omni.togglepvp";
         public static string ToggleTeam => "chireiden.omni.toggleteam";
         public static string PvPCommand => "chireiden.omni.setpvp";
@@ -42,7 +42,6 @@ public static class Consts
     }
     public static class Commands
     {
-        public static string Whynot => "whynot";
         public static string Ghost => "ghost";
         public static string SetLanguage => "setlang";
         public static string SetPvp => "_pvp";
