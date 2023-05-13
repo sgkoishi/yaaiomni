@@ -3,12 +3,11 @@ using System.Net;
 using System.Net.Sockets;
 using Terraria.Net;
 using Terraria.Net.Sockets;
-using TerrariaApi.Server;
 using TShockAPI.Sockets;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private void OTHook_Socket_OnCreate(object? sender, OTAPI.Hooks.Netplay.CreateTcpListenerEventArgs args)
     {

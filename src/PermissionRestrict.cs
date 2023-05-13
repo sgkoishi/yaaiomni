@@ -1,14 +1,12 @@
-﻿using System.Runtime.CompilerServices;
-using Terraria.Localization;
+﻿using Terraria.Localization;
 using TerrariaApi.Server;
-using static TShockAPI.GetDataHandlers;
 
 namespace Chireiden.TShock.Omni;
 
-partial class Plugin : TerrariaPlugin
+public partial class Plugin : TerrariaPlugin
 {
     [RelatedPermission("TogglePvP", "chireiden.omni.togglepvp")]
-    private void GDHook_Permission_TogglePvp(object? sender, TogglePvpEventArgs args)
+    private void GDHook_Permission_TogglePvp(object? sender, TShockAPI.GetDataHandlers.TogglePvpEventArgs args)
     {
         if (args.Handled)
         {
@@ -39,7 +37,7 @@ partial class Plugin : TerrariaPlugin
     }
 
     [RelatedPermission("ToggleTeam", "chireiden.omni.toggleteam")]
-    private void GDHook_Permission_PlayerTeam(object? sender, PlayerTeamEventArgs args)
+    private void GDHook_Permission_PlayerTeam(object? sender, TShockAPI.GetDataHandlers.PlayerTeamEventArgs args)
     {
         if (args.Handled)
         {
@@ -89,7 +87,7 @@ partial class Plugin : TerrariaPlugin
         }
 
         var player = TShockAPI.TShock.Players[args.Instance.whoAmI];
-        if (player == null || player.HasPermission(DefinedConsts.Permissions.SyncLoadout))
+        if (player?.HasPermission(DefinedConsts.Permissions.SyncLoadout) != false)
         {
             return;
         }

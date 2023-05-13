@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Reflection;
 using Terraria.Localization;
-using TerrariaApi.Server;
 using TShockAPI;
 
 namespace Chireiden.TShock.Omni;

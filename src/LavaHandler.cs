@@ -1,8 +1,6 @@
-﻿using TerrariaApi.Server;
+﻿namespace Chireiden.TShock.Omni;
 
-namespace Chireiden.TShock.Omni;
-
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private void Detour_Lava_KillTile(On.Terraria.WorldGen.orig_KillTile orig, int i, int j, bool fail, bool effectOnly, bool noItem)
     {

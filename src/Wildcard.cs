@@ -1,10 +1,9 @@
-﻿using TerrariaApi.Server;
-using TShockAPI;
+﻿using TShockAPI;
 using TShockAPI.Hooks;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private void TSHook_Wildcard_PlayerCommand(PlayerCommandEventArgs args)
     {

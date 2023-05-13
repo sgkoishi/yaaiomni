@@ -1,8 +1,6 @@
-﻿using TerrariaApi.Server;
+﻿namespace Chireiden.TShock.Omni;
 
-namespace Chireiden.TShock.Omni;
-
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private void MMHook_MemoryTrim_DisplayDoll(On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.orig_ctor orig, Terraria.GameContent.Tile_Entities.TEDisplayDoll self)
     {

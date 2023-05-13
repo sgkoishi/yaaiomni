@@ -2,7 +2,7 @@
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private void TAHook_Permission_ItemForceIntoChest(ForceItemIntoChestEventArgs args)
     {
@@ -17,7 +17,7 @@ public partial class Plugin : TerrariaPlugin
         }
 
         var tp = TShockAPI.TShock.Players[args.Player.whoAmI];
-        if (tp == null || !tp.HasBuildPermission(args.Chest.x, args.Chest.y, false))
+        if (tp?.HasBuildPermission(args.Chest.x, args.Chest.y, false) != true)
         {
             args.Handled = true;
         }
@@ -36,7 +36,7 @@ public partial class Plugin : TerrariaPlugin
         }
 
         var tp = TShockAPI.TShock.Players[args.Player.Index];
-        if (tp == null || !tp.HasBuildPermission(args.X, args.Y, false))
+        if (tp?.HasBuildPermission(args.X, args.Y, false) != true)
         {
             args.Handled = true;
         }

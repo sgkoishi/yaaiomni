@@ -1,9 +1,8 @@
-﻿using TerrariaApi.Server;
-using TShockAPI;
+﻿using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private bool Detour_PlayerActive(Func<TSPlayer, bool> orig, TSPlayer player)
     {

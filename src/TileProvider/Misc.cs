@@ -3,7 +3,7 @@ using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+partial class Plugin
 {
     private void MMHook_TileProvider_ClearWorld(On.Terraria.WorldGen.orig_clearWorld orig)
     {

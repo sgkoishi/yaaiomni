@@ -1,9 +1,8 @@
 ﻿using Chireiden.TShock.Omni.DefinedConsts;
-using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private void VanillaSetup()
     {

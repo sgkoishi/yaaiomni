@@ -1,11 +1,10 @@
 ﻿using Chireiden.TShock.Omni.DefinedConsts;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private readonly ConditionalWeakTable<TShockAPI.TSPlayer, AttachedData> _playerData = new ConditionalWeakTable<TShockAPI.TSPlayer, AttachedData>();
     public AttachedData this[TShockAPI.TSPlayer player]

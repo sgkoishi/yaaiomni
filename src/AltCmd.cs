@@ -1,8 +1,6 @@
-﻿using TerrariaApi.Server;
+﻿namespace Chireiden.TShock.Omni;
 
-namespace Chireiden.TShock.Omni;
-
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     public class ParsedCommand
     {

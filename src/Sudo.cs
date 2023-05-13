@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.Hooks;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public void RunWithoutPermissionChecks(Action action, TSPlayer? player = null)

@@ -4,7 +4,7 @@ using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+partial class Plugin
 {
     private void MMHook_DebugPacket_GetData(On.Terraria.MessageBuffer.orig_GetData orig, MessageBuffer self, int start, int length, out int messageType)
     {

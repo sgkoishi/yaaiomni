@@ -29,6 +29,8 @@ public partial class Plugin : TerrariaPlugin
         AppDomain.CurrentDomain.FirstChanceException += this.FirstChanceExceptionHandler;
         this.Order = int.MinValue;
         this.config = new Config();
+        this.LoadConfig(Utils.ConsolePlayer.Instance);
+        this.config._init = false;
         this.Detour(
             nameof(this.Detour_UpdateCheckAsync),
             typeof(UpdateManager)
@@ -94,7 +96,7 @@ public partial class Plugin : TerrariaPlugin
             this.ILHook_Mitigation_KeepRestAlive);
     }
 
-    private void OnReload(ReloadEventArgs? e)
+    private void LoadConfig(TSPlayer? initiator)
     {
         var jss = new JsonSerializerSettings
         {
@@ -114,7 +116,7 @@ public partial class Plugin : TerrariaPlugin
         }
         catch (Exception ex)
         {
-            e?.Player?.SendErrorMessage($"Failed to load config: {ex.Message}");
+            initiator?.SendErrorMessage($"Failed to load config: {ex.Message}");
             return;
         }
         try
@@ -123,13 +125,17 @@ public partial class Plugin : TerrariaPlugin
         }
         catch (Exception ex)
         {
-            e?.Player?.SendErrorMessage($"Failed to save config: {ex.Message}");
+            initiator?.SendErrorMessage($"Failed to save config: {ex.Message}");
             return;
         }
-        e?.Player?.SendSuccessMessage("Chireiden.Omni loaded.");
+        initiator?.SendSuccessMessage("Chireiden.Omni loaded.");
+    }
+
+    private void ApplyConfig(TSPlayer? initiator)
+    {
         if (this.config.ShowConfig)
         {
-            e?.Player?.SendInfoMessage(JsonConvert.SerializeObject(this.config, Formatting.Indented));
+            initiator?.SendInfoMessage(JsonConvert.SerializeObject(this.config, Formatting.Indented));
         }
         switch (this.config.Enhancements.TileProvider)
         {
@@ -160,19 +166,19 @@ public partial class Plugin : TerrariaPlugin
         var spamlim = this.config.Mitigation.ChatSpamRestrict;
         if (spamlim.Count > 0)
         {
-            e?.Player?.SendInfoMessage("ChatSpam limit applied:");
+            initiator?.SendInfoMessage("ChatSpam limit applied:");
             foreach (var limiter in spamlim)
             {
-                e?.Player?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} messages per {Math.Round(limiter.Maximum / 60, 1):G} seconds");
+                initiator?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} messages per {Math.Round(limiter.Maximum / 60, 1):G} seconds");
             }
         }
         var connlim = this.config.Mitigation.ConnectionLimit;
         if (connlim.Count > 0)
         {
-            e?.Player?.SendInfoMessage("Connection limit applied:");
+            initiator?.SendInfoMessage("Connection limit applied:");
             foreach (var limiter in connlim)
             {
-                e?.Player?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} connections per IP per {Math.Round(limiter.Maximum, 1):G} seconds");
+                initiator?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} connections per IP per {Math.Round(limiter.Maximum, 1):G} seconds");
             }
         }
         foreach (var field in typeof(DefinedConsts.DataKey).GetFields())
@@ -202,8 +208,15 @@ public partial class Plugin : TerrariaPlugin
         Terraria.Initializers.ChatInitializer.Load();
     }
 
+    private void OnReload(ReloadEventArgs? e)
+    {
+        this.LoadConfig(e?.Player);
+        this.ApplyConfig(e?.Player);
+    }
+
     public override void Initialize()
     {
+        this.config._init = true;
         On.Terraria.MessageBuffer.GetData += this.MMHook_PatchVersion_GetData;
         On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor += this.MMHook_MemoryTrim_DisplayDoll;
         On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor += this.MMHook_MemoryTrim_HatRack;
@@ -304,5 +317,17 @@ public partial class Plugin : TerrariaPlugin
         OTAPI.Hooks.Netplay.CreateTcpListener += this.OTHook_Socket_OnCreate;
         this.InitCommands();
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
+    }
+
+    private void ShowError(string value)
+    {
+        if (this.config?._init == true)
+        {
+            TShockAPI.TShock.Log.Error(value);
+        }
+        else
+        {
+            Console.WriteLine(value);
+        }
     }
 }

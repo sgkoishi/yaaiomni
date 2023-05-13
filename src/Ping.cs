@@ -1,12 +1,8 @@
-﻿using MySqlX.XDevAPI.Common;
-using System.Linq;
-using System.Threading.Channels;
-using TerrariaApi.Server;
-using TShockAPI;
+﻿using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     public void Ping(TSPlayer player, Action<TSPlayer, TimeSpan> callback)
     {

@@ -9,6 +9,11 @@ namespace Chireiden.TShock.Omni;
 public class Config
 {
     /// <summary>
+    /// TShock init
+    /// </summary>
+    internal bool _init;
+
+    /// <summary>
     /// Weather to show the config file on load/reload.
     /// </summary>
     public bool ShowConfig = false;
@@ -93,7 +98,7 @@ public class Config
         /// <summary>
         /// Disable vanilla version check.
         /// </summary>
-        public bool SyncVersion = true;
+        public bool SyncVersion = false;
 
         /// <summary>
         /// Action for TShock's update
@@ -347,6 +352,7 @@ public class Config
         /// This will silently proceed the packet without boardcasting it, and
         /// stop future unnecessary sync.
         /// </para>
+        /// Tracking: <see href="https://forums.terraria.org/index.php?threads/network-broadcast-storm.117270/"/>
         /// </summary>
         public bool InventorySlotPE = true;
 
@@ -360,6 +366,7 @@ public class Config
         /// This will silently revert the attempt of healing.
         /// Item is still consumed as punishment.
         /// </para>
+        /// Tracking: <see href="https://forums.terraria.org/index.php?threads/almost-invincible-by-healing-with-potions-but-without-cooldown.117269/"/>
         /// </summary>
         public bool PotionSicknessPE = true;
 
@@ -373,6 +380,7 @@ public class Config
         /// This will silently revert the attempt of using the item.
         /// Might cause player slightly desync when they try to do so.
         /// </para>
+        /// Tracking: <see href="https://forums.terraria.org/index.php?threads/almost-invincible-by-healing-with-potions-but-without-cooldown.117269/"/>
         /// </summary>
         public bool SwapWhileUsePE = true;
 
@@ -467,12 +475,12 @@ public class Config
         /// <summary>
         /// <para>
         /// Disabled players are restricted from most actions including being hurt.
-        /// <see href="https://github.com/Pryaxis/TShock/issues/1151" />
         /// </para>
         /// <para>Cause imbalance.</para>
         /// <para>
         /// This will allow disabled players to be hurt.
         /// </para>
+        /// <see href="https://github.com/Pryaxis/TShock/issues/1151" />
         /// </summary>
         public DisabledDamageAction DisabledDamageHandler = DisabledDamageAction.Preset;
 
@@ -486,6 +494,7 @@ public class Config
         /// <para>
         /// This will try to change the behavior of the coin pickup.
         /// </para>
+        /// <see href="https://github.com/Pryaxis/TShock/issues/2004"/>
         /// </summary>
         public ExpertCoinHandler ExpertExtraCoin = ExpertCoinHandler.Preset;
 
@@ -498,6 +507,7 @@ public class Config
         /// <para>
         /// This will try to remove the Connection header from the request.
         /// </para>
+        /// <see href="https://github.com/Pryaxis/TShock/issues/2923"/>
         /// </summary>
         public bool KeepRestAlive = true;
 
@@ -517,6 +527,7 @@ public class Config
         /// may run `/help` (CommandId: Say, Content: /help) or
         /// `/hilfe` (CommandId: Help), and both works.
         /// </para>
+        /// <see href="https://github.com/Pryaxis/TShock/issues/2914"/>
         /// </summary>
         public bool UseEnglishCommand = true;
 

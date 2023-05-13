@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Runtime.ExceptionServices;
-using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private readonly ThreadLocal<int> inFirstChance = new ThreadLocal<int>(() => 0);
     private readonly HashSet<string> exceptions = new HashSet<string>();
@@ -27,7 +26,7 @@ public partial class Plugin : TerrariaPlugin
             var trace = new StackTrace(true);
             if (this.exceptions.Add(trace.ToString()))
             {
-                TShockAPI.TShock.Log.ConsoleError($"New First Chance: {trace}");
+                this.ShowError($"New First Chance: {trace}");
             }
         }
         catch

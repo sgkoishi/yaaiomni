@@ -1,9 +1,8 @@
-﻿using TerrariaApi.Server;
-using TShockAPI;
+﻿using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private async Task Detour_UpdateCheckAsync(Func<UpdateManager, object, Task> orig, UpdateManager um, object state)
     {

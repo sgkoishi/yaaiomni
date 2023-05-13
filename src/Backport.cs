@@ -1,15 +1,14 @@
 ﻿using MonoMod.Cil;
-using System.Reflection;
 using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     [Obsolete]
     private void ILHook_Backport_2892(ILContext context)
     {
-        if ((context.Body?.Instructions[0]?.Operand?.ToString() ?? "").Contains(@"(?:\/s(?<Stack>\d{1,4}))"))
+        if (context.Body?.Instructions[0]?.Operand?.ToString()?.Contains(@"(?:\/s(?<Stack>\d{1,3}))") == true)
         {
             context.Body!.Instructions[0].Operand = @"\[i(tem)?(?:\/s(?<Stack>\d{1,4}))?(?:\/p(?<Prefix>\d{1,3}))?:(?<NetID>-?\d{1,4})\]";
         }

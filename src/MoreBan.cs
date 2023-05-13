@@ -1,13 +1,12 @@
 ﻿using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.DB;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private FieldInfo? _CheckBan_lambda_player;
     private bool Detour_CheckBan_IP(Func<object, KeyValuePair<int, Ban>, bool> orig, object instance, KeyValuePair<int, Ban> kvp)

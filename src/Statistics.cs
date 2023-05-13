@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json;
-using TerrariaApi.Server;
 using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     public DebugStat Statistics { get; } = new();
     public class DebugStat

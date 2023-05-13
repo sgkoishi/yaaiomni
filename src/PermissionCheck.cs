@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics;
-using TerrariaApi.Server;
 using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private bool Detour_HasPermission(Func<TSPlayer, string, bool> orig, TSPlayer player, string permission)
     {

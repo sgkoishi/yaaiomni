@@ -279,4 +279,45 @@ public static class Utils
     {
         return MemoryMarshal.Cast<byte, int>(addr.GetAddressBytes().AsSpan())[0];
     }
+
+    internal class ConsolePlayer : TSPlayer
+    {
+        internal static ConsolePlayer Instance = new ConsolePlayer("Console");
+        private static readonly Dictionary<ConsoleColor, int> _consoleColorMap = new Dictionary<ConsoleColor, int>
+        {
+            [ConsoleColor.Red] = 0xFF0000,
+            [ConsoleColor.Green] = 0x00FF00,
+            [ConsoleColor.Blue] = 0x0000FF,
+            [ConsoleColor.Yellow] = 0xFFFF00,
+            [ConsoleColor.Cyan] = 0x00FFFF,
+            [ConsoleColor.Magenta] = 0xFF00FF,
+            [ConsoleColor.White] = 0xFFFFFF,
+            [ConsoleColor.Gray] = 0x808080,
+            [ConsoleColor.DarkRed] = 0x800000,
+            [ConsoleColor.DarkGreen] = 0x008000,
+            [ConsoleColor.DarkBlue] = 0x000080,
+            [ConsoleColor.DarkYellow] = 0x808000,
+            [ConsoleColor.DarkCyan] = 0x008080,
+            [ConsoleColor.DarkMagenta] = 0x800080,
+            [ConsoleColor.DarkGray] = 0x808080,
+            [ConsoleColor.Black] = 0x000000,
+        };
+
+        public ConsolePlayer(string name) : base(name)
+        {
+        }
+
+        public override void SendMessage(string msg, byte red, byte green, byte blue)
+        {
+            Console.ForegroundColor = _consoleColorMap
+                .MinBy(kvp =>
+                    Math.Pow((kvp.Value >> 16) - red, 2)
+                    + Math.Pow(((kvp.Value >> 8) & 0xFF) - green, 2)
+                    + Math.Pow((kvp.Value & 0xFF) - blue, 2))
+                .Key;
+            Console.Write(msg);
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+    }
 }

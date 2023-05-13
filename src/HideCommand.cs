@@ -1,10 +1,9 @@
-﻿using TerrariaApi.Server;
-using TShockAPI;
+﻿using TShockAPI;
 using TShockAPI.Hooks;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private List<Command> _hiddenCommands = new();
 

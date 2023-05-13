@@ -5,7 +5,7 @@ using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     [Command("PvPStatus", "chireiden.omni.setpvp", "_pvp")]
     [RelatedPermission("Admin.PvPStatus", "chireiden.omni.admin.setpvp")]

@@ -3,11 +3,10 @@ using MonoMod.Cil;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Runtime.CompilerServices;
-using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     internal static class Mitigations
     {
@@ -305,7 +304,7 @@ public partial class Plugin : TerrariaPlugin
                 {
                     foreach (var item in Terraria.Main.item)
                     {
-                        if (item == null || !item.active || item.instanced || !item.IsACoin || item.timeLeftInWhichTheItemCannotBeTakenByEnemies != 0)
+                        if (item?.active != true || item.instanced || !item.IsACoin || item.timeLeftInWhichTheItemCannotBeTakenByEnemies != 0)
                         {
                             continue;
                         }
@@ -404,14 +403,7 @@ public partial class Plugin : TerrariaPlugin
 
     private void CheckConnectionTimeout()
     {
-        var count = 0;
-        for (var i = 0; i < Terraria.Main.maxNetPlayers; i++)
-        {
-            if (Terraria.Netplay.Clients[i].IsConnected())
-            {
-                count += 1;
-            }
-        }
+        var count = Terraria.Netplay.Clients.Count(rc => rc?.IsConnected() == true);
 
         if (count <= Terraria.Main.maxNetPlayers * 0.6)
         {
@@ -453,18 +445,25 @@ public partial class Plugin : TerrariaPlugin
         if (mitigation.Enabled)
         {
             var cursor = new ILCursor(context);
-            cursor.GotoNext(MoveType.After, (i) => i.MatchCallvirt<TShockAPI.TSPlayer>(nameof(TShockAPI.TSPlayer.IsBeingDisabled)));
-            switch (mitigation.DisabledDamageHandler)
+            try
             {
-                case Config.MitigationSettings.DisabledDamageAction.AsIs:
-                    break;
-                case Config.MitigationSettings.DisabledDamageAction.Preset:
-                case Config.MitigationSettings.DisabledDamageAction.Hurt:
-                    cursor.Emit(OpCodes.Pop);
-                    cursor.Emit(OpCodes.Ldc_I4_0);
-                    break;
-                case Config.MitigationSettings.DisabledDamageAction.Ghost:
-                    break;
+                cursor.GotoNext(MoveType.After, (i) => i.MatchCallvirt<TShockAPI.TSPlayer>(nameof(TShockAPI.TSPlayer.IsBeingDisabled)));
+                switch (mitigation.DisabledDamageHandler)
+                {
+                    case Config.MitigationSettings.DisabledDamageAction.AsIs:
+                        break;
+                    case Config.MitigationSettings.DisabledDamageAction.Preset:
+                    case Config.MitigationSettings.DisabledDamageAction.Hurt:
+                        cursor.Emit(OpCodes.Pop);
+                        cursor.Emit(OpCodes.Ldc_I4_0);
+                        break;
+                    case Config.MitigationSettings.DisabledDamageAction.Ghost:
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                this.ShowError($"Attempt hook {nameof(Config.Mitigation)}.{nameof(Config.MitigationSettings.DisabledDamageHandler)} failed, might be already fixed.");
             }
         }
     }
@@ -472,16 +471,20 @@ public partial class Plugin : TerrariaPlugin
     private void ILHook_Mitigation_KeepRestAlive(ILContext context)
     {
         // FIXME: This is a backport of Pryaxis/TShock#2925
-        var mitigation = this.config.Mitigation;
-        if (mitigation.Enabled)
+        try
         {
-            var cursor = new ILCursor(context);
-            cursor.GotoNext(MoveType.Before, (i) => i.MatchCallvirt("HttpServer.Headers.ConnectionHeader", "set_Type"));
-            if (mitigation.KeepRestAlive)
+            var mitigation = this.config.Mitigation;
+            if (mitigation.Enabled && mitigation.KeepRestAlive)
             {
+                var cursor = new ILCursor(context);
+                cursor.GotoNext(MoveType.Before, (i) => i.MatchCallvirt("HttpServer.Headers.ConnectionHeader", "set_Type"));
                 cursor.Emit(OpCodes.Pop);
                 cursor.Emit(OpCodes.Ldc_I4_1);
             }
+        }
+        catch (Exception e)
+        {
+            this.ShowError($"Attempt hook {nameof(Config.Mitigation)}.{nameof(Config.MitigationSettings.KeepRestAlive)} failed, might be already fixed.");
         }
     }
 

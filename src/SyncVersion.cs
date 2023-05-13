@@ -1,9 +1,8 @@
 ﻿using Terraria;
-using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private static readonly byte[] _versionPacket = new byte[] {
         (byte) PacketTypes.ConnectRequest,

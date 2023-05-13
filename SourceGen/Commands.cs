@@ -321,6 +321,10 @@ namespace Chireiden.TShock
         public bool DoLog { get; set; }
         public string HelpText { get; set; }
 
+        public CommandAttribute(string key, string permission, string name)
+        {
+        }
+
         public CommandAttribute(string key, string permission, string name, params string[] aliases)
         {
         }

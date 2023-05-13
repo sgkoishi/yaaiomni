@@ -1,10 +1,9 @@
 ﻿using Terraria;
 using Terraria.ID;
-using TerrariaApi.Server;
 
 namespace Chireiden.TShock.Omni;
 
-public partial class Plugin : TerrariaPlugin
+public partial class Plugin
 {
     private void MMHook_Soundness_ProjectileKill(On.Terraria.Projectile.orig_Kill orig, Projectile self)
     {
