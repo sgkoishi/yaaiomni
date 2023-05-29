@@ -1,4 +1,9 @@
-﻿namespace Chireiden.TShock.Omni;
+﻿using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using TShockAPI;
+
+namespace Chireiden.TShock.Omni;
 
 public partial class Plugin
 {
@@ -26,6 +31,7 @@ public partial class Plugin
             this._buffer = string.Empty;
         }
     }
+
     private bool Detour_Command_Alternative(Func<TShockAPI.TSPlayer, string, bool> orig, TShockAPI.TSPlayer player, string text)
     {
         if (this.config.Enhancements.AlternativeCommandSyntax)
@@ -38,19 +44,60 @@ public partial class Plugin
                 {
                     cmd = TShockAPI.Commands.Specifier + cmd;
                 }
-                try
+                if (command.ContinueOnError)
                 {
-                    orig(player, cmd);
+                    this.HandleCommandCatched(orig, player, cmd);
                 }
-                catch when (command.ContinueOnError)
+                else
                 {
+                    this.HandleCommandUncatched(orig, player, cmd);
                 }
             }
             return true;
         }
         else
         {
-            return orig(player, text);
+            return this.HandleCommandCatched(orig, player, text);
         }
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    private bool HandleCommandUncatched(Func<TShockAPI.TSPlayer, string, bool> orig, TShockAPI.TSPlayer player, string text)
+    {
+        return orig(player, text);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    private bool HandleCommandCatched(Func<TShockAPI.TSPlayer, string, bool> orig, TShockAPI.TSPlayer player, string text)
+    {
+        return orig(player, text);
+    }
+
+    private static MethodInfo _uncatchedHandleCommand = Utils.Method(() =>
+            new Plugin(null!).HandleCommandUncatched(null!, null!, null!))!;
+    private static MethodInfo _catchedHandleCommand = Utils.Method(() =>
+            new Plugin(null!).HandleCommandCatched(null!, null!, null!))!;
+
+    private bool Detour_Command_Run(Func<Command, string, bool, TSPlayer, List<string>, bool> orig, Command instance, string msg, bool silent, TSPlayer ply, List<string> parms)
+    {
+        var trace = new StackTrace();
+        foreach (var frame in trace.GetFrames())
+        {
+            if (frame.GetMethod() == _catchedHandleCommand)
+            {
+                return orig(instance, msg, silent, ply, parms);
+            }
+            else
+            {
+                if (!instance.CanRun(ply))
+                {
+                    return false;
+                }
+                instance.CommandDelegate(new CommandArgs(msg, silent, ply, parms));
+                return true;
+            }
+        }
+
+        return orig(instance, msg, silent, ply, parms);
     }
 }

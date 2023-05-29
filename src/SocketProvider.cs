@@ -57,7 +57,7 @@ internal static class Socket
 
         public bool _isListening;
 
-        public SelfSocket()
+        protected SelfSocket()
         {
             this._connection = new TcpClient
             {
@@ -65,7 +65,7 @@ internal static class Socket
             };
         }
 
-        public SelfSocket(TcpClient tcpClient)
+        protected SelfSocket(TcpClient tcpClient)
         {
             this._connection = tcpClient;
             this._connection.NoDelay = true;
@@ -81,7 +81,7 @@ internal static class Socket
 
         bool ISocket.IsConnected()
         {
-            return this._connection != null && this._connection.Client != null && this._connection.Connected;
+            return this._connection?.Client != null && this._connection.Connected;
         }
 
         void ISocket.Connect(RemoteAddress address)
@@ -145,8 +145,9 @@ internal static class Socket
                     Console.WriteLine(Terraria.Localization.Language.GetTextValue("Net.ClientConnecting", socket.GetRemoteAddress()));
                     this._listenerCallback!(socket);
                 }
-                catch (Exception)
+                catch
                 {
+                    // ignored
                 }
             }
 
@@ -262,7 +263,7 @@ internal static class Socket
         {
             try
             {
-                var read = await this._connection.GetStream().ReadAsync(data, offset, size);
+                var read = await this._connection.GetStream().ReadAsync(data.AsMemory(offset, size));
                 callback(state, read);
             }
             catch

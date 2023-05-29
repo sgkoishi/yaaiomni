@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Net;
 using System.Runtime.InteropServices;
 using Terraria.Localization;
@@ -278,6 +279,51 @@ public static class Utils
     public static int ToInt(IPAddress addr)
     {
         return MemoryMarshal.Cast<byte, int>(addr.GetAddressBytes().AsSpan())[0];
+    }
+
+    public static Terraria.Item GetInventory(this Terraria.Player p, short slot)
+    {
+        return slot switch
+        {
+            short when Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0 + 10 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0
+                => p.Loadouts[2].Dye[slot - Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0],
+            short when Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout3_Armor_0
+                => p.Loadouts[2].Armor[slot - Terraria.ID.PlayerItemSlotID.Loadout3_Armor_0],
+            short when Terraria.ID.PlayerItemSlotID.Loadout3_Armor_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout2_Dye_0
+                => p.Loadouts[1].Dye[slot - Terraria.ID.PlayerItemSlotID.Loadout2_Dye_0],
+            short when Terraria.ID.PlayerItemSlotID.Loadout2_Dye_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout2_Armor_0
+                => p.Loadouts[1].Armor[slot - Terraria.ID.PlayerItemSlotID.Loadout2_Armor_0],
+            short when Terraria.ID.PlayerItemSlotID.Loadout2_Armor_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout1_Dye_0
+                => p.Loadouts[0].Dye[slot - Terraria.ID.PlayerItemSlotID.Loadout1_Dye_0],
+            short when Terraria.ID.PlayerItemSlotID.Loadout1_Dye_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0
+                => p.Loadouts[0].Armor[slot - Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0],
+            short when Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank4_0
+                => p.bank4.item[slot - Terraria.ID.PlayerItemSlotID.Bank4_0],
+            short when Terraria.ID.PlayerItemSlotID.Bank4_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank3_0
+                => p.bank3.item[slot - Terraria.ID.PlayerItemSlotID.Bank3_0],
+            short when Terraria.ID.PlayerItemSlotID.Bank3_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.TrashItem
+                => p.trashItem,
+            short when Terraria.ID.PlayerItemSlotID.TrashItem > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank2_0
+                => p.bank2.item[slot - Terraria.ID.PlayerItemSlotID.Bank2_0],
+            short when Terraria.ID.PlayerItemSlotID.Bank2_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank1_0
+                => p.bank.item[slot - Terraria.ID.PlayerItemSlotID.Bank1_0],
+            short when Terraria.ID.PlayerItemSlotID.Bank1_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.MiscDye0
+                => p.miscDyes[slot - Terraria.ID.PlayerItemSlotID.MiscDye0],
+            short when Terraria.ID.PlayerItemSlotID.MiscDye0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Misc0
+                => p.miscEquips[slot - Terraria.ID.PlayerItemSlotID.Misc0],
+            short when Terraria.ID.PlayerItemSlotID.Misc0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Dye0
+                => p.dye[slot - Terraria.ID.PlayerItemSlotID.Dye0],
+            short when Terraria.ID.PlayerItemSlotID.Dye0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Armor0
+                => p.armor[slot - Terraria.ID.PlayerItemSlotID.Armor0],
+            short when Terraria.ID.PlayerItemSlotID.Armor0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Inventory0
+                => p.inventory[slot - Terraria.ID.PlayerItemSlotID.Inventory0],
+            _ => throw new System.Runtime.CompilerServices.SwitchExpressionException($"Unexpected slot: {slot}")
+        };
+    }
+
+    public static System.Reflection.MethodInfo? Method(Expression<Action> expression)
+    {
+        return (expression.Body as MethodCallExpression)?.Method;
     }
 
     internal class ConsolePlayer : TSPlayer

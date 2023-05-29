@@ -27,43 +27,7 @@ public partial class Plugin
             var prefix = data[5];
             var type = BitConverter.ToInt16(data.Slice(6, 2));
 
-            var p = Terraria.Main.player[player];
-            var existingItem = slot switch
-            {
-                short when Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0 + 10 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0
-                    => p.Loadouts[2].Dye[slot - Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0],
-                short when Terraria.ID.PlayerItemSlotID.Loadout3_Dye_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout3_Armor_0
-                    => p.Loadouts[2].Armor[slot - Terraria.ID.PlayerItemSlotID.Loadout3_Armor_0],
-                short when Terraria.ID.PlayerItemSlotID.Loadout3_Armor_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout2_Dye_0
-                    => p.Loadouts[1].Dye[slot - Terraria.ID.PlayerItemSlotID.Loadout2_Dye_0],
-                short when Terraria.ID.PlayerItemSlotID.Loadout2_Dye_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout2_Armor_0
-                    => p.Loadouts[1].Armor[slot - Terraria.ID.PlayerItemSlotID.Loadout2_Armor_0],
-                short when Terraria.ID.PlayerItemSlotID.Loadout2_Armor_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout1_Dye_0
-                    => p.Loadouts[0].Dye[slot - Terraria.ID.PlayerItemSlotID.Loadout1_Dye_0],
-                short when Terraria.ID.PlayerItemSlotID.Loadout1_Dye_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0
-                    => p.Loadouts[0].Armor[slot - Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0],
-                short when Terraria.ID.PlayerItemSlotID.Loadout1_Armor_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank4_0
-                    => p.bank4.item[slot - Terraria.ID.PlayerItemSlotID.Bank4_0],
-                short when Terraria.ID.PlayerItemSlotID.Bank4_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank3_0
-                    => p.bank3.item[slot - Terraria.ID.PlayerItemSlotID.Bank3_0],
-                short when Terraria.ID.PlayerItemSlotID.Bank3_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.TrashItem
-                    => p.trashItem,
-                short when Terraria.ID.PlayerItemSlotID.TrashItem > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank2_0
-                    => p.bank2.item[slot - Terraria.ID.PlayerItemSlotID.Bank2_0],
-                short when Terraria.ID.PlayerItemSlotID.Bank2_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Bank1_0
-                    => p.bank.item[slot - Terraria.ID.PlayerItemSlotID.Bank1_0],
-                short when Terraria.ID.PlayerItemSlotID.Bank1_0 > slot && slot >= Terraria.ID.PlayerItemSlotID.MiscDye0
-                    => p.miscDyes[slot - Terraria.ID.PlayerItemSlotID.MiscDye0],
-                short when Terraria.ID.PlayerItemSlotID.MiscDye0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Misc0
-                    => p.miscEquips[slot - Terraria.ID.PlayerItemSlotID.Misc0],
-                short when Terraria.ID.PlayerItemSlotID.Misc0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Dye0
-                    => p.dye[slot - Terraria.ID.PlayerItemSlotID.Dye0],
-                short when Terraria.ID.PlayerItemSlotID.Dye0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Armor0
-                    => p.armor[slot - Terraria.ID.PlayerItemSlotID.Armor0],
-                short when Terraria.ID.PlayerItemSlotID.Armor0 > slot && slot >= Terraria.ID.PlayerItemSlotID.Inventory0
-                    => p.inventory[slot - Terraria.ID.PlayerItemSlotID.Inventory0],
-                _ => throw new System.Runtime.CompilerServices.SwitchExpressionException($"Unexpected slot: {slot}")
-            };
+            var existingItem = Terraria.Main.player[player].GetInventory(slot);
 
             if (existingItem != null)
             {
@@ -123,6 +87,12 @@ public partial class Plugin
                 {
                     this.Statistics.MitigationSlotPEAllowed++;
                 }
+                break;
+            }
+            case (int) PacketTypes.PlayerSpawn:
+            {
+                // Spawn as dead with no respawn if dead in singleplayer?
+                // Unable to repro with PC 1.4.4.9
                 break;
             }
             case (int) PacketTypes.EffectHeal when mitigation.PotionSicknessPE:
@@ -222,12 +192,12 @@ public partial class Plugin
                 switch (mitigation.ExpertExtraCoin)
                 {
                     case Config.MitigationSettings.ExpertCoinHandler.AsIs:
-                    case Config.MitigationSettings.ExpertCoinHandler.Preset:
                     {
                         break;
                     }
                     case Config.MitigationSettings.ExpertCoinHandler.DisableValue:
                     case Config.MitigationSettings.ExpertCoinHandler.ServerSide:
+                    case Config.MitigationSettings.ExpertCoinHandler.Preset:
                     {
                         args.Result = OTAPI.HookResult.Cancel;
                         // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
@@ -267,7 +237,7 @@ public partial class Plugin
         args.Handled = true;
     }
 
-    private void TAHook_Mitigation_GameUpdate(EventArgs args)
+    private void TAHook_Mitigation_GameUpdate(EventArgs _)
     {
         var mitigation = this.config.Mitigation;
         if (!mitigation.Enabled)
@@ -295,11 +265,11 @@ public partial class Plugin
             switch (mitigation.ExpertExtraCoin)
             {
                 case Config.MitigationSettings.ExpertCoinHandler.AsIs:
-                case Config.MitigationSettings.ExpertCoinHandler.Preset:
                 case Config.MitigationSettings.ExpertCoinHandler.DisableValue:
                 {
                     break;
                 }
+                case Config.MitigationSettings.ExpertCoinHandler.Preset:
                 case Config.MitigationSettings.ExpertCoinHandler.ServerSide:
                 {
                     foreach (var item in Terraria.Main.item)
@@ -370,12 +340,12 @@ public partial class Plugin
     private void MMHook_Mitigation_OnConnectionAccepted(On.Terraria.Netplay.orig_OnConnectionAccepted orig, Terraria.Net.Sockets.ISocket client)
     {
         var mitigation = this.config.Mitigation;
-        if (mitigation.Enabled && client.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa)
+        if (mitigation.Enabled && mitigation.ConnectionLimit.Count != 0)
         {
-            if (mitigation.ConnectionLimit.Count != 0 && Utils.PublicIPv4Address(tcpa.Address))
+            if (client.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa && Utils.PublicIPv4Address(tcpa.Address))
             {
                 var addrs = tcpa.Address.ToString();
-                var cd = this._connPool.Connections.GetOrAdd(addrs, (_k) => new ConnectionStore.Connection
+                var cd = this._connPool.Connections.GetOrAdd(addrs, _ => new ConnectionStore.Connection
                 {
                     Address = tcpa.Address,
                     Limit = new ConcurrentBag<Limiter>(mitigation.ConnectionLimit.Select(lc => (Limiter) lc)),
@@ -461,7 +431,7 @@ public partial class Plugin
                         break;
                 }
             }
-            catch (Exception e)
+            catch
             {
                 this.ShowError($"Attempt hook {nameof(Config.Mitigation)}.{nameof(Config.MitigationSettings.DisabledDamageHandler)} failed, might be already fixed.");
             }
@@ -482,7 +452,7 @@ public partial class Plugin
                 cursor.Emit(OpCodes.Ldc_I4_1);
             }
         }
-        catch (Exception e)
+        catch
         {
             this.ShowError($"Attempt hook {nameof(Config.Mitigation)}.{nameof(Config.MitigationSettings.KeepRestAlive)} failed, might be already fixed.");
         }
