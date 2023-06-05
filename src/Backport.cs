@@ -24,6 +24,18 @@ public partial class Plugin
     private void Detour_Backport_2934(Action orig)
     {
         orig();
+        if (!Terraria.Netplay.HasClients)
+        {
+            if (this._tickCheck.Tick != -1)
+            {
+                var (Tick, Time) = this._tickCheck;
+                this._tickCheck = (-1, DateTime.MinValue);
+                var diff = this._updateCounter - Tick;
+                var time = DateTime.Now - Time;
+                TShockAPI.TShock.Log.ConsoleInfo(
+                    $"[Omni] {diff} ticks in {time.TotalSeconds:F2} seconds ({diff / time.TotalSeconds:F2} tps)");
+            }
+        }
         if (ServerApi.ForceUpdate)
         {
             Terraria.Netplay.HasClients = true;

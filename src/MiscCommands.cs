@@ -487,4 +487,29 @@ public partial class Plugin
     {
         args.Player.SendInfoMessage(string.Join(" ", args.Parameters));
     }
+
+    private (int Tick, DateTime Time) _tickCheck = (-1, DateTime.MinValue);
+    [Command("UpsCheck", "chireiden.omni.admin.upscheck", "_ups")]
+    private void Command_TicksPerSec(CommandArgs args)
+    {
+        if (this._tickCheck.Tick == -1)
+        {
+            this._tickCheck = (this._updateCounter, DateTime.Now);
+            args.Player.SendInfoMessage("Started tracking ticks per second.");
+        }
+        else
+        {
+            var (Tick, Time) = this._tickCheck;
+            this._tickCheck = (-1, DateTime.MinValue);
+            var diff = this._updateCounter - Tick;
+            var time = DateTime.Now - Time;
+            args.Player.SendInfoMessage($"{diff} ticks / {time} seconds: {diff / time.TotalSeconds:F2}");
+        }
+    }
+
+    [Command("ApplyDefaultPermission", "chireiden.omni.admin.setupperm", "_setperm")]
+    private void Command_SetupPermission(CommandArgs args)
+    {
+        this.PermissionSetup();
+    }
 }

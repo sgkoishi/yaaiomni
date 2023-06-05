@@ -43,7 +43,7 @@ public partial class Plugin
         TShockAPI.TShock.Groups.UpdateGroup(group.Name, Misc.VanillaGroup, group.Permissions, group.ChatColor, group.Suffix, group.Prefix);
     }
 
-    private void PermissionSetup()
+    private void DefaultPermissionSetup()
     {
         var preset = this.config.Permission.Preset;
         var vanillaMode = this.config.Mode.Vanilla.Enabled;
@@ -57,6 +57,13 @@ public partial class Plugin
             return;
         }
 
+        this.PermissionSetup();
+    }
+
+    private void PermissionSetup()
+    {
+        var preset = this.config.Permission.Preset;
+        var vanillaMode = this.config.Mode.Vanilla.Enabled;
         var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
         if (preset.AllowRestricted || vanillaMode)
         {

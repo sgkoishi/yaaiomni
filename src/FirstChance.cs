@@ -23,10 +23,10 @@ public partial class Plugin
         try
         {
             this.inFirstChance.Value++;
-            var trace = new StackTrace(true);
-            if (this.exceptions.Add(trace.ToString()))
+            var v = args.Exception.ToString();
+            if (this.exceptions.Add(v))
             {
-                this.ShowError($"New First Chance: {trace}");
+                this.ShowError($"New First Chance: {v}");
             }
         }
         catch

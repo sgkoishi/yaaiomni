@@ -149,7 +149,7 @@ public partial class Plugin : TerrariaPlugin
             case Config.EnhancementsSettings.TileProviderOptions.Preset:
                 break;
         }
-        this.PermissionSetup();
+        this.DefaultPermissionSetup();
         this.VanillaSetup();
         foreach (var command in Commands.ChatCommands)
         {
@@ -235,7 +235,7 @@ public partial class Plugin : TerrariaPlugin
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SummonBoss;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.TAHook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
-        TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.TAHook_TimeoutInterval);
+        TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.TAHook_Update);
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.TAHook_Mitigation_GameUpdate);
         TerrariaApi.Server.ServerApi.Hooks.ItemForceIntoChest.Register(this, this.TAHook_Permission_ItemForceIntoChest);
         TShockAPI.Hooks.PlayerHooks.PlayerCommand += this.TSHook_HideCommand_PlayerCommand;
@@ -274,7 +274,7 @@ public partial class Plugin : TerrariaPlugin
             OTAPI.Hooks.Netplay.CreateTcpListener -= this.OTHook_Socket_OnCreate;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.TAHook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
-            TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.TAHook_TimeoutInterval);
+            TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.TAHook_Update);
             TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Deregister(this, this.TAHook_Mitigation_GameUpdate);
             TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.TSHook_HideCommand_PlayerCommand;
             TShockAPI.Hooks.PlayerHooks.PlayerCommand -= this.TSHook_Wildcard_PlayerCommand;

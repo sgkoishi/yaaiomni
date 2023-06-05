@@ -6,7 +6,7 @@ public partial class Plugin
 {
     private int _updateCounter = 0;
 
-    private void TAHook_TimeoutInterval(EventArgs _)
+    private void TAHook_Update(EventArgs _)
     {
         this._updateCounter++;
         foreach (var player in Utils.ActivePlayers)

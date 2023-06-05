@@ -8,6 +8,9 @@ Yet another misc plugin for TShock
 
 ### Commands
 
+<details><summary>Click to expand</summary>
+<p>
+
 | Command | Description | Hidden | Permission | Note |
 | --- | --- | --- | --- | --- |
 | `/whynot` | Show recent permission queries related to your player. | Hidden by default. | `chireiden.omni.whynot` | |
@@ -33,7 +36,14 @@ Yet another misc plugin for TShock
 | `/_chat` | Chat. | Hidden by default. | `chireiden.omni.chat` <br /> `tshock.canchat` | |
 | `/exportcharacter` | Export SSC data (server side). | | `chireiden.omni.admin.exportcharacter` | For admin. |
 
+</p>
+</details>
+
 ### Defaults
+
+<details><summary>Click to expand</summary>
+<p>
+
 * The permission of `/ghost`, `/setlang`, `/_debugstat`, timeout/delay/interval series commands, `/downloadcharacter` are granted to the topmost parent of `owner` with kick permission, or `newadmin`'s parent if `owner` is not found.
 * The permission of `/_gc`, `/tileprovider`, `/maxplayers`, `/rbc`, `/kc`, `/exportcharacter` are granted to the topmost parent of `owner` with maintenance permission, or `trustedadmin`'s parent if `owner` is not found.
 * The permission of `/runas`, `/listclients`, `/dumpbuffer` are granted to the topmost parent of `owner` with sudo permission.
@@ -43,7 +53,14 @@ Yet another misc plugin for TShock
 * Errors thrown from TShock's update check will be silently ignored. (`.SuppressUpdate` in config)
 * Chat spam limit to 3 msg/5 sec, 5 msg/20 sec. (`.Mitigation.ChatSpamRestrict` in config)
 
+</p>
+</details>
+
 ### More features
+
+<details><summary>Click to expand</summary>
+<p>
+
 * `.TrimMemory` in config can reduce memory usage.
   * Depends on the content of the map, may vary from no effect to ~600MB reduced.
   * No side effects.
@@ -68,9 +85,17 @@ Yet another misc plugin for TShock
 * Sudo is called `/runas` to avoid conflict with TShock's `/sudo`.
   * With `-f` flag bypasses permission check.
 
+</p>
+</details>
+
 ### Do not touch unless you know what you are doing
+
 > __Warning__  
 > **KEEP IT UNCHANGED. DO NOT TOUCH UNLESS YOU KNOW WHAT YOU ARE DOING**
+
+<details><summary>Click to expand</summary>
+<p>
+
 * `.Soundness` in config enforce some soundness permission checks.
 * `.Mitigation` in config can fix some issues that exist but not blame to TShock.
 * `.Socket` in config can switch to a different socket implementation.
@@ -80,3 +105,6 @@ Yet another misc plugin for TShock
 * `.TileProvider` in config can switch to a different tile provider.
   * `CheckedTypedCollection` and `CheckedGenericCollection` might improve performance slightly but may cause NRE.
 * `.DebugPacket` in config can log all packets and networking exceptions.
+
+</p>
+</details>

@@ -10,7 +10,7 @@ partial class Plugin
     {
         if (this.config.DebugPacket.In)
         {
-            TShockAPI.TShock.Log.ConsoleInfo($"[DbgPkt] I ->{self.whoAmI} [{length:X4}] {(PacketTypes) self.readBuffer[start]} {BitConverter.ToString(self.readBuffer, start + 1, length - 1)}");
+            TShockAPI.TShock.Log.ConsoleInfo($"[DbgPkt] I ->{self.whoAmI} [{length:X4}] {(PacketTypes) self.readBuffer[start]} {Convert.ToHexString(self.readBuffer, start + 1, length - 1)}");
         }
         orig(self, start, length, out messageType);
     }
@@ -28,7 +28,7 @@ partial class Plugin
     {
         if (this.config.DebugPacket.BytesOut)
         {
-            TShockAPI.TShock.Log.ConsoleInfo($"[DbgPkt] O ->{args.RemoteClient} {(PacketTypes) args.Data[args.Offset + 2]} {args.Result != OTAPI.HookResult.Cancel} {BitConverter.ToString(args.Data, args.Offset, args.Size)}");
+            TShockAPI.TShock.Log.ConsoleInfo($"[DbgPkt] O ->{args.RemoteClient} {(PacketTypes) args.Data[args.Offset + 2]} {args.Result != OTAPI.HookResult.Cancel} {Convert.ToHexString(args.Data, args.Offset, args.Size)}");
         }
     }
 
