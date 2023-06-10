@@ -26,7 +26,7 @@ public partial class Plugin
         {
             addperm += TShockAPI.TShock.Groups.AddPermissions(Misc.VanillaGroup, new List<string> { "tshock.ignore.*", "!tshock.ignore.ssc" });
         }
-        if (addperm.Length > 0)
+        if (addperm.Length == 0)
         {
             TShockAPI.TSPlayer.Server.SendInfoMessage($"Failed to add permissions to group {Misc.VanillaGroup}.");
         }
@@ -40,7 +40,17 @@ public partial class Plugin
             TShockAPI.TSPlayer.Server.SendErrorMessage($"Failed to find group {TShockAPI.TShock.Config.Settings.DefaultRegistrationGroupName}.");
             return;
         }
-        TShockAPI.TShock.Groups.UpdateGroup(group.Name, Misc.VanillaGroup, group.Permissions, group.ChatColor, group.Suffix, group.Prefix);
+        if (group.Name != Misc.VanillaGroup)
+        {
+            try
+            {
+                TShockAPI.TShock.Groups.UpdateGroup(group.Name, Misc.VanillaGroup, group.Permissions, group.ChatColor, group.Suffix, group.Prefix);
+            }
+            catch (Exception e)
+            {
+                TShockAPI.TSPlayer.Server.SendInfoMessage($"Failed to set parent group to {Misc.VanillaGroup}: {e}");
+            }
+        }
     }
 
     private void DefaultPermissionSetup()
