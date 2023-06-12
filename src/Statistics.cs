@@ -16,6 +16,7 @@ public partial class Plugin
         public int MitigationRejectedSwapWhileUse;
         public int MitigationRejectedSicknessHeal;
         public int MitigationTerminatedConnection;
+        public int MitigationCoinReduced;
     }
 
     [Command("Admin.DebugStat", "chireiden.omni.admin.debugstat", "_debugstat")]

@@ -15,7 +15,7 @@ public partial class Plugin
             var ecl = (List<Command>) args.CommandList;
             ecl.AddRange(hc.Except(Commands.ChatCommands));
         }
-        var hidden = Commands.ChatCommands.FindAll(c => this.config.HideCommands.Any(h => c.HasAlias(h)));
+        var hidden = Commands.ChatCommands.FindAll(c => this.config.HideCommands.Value.Any(h => c.HasAlias(h)));
         if (hidden.Count > 0)
         {
             Commands.ChatCommands = Commands.ChatCommands.Except(hidden).ToList();

@@ -61,7 +61,7 @@ public partial class Plugin
         {
             this._CheckBan_lambda_player = instance.GetType().GetField("player")!;
         }
-        if (this.config.Enhancements.BanPattern)
+        if (this.config.Enhancements.Value.BanPattern)
         {
             var player = ((TSPlayer) this._CheckBan_lambda_player.GetValue(instance)!)!;
             var ban = kvp.Value;

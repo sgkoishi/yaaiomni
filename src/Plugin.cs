@@ -11,7 +11,7 @@ namespace Chireiden.TShock.Omni;
 [ApiVersion(2, 1)]
 public partial class Plugin : TerrariaPlugin
 {
-    public override string Name => $"{Assembly.GetExecutingAssembly().GetName().Name} {CommitHashAttribute.GetCommitHash()}";
+    public override string Name => $"{Assembly.GetExecutingAssembly().GetName().Name} {CommitHashAttribute.GetCommitHash()[0..10]}";
     public override string Author => "SGKoishi";
     public override Version Version => Assembly.GetExecutingAssembly().GetName().Version!;
     public override string Description => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description!;
@@ -23,6 +23,7 @@ public partial class Plugin : TerrariaPlugin
     private const BindingFlags _bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
     public Config config;
+    internal bool _TShockInit = false;
 
     public Plugin(Main game) : base(game)
     {
@@ -30,7 +31,6 @@ public partial class Plugin : TerrariaPlugin
         this.Order = int.MinValue;
         this.config = new Config();
         this.LoadConfig(Utils.ConsolePlayer.Instance);
-        this.config._init = false;
         this.Detour(
             nameof(this.Detour_UpdateCheckAsync),
             typeof(UpdateManager)
@@ -98,20 +98,11 @@ public partial class Plugin : TerrariaPlugin
 
     private void LoadConfig(TSPlayer? initiator)
     {
-        var jss = new JsonSerializerSettings
-        {
-            ObjectCreationHandling = ObjectCreationHandling.Replace,
-            Converters = new List<JsonConverter>
-            {
-                new Config.LimiterConfig.LimiterConverter(),
-            },
-            Formatting = Formatting.Indented,
-        };
         try
         {
             if (File.Exists(this.ConfigPath))
             {
-                this.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(this.ConfigPath), jss)!;
+                this.config = Config.Deserialize(File.ReadAllText(this.ConfigPath));
             }
         }
         catch (Exception ex)
@@ -121,23 +112,23 @@ public partial class Plugin : TerrariaPlugin
         }
         try
         {
-            File.WriteAllText(this.ConfigPath, JsonConvert.SerializeObject(this.config, jss));
+            File.WriteAllText(this.ConfigPath, Config.Serialize(this.config));
         }
         catch (Exception ex)
         {
             initiator?.SendErrorMessage($"Failed to save config: {ex.Message}");
             return;
         }
-        initiator?.SendSuccessMessage("Chireiden.Omni loaded.");
     }
 
     private void ApplyConfig(TSPlayer? initiator)
     {
+        this.LoadConfig(initiator);
         if (this.config.ShowConfig)
         {
             initiator?.SendInfoMessage(JsonConvert.SerializeObject(this.config, Formatting.Indented));
         }
-        switch (this.config.Enhancements.TileProvider)
+        switch (this.config.Enhancements.Value.TileProvider.Value)
         {
             case Config.EnhancementsSettings.TileProviderOptions.CheckedGenericCollection:
                 Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile, new CheckedGenericCollection());
@@ -146,7 +137,6 @@ public partial class Plugin : TerrariaPlugin
                 Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile, new CheckedTypedCollection());
                 break;
             case Config.EnhancementsSettings.TileProviderOptions.AsIs:
-            case Config.EnhancementsSettings.TileProviderOptions.Preset:
                 break;
         }
         this.DefaultPermissionSetup();
@@ -163,7 +153,7 @@ public partial class Plugin : TerrariaPlugin
         {
             Utils.TryRenameCommand(command, this.config.CommandRenames);
         }
-        var spamlim = this.config.Mitigation.ChatSpamRestrict;
+        var spamlim = this.config.Mitigation.Value.ChatSpamRestrict.Value;
         if (spamlim.Count > 0)
         {
             initiator?.SendInfoMessage("ChatSpam limit applied:");
@@ -172,7 +162,7 @@ public partial class Plugin : TerrariaPlugin
                 initiator?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} messages per {Math.Round(limiter.Maximum / 60, 1):G} seconds");
             }
         }
-        var connlim = this.config.Mitigation.ConnectionLimit;
+        var connlim = this.config.Mitigation.Value.ConnectionLimit.Value;
         if (connlim.Count > 0)
         {
             initiator?.SendInfoMessage("Connection limit applied:");
@@ -201,22 +191,21 @@ public partial class Plugin : TerrariaPlugin
             hook.Undo();
             hook.Apply();
         }
-        foreach (var command in this.config.StartupCommands)
+        foreach (var command in this.config.StartupCommands.Value)
         {
             TShockAPI.Commands.HandleCommand(TShockAPI.TSPlayer.Server, command);
         }
         Terraria.Initializers.ChatInitializer.Load();
+        initiator?.SendSuccessMessage("Chireiden.Omni loaded.");
     }
 
     private void OnReload(ReloadEventArgs? e)
     {
-        this.LoadConfig(e?.Player);
         this.ApplyConfig(e?.Player);
     }
 
     public override void Initialize()
     {
-        this.config._init = true;
         On.Terraria.MessageBuffer.GetData += this.MMHook_PatchVersion_GetData;
         On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor += this.MMHook_MemoryTrim_DisplayDoll;
         On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor += this.MMHook_MemoryTrim_HatRack;
@@ -313,6 +302,7 @@ public partial class Plugin : TerrariaPlugin
 
     private void PostTShockInitialize()
     {
+        this._TShockInit = true;
         this.Backports();
         OTAPI.Hooks.Netplay.CreateTcpListener += this.OTHook_Socket_OnCreate;
         this.InitCommands();
@@ -321,7 +311,7 @@ public partial class Plugin : TerrariaPlugin
 
     private void ShowError(string value)
     {
-        if (this.config?._init == true)
+        if (this._TShockInit)
         {
             TShockAPI.TShock.Log.Error(value);
         }

@@ -6,7 +6,8 @@ public partial class Plugin
 {
     private async Task Detour_UpdateCheckAsync(Func<UpdateManager, object, Task> orig, UpdateManager um, object state)
     {
-        if (this.config.Enhancements.SuppressUpdate == Config.EnhancementsSettings.UpdateOptions.Disabled)
+        var flag = this.config.Enhancements.Value.SuppressUpdate.Value;
+        if (flag == Config.EnhancementsSettings.UpdateOptions.Disabled)
         {
             return;
         }
@@ -15,9 +16,7 @@ public partial class Plugin
             await orig(um, state);
             return;
         }
-        catch when (this.config.Enhancements.SuppressUpdate
-            is Config.EnhancementsSettings.UpdateOptions.Silent
-                or Config.EnhancementsSettings.UpdateOptions.Preset)
+        catch when (flag is Config.EnhancementsSettings.UpdateOptions.Silent)
         {
             return;
         }

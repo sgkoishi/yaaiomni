@@ -5,7 +5,7 @@ public partial class Plugin
     private void Detour_Lava_KillTile(On.Terraria.WorldGen.orig_KillTile orig, int i, int j, bool fail, bool effectOnly, bool noItem)
     {
         var shouldHandle = false;
-        var strtg = this.config.LavaHandler;
+        var strtg = this.config.LavaHandler.Value;
         if (strtg.Enabled)
         {
             if (Terraria.Main.tile[i, j].type == Terraria.ID.TileID.Hellstone && !strtg.AllowHellstone)
@@ -31,7 +31,7 @@ public partial class Plugin
     private void Detour_Lava_HitEffect(On.Terraria.NPC.orig_HitEffect orig, Terraria.NPC self, int hitDirection, double dmg)
     {
         var shouldHandle = false;
-        var strtg = this.config.LavaHandler;
+        var strtg = this.config.LavaHandler.Value;
         if (strtg.Enabled)
         {
             if (self.type == Terraria.ID.NPCID.LavaSlime && !strtg.AllowLavaSlime)

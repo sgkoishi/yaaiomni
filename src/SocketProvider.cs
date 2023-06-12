@@ -11,7 +11,7 @@ public partial class Plugin
 {
     private void OTHook_Socket_OnCreate(object? sender, OTAPI.Hooks.Netplay.CreateTcpListenerEventArgs args)
     {
-        switch (this.config.Enhancements.Socket)
+        switch (this.config.Enhancements.Value.Socket.Value)
         {
             case Config.EnhancementsSettings.SocketType.Vanilla:
                 args.Result = new Terraria.Net.Sockets.TcpSocket();
@@ -33,7 +33,7 @@ public partial class Plugin
             case Config.EnhancementsSettings.SocketType.AnotherAsyncSocket:
                 args.Result = new Socket.AnotherAsyncSocket();
                 return;
-            case Config.EnhancementsSettings.SocketType.Preset:
+            case Config.EnhancementsSettings.SocketType.AnotherAsyncSocketAsFallback:
                 if (args.Result is TShockAPI.Sockets.LinuxTcpSocket)
                 {
                     args.Result = new Socket.AnotherAsyncSocket();

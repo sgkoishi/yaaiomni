@@ -7,7 +7,7 @@ public partial class Plugin
 {
     private void MMHook_Soundness_ProjectileKill(On.Terraria.Projectile.orig_Kill orig, Projectile self)
     {
-        if (this.config.Soundness.ProjectileKillMapEditRestriction)
+        if (this.config.Soundness.Value.ProjectileKillMapEditRestriction)
         {
             if (self.type is ProjectileID.DirtBomb or
                 ProjectileID.DirtStickyBomb)

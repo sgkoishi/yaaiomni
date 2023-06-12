@@ -20,7 +20,7 @@ public partial class Plugin
         var knownIPs = JsonConvert.DeserializeObject<List<string>>(account?.KnownIps ?? "[]")!;
         var first = false;
         var second = false;
-        switch (this.config.Enhancements.NameCollision)
+        switch (this.config.Enhancements.Value.NameCollision.Value)
         {
             case Config.EnhancementsSettings.NameCollisionAction.First:
                 first = true;
@@ -54,10 +54,9 @@ public partial class Plugin
                 args.Handled = true;
                 break;
             case Config.EnhancementsSettings.NameCollisionAction.Unhandled:
-            case Config.EnhancementsSettings.NameCollisionAction.Preset:
                 return;
             default:
-                throw new SwitchExpressionException($"Unexpected option {this.config.Enhancements.NameCollision}");
+                throw new SwitchExpressionException($"Unexpected option {this.config.Enhancements.Value.NameCollision.Value}");
         }
         if (first)
         {

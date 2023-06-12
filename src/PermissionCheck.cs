@@ -8,7 +8,7 @@ public partial class Plugin
     private bool Detour_HasPermission(Func<TSPlayer, string, bool> orig, TSPlayer player, string permission)
     {
         var result = orig(player, permission);
-        var strgy = this.config.Permission.Log;
+        var strgy = this.config.Permission.Value.Log.Value;
         if (strgy.Enabled)
         {
             var history = this[player].PermissionHistory;

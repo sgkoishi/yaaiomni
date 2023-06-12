@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Chireiden.TShock.Omni.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace Chireiden.TShock.Omni;
 
@@ -9,42 +11,37 @@ namespace Chireiden.TShock.Omni;
 public class Config
 {
     /// <summary>
-    /// TShock init
-    /// </summary>
-    internal bool _init;
-
-    /// <summary>
     /// Weather to show the config file on load/reload.
     /// </summary>
-    public bool ShowConfig = false;
+    public Optional<bool> ShowConfig = Optional.Default(false);
 
     /// <summary>
     /// Weather to log all exceptions.
     /// </summary>
-    public bool LogFirstChance = false;
+    public Optional<bool> LogFirstChance = Optional.Default(false);
 
     /// <summary>
     /// DateTime format for logging.
     /// </summary>
-    public string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
+    public Optional<string> DateTimeFormat = Optional.Default("yyyy-MM-dd HH:mm:ss.fff");
 
     /// <summary>
     /// The wildcard of matching all players. Directly using "*" itself is not
     /// suggested as some commands might have special meaning for it.
     /// </summary>
-    public List<string> PlayerWildcardFormat = new List<string> {
+    public Optional<List<string>> PlayerWildcardFormat = Optional.Default(new List<string> {
         "*all*"
-    };
+    });
 
     /// <summary>
     /// The pattern of matching the server itself.
     /// </summary>
-    public List<string> ServerWildcardFormat = new List<string> {
+    public Optional<List<string>> ServerWildcardFormat = Optional.Default(new List<string> {
         "*server*",
         "*console*",
-    };
+    });
 
-    public List<string> HideCommands = new List<string> {
+    public Optional<List<string>> HideCommands = Optional.Default(new List<string> {
         DefinedConsts.Commands.Whynot,
         DefinedConsts.Commands.PvPStatus,
         DefinedConsts.Commands.TeamStatus,
@@ -54,32 +51,34 @@ public class Config
         DefinedConsts.Commands.Ping,
         DefinedConsts.Commands.Chat,
         DefinedConsts.Commands.Echo,
-    };
+        DefinedConsts.Commands.Admin.UpsCheck,
+        DefinedConsts.Commands.Admin.ApplyDefaultPermission
+    });
 
-    public List<string> StartupCommands = new List<string>();
+    public Optional<List<string>> StartupCommands = Optional.Default(new List<string>());
 
-    public Dictionary<string, List<string>> CommandRenames = new();
+    public Optional<Dictionary<string, List<string>>> CommandRenames = Optional.Default(new Dictionary<string, List<string>>());
 
-    public EnhancementsSettings Enhancements = new();
+    public Optional<EnhancementsSettings> Enhancements = Optional.Default(new EnhancementsSettings());
 
-    public LavaSettings LavaHandler = new();
+    public Optional<LavaSettings> LavaHandler = Optional.Default(new LavaSettings());
 
-    public DebugPacketSettings DebugPacket = new();
+    public Optional<DebugPacketSettings> DebugPacket = Optional.Default(new DebugPacketSettings());
 
-    public SoundnessSettings Soundness = new();
+    public Optional<SoundnessSettings> Soundness = Optional.Default(new SoundnessSettings());
 
-    public PermissionSettings Permission = new();
+    public Optional<PermissionSettings> Permission = Optional.Default(new PermissionSettings());
 
-    public Modes Mode = new();
+    public Optional<Modes> Mode = Optional.Default(new Modes());
 
-    public MitigationSettings Mitigation = new();
+    public Optional<MitigationSettings> Mitigation = Optional.Default(new MitigationSettings());
 
     public class EnhancementsSettings
     {
         /// <summary>
         /// Remove unused client-side objects to save memory.
         /// </summary>
-        public bool TrimMemory = true;
+        public Optional<bool> TrimMemory = Optional.Default(true);
 
         /// <summary>
         /// Alternative command syntax implementation.
@@ -88,44 +87,42 @@ public class Config
         /// Note: this is not fully compatible with TShock's command syntax.
         /// </para>
         /// </summary>
-        public bool AlternativeCommandSyntax = true;
+        public Optional<bool> AlternativeCommandSyntax = Optional.Default(true);
 
         /// <summary>
         /// Override config file with CLI input (port, maxplayers)
         /// </summary>
-        public bool CLIoverConfig = true;
+        public Optional<bool> CLIoverConfig = Optional.Default(true);
 
         /// <summary>
         /// Disable vanilla version check.
         /// </summary>
-        public bool SyncVersion = false;
+        public Optional<bool> SyncVersion = Optional.Default(false);
 
         /// <summary>
         /// Action for TShock's update
         /// </summary>
-        public UpdateOptions SuppressUpdate = UpdateOptions.Preset;
+        public Optional<UpdateOptions> SuppressUpdate = Optional.Default(UpdateOptions.Silent);
 
         /// <summary>
         /// Socket Provider
         /// </summary>
-        public SocketType Socket = SocketType.Preset;
+        public Optional<SocketType> Socket = Optional.Default(SocketType.AnotherAsyncSocketAsFallback);
 
-        public NameCollisionAction NameCollision = NameCollisionAction.Preset;
+        public Optional<NameCollisionAction> NameCollision = Optional.Default(NameCollisionAction.Unhandled);
 
-        public TileProviderOptions TileProvider = TileProviderOptions.Preset;
+        public Optional<TileProviderOptions> TileProvider = Optional.Default(TileProviderOptions.AsIs);
 
         /// <summary>
         /// Support regex (`namea:player.*`) and IP mask (`ipa:1.1.0.0/16`).
         /// </summary>
-        public bool BanPattern = true;
+        public Optional<bool> BanPattern = Optional.Default(true);
 
-        [JsonConverter(typeof(StringEnumConverter))]
         public enum UpdateOptions
         {
             Silent,
             Disabled,
             AsIs,
-            Preset,
         }
 
         /// <summary>
@@ -142,7 +139,6 @@ public class Config
         /// </code>
         /// This 'memory leak' is now confirmed to be related to <seealso cref="Chireiden.TShock.Omni.Config.MitigationSettings.InventorySlotPE"/>.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public enum SocketType
         {
             Vanilla,
@@ -152,10 +148,9 @@ public class Config
             HackyBlocked,
             HackyAsync,
             AnotherAsyncSocket,
-            Preset
+            AnotherAsyncSocketAsFallback
         }
 
-        [JsonConverter(typeof(StringEnumConverter))]
         public enum NameCollisionAction
         {
             /// <summary>
@@ -182,43 +177,38 @@ public class Config
             /// Do nothing
             /// </summary>
             Unhandled,
-            Preset,
         }
 
-        [JsonConverter(typeof(StringEnumConverter))]
         public enum TileProviderOptions
         {
             AsIs,
             CheckedTypedCollection,
             CheckedGenericCollection,
-            Preset,
         }
     }
 
     public class LavaSettings
     {
-        public bool Enabled = false;
-        public bool AllowHellstone = false;
-        public bool AllowCrispyHoneyBlock = false;
-        public bool AllowHellbat = false;
-        public bool AllowLavaSlime = false;
-        public bool AllowLavabat = false;
+        public Optional<bool> Enabled = Optional.Default(false);
+        public Optional<bool> AllowHellstone = Optional.Default(false);
+        public Optional<bool> AllowCrispyHoneyBlock = Optional.Default(false);
+        public Optional<bool> AllowHellbat = Optional.Default(false);
+        public Optional<bool> AllowLavaSlime = Optional.Default(false);
+        public Optional<bool> AllowLavabat = Optional.Default(false);
     }
 
     public class DebugPacketSettings
     {
-        public bool In = false;
-        public bool Out = false;
-        public bool BytesOut = false;
-        public CatchedException ShowCatchedException = CatchedException.Preset;
+        public Optional<bool> In = Optional.Default(false);
+        public Optional<bool> Out = Optional.Default(false);
+        public Optional<bool> BytesOut = Optional.Default(false);
+        public Optional<CatchedException> ShowCatchedException = Optional.Default(CatchedException.Uncommon);
 
-        [JsonConverter(typeof(StringEnumConverter))]
         public enum CatchedException
         {
-            None = 1,
+            None,
             Uncommon,
             All,
-            Preset = 0
         }
     }
 
@@ -227,72 +217,72 @@ public class Config
         /// <summary>
         /// Permission restrict server-side tile modification projectiles like liquid bombs &amp; rockets, dirt bombs.
         /// </summary>
-        public bool ProjectileKillMapEditRestriction = true;
+        public Optional<bool> ProjectileKillMapEditRestriction = Optional.Default(true);
 
         /// <summary>
         /// Restrict quick stack to have build permission.
         /// </summary>
-        public bool QuickStackRestriction = true;
+        public Optional<bool> QuickStackRestriction = Optional.Default(true);
 
         /// <summary>
         /// Restrict sign edit to have build permission.
         /// </summary>
-        public bool SignEditRestriction = true;
+        public Optional<bool> SignEditRestriction = Optional.Default(true);
     }
 
     public class PermissionSettings
     {
-        public PermissionLogSettings Log = new();
-        public RestrictSettings Restrict = new();
-        public PresetSettings Preset = new();
+        public Optional<PermissionLogSettings> Log = Optional.Default(new PermissionLogSettings());
+        public Optional<RestrictSettings> Restrict = Optional.Default(new RestrictSettings());
+        public Optional<PresetSettings> Preset = Optional.Default(new PresetSettings());
 
         public class PermissionLogSettings
         {
-            public bool Enabled = true;
-            public int LogCount = 50;
-            public bool LogDuplicate = false;
-            public double LogDistinctTime = 1;
-            public bool LogStackTrace = false;
+            public Optional<bool> Enabled = Optional.Default(true);
+            public Optional<int> LogCount = Optional.Default(50);
+            public Optional<bool> LogDuplicate = Optional.Default(false);
+            public Optional<double> LogDistinctTime = Optional.Default(1.0);
+            public Optional<bool> LogStackTrace = Optional.Default(false);
         }
 
         public class RestrictSettings
         {
-            public bool Enabled = true;
-            public bool ToggleTeam = true;
-            public bool TogglePvP = true;
-            public bool SyncLoadout = true;
-            public bool SummonBoss = true;
+            public Optional<bool> Enabled = Optional.Default(false);
+            public Optional<bool> ToggleTeam = Optional.Default(true);
+            public Optional<bool> TogglePvP = Optional.Default(true);
+            public Optional<bool> SyncLoadout = Optional.Default(true);
+            public Optional<bool> SummonBoss = Optional.Default(true);
         }
 
         public class PresetSettings
         {
-            public bool Enabled = true;
-            public bool AlwaysApply = false;
-            public bool DebugForAdminOnly = false;
-            public bool AllowRestricted = true;
+            public Optional<bool> Enabled = Optional.Default(true);
+            public Optional<bool> AlwaysApply = Optional.Default(false);
+            public Optional<bool> DebugForAdminOnly = Optional.Default(false);
+            public Optional<bool> AllowRestricted = Optional.Default(true);
         }
     }
 
     public class Modes
     {
-        public BuildingMode Building = new();
-        public PvPMode PvP = new();
-        public VanillaMode Vanilla = new();
+        public Optional<BuildingMode> Building = Optional.Default(new BuildingMode());
+        public Optional<PvPMode> PvP = Optional.Default(new PvPMode());
+        public Optional<VanillaMode> Vanilla = Optional.Default(new VanillaMode());
 
         public class BuildingMode
         {
-            public bool Enabled = false;
+            public Optional<bool> Enabled = Optional.Default(false);
         }
 
         public class PvPMode
         {
-            public bool Enabled = false;
+            public Optional<bool> Enabled = Optional.Default(false);
         }
 
         public class VanillaMode
         {
-            public bool Enabled = false;
-            public List<string> Permissions = new List<string> {
+            public Optional<bool> Enabled = Optional.Default(false);
+            public Optional<List<string>> Permissions = Optional.Default(new List<string> {
                 TShockAPI.Permissions.canregister,
                 TShockAPI.Permissions.canlogin,
                 TShockAPI.Permissions.canlogout,
@@ -326,21 +316,21 @@ public class Config
                 DefinedConsts.Permissions.ToggleTeam,
                 DefinedConsts.Permissions.SyncLoadout,
                 DefinedConsts.Permissions.Ping
-            };
-            public bool AllowJourney = false;
-            public bool IgnoreAntiCheat = false;
-            public VanillaAntiCheat AntiCheat = new();
+            });
+            public Optional<bool> AllowJourney = Optional.Default(false);
+            public Optional<bool> IgnoreAntiCheat = Optional.Default(false);
+            public Optional<VanillaAntiCheat> AntiCheat = Optional.Default(new VanillaAntiCheat());
 
             public class VanillaAntiCheat
             {
-                public bool Enabled = false;
+                public Optional<bool> Enabled = Optional.Default(false);
             }
         }
     }
 
     public class MitigationSettings
     {
-        public bool Enabled = true;
+        public Optional<bool> Enabled = Optional.Default(true);
 
         /// <summary>
         /// <para>
@@ -354,7 +344,7 @@ public class Config
         /// </para>
         /// Tracking: <see href="https://forums.terraria.org/index.php?threads/network-broadcast-storm.117270/"/>
         /// </summary>
-        public bool InventorySlotPE = true;
+        public Optional<bool> InventorySlotPE = Optional.Default(true);
 
         /// <summary>
         /// <para>
@@ -368,7 +358,7 @@ public class Config
         /// </para>
         /// Tracking: <see href="https://forums.terraria.org/index.php?threads/almost-invincible-by-healing-with-potions-but-without-cooldown.117269/"/>
         /// </summary>
-        public bool PotionSicknessPE = true;
+        public Optional<bool> PotionSicknessPE = Optional.Default(true);
 
         /// <summary>
         /// <para>
@@ -382,7 +372,7 @@ public class Config
         /// </para>
         /// Tracking: <see href="https://forums.terraria.org/index.php?threads/almost-invincible-by-healing-with-potions-but-without-cooldown.117269/"/>
         /// </summary>
-        public bool SwapWhileUsePE = true;
+        public Optional<bool> SwapWhileUsePE = Optional.Default(true);
 
         /// <summary>
         /// <para>
@@ -396,10 +386,10 @@ public class Config
         ///   5 messages per 20 seconds
         /// </para>
         /// </summary>
-        public List<LimiterConfig> ChatSpamRestrict = new List<LimiterConfig> {
+        public Optional<List<LimiterConfig>> ChatSpamRestrict = Optional.Default(new List<LimiterConfig> {
             new LimiterConfig { RateLimit = 1.6, Maximum = 5 },
             new LimiterConfig { RateLimit = 4, Maximum = 20 }
-        };
+        });
 
         /// <summary>
         /// <para>
@@ -413,7 +403,7 @@ public class Config
         /// Use with caution.
         /// </para>
         /// </summary>
-        public bool NpcUpdateBuffRateLimit = false;
+        public Optional<bool> NpcUpdateBuffRateLimit = Optional.Default(false);
 
         /// <summary>
         /// <para>
@@ -430,7 +420,7 @@ public class Config
         /// This will prevent the title from being set if TERM has no xterm.
         /// </para>
         /// </summary>
-        public bool SuppressTitle = true;
+        public Optional<bool> SuppressTitle = Optional.Default(true);
 
         /// <summary>
         /// <para>
@@ -447,10 +437,10 @@ public class Config
         ///   4 connections per 60 seconds
         /// </para>
         /// </summary>
-        public List<LimiterConfig> ConnectionLimit = new List<LimiterConfig> {
+        public Optional<List<LimiterConfig>> ConnectionLimit = Optional.Default(new List<LimiterConfig> {
             new LimiterConfig { RateLimit = 3, Maximum = 5 },
             new LimiterConfig { RateLimit = 15, Maximum = 60 },
-        };
+        });
 
         /// <summary>
         /// <para>
@@ -467,10 +457,10 @@ public class Config
         ///   <seealso cref="PacketTypes.ConnectRequest"> received: +3 seconds
         /// </para>
         /// </summary>
-        public Dictionary<int, double> ConnectionStateTimeout = new Dictionary<int, double> {
+        public Optional<Dictionary<int, double>> ConnectionStateTimeout = Optional.Default(new Dictionary<int, double> {
             { 0, 1 },
             { 1, 4 },
-        };
+        });
 
         /// <summary>
         /// <para>
@@ -482,7 +472,7 @@ public class Config
         /// </para>
         /// <see href="https://github.com/Pryaxis/TShock/issues/1151" />
         /// </summary>
-        public DisabledDamageAction DisabledDamageHandler = DisabledDamageAction.Preset;
+        public Optional<DisabledDamageAction> DisabledDamageHandler = Optional.Default(DisabledDamageAction.Hurt);
 
         /// <summary>
         /// <para>
@@ -496,7 +486,7 @@ public class Config
         /// </para>
         /// <see href="https://github.com/Pryaxis/TShock/issues/2004"/>
         /// </summary>
-        public ExpertCoinHandler ExpertExtraCoin = ExpertCoinHandler.Preset;
+        public Optional<ExpertCoinHandler> ExpertExtraCoin = Optional.Default(ExpertCoinHandler.ServerSide);
 
         /// <summary>
         /// <para>
@@ -509,7 +499,7 @@ public class Config
         /// </para>
         /// <see href="https://github.com/Pryaxis/TShock/issues/2923"/>
         /// </summary>
-        public bool KeepRestAlive = true;
+        public Optional<bool> KeepRestAlive = Optional.Default(true);
 
         /// <summary>
         /// <para>
@@ -529,18 +519,15 @@ public class Config
         /// </para>
         /// <see href="https://github.com/Pryaxis/TShock/issues/2914"/>
         /// </summary>
-        public bool UseEnglishCommand = true;
+        public Optional<bool> UseEnglishCommand = Optional.Default(true);
 
-        [JsonConverter(typeof(StringEnumConverter))]
         public enum DisabledDamageAction
         {
             AsIs,
             Hurt,
-            Ghost,
-            Preset
+            Ghost
         }
 
-        [JsonConverter(typeof(StringEnumConverter))]
         public enum ExpertCoinHandler
         {
             /// <summary>
@@ -555,9 +542,6 @@ public class Config
             /// Untouched like vanilla.
             /// <para>
             AsIs,
-            /// <summary>
-            /// The suggested behavior (by the author, which is AsIs for now).
-            Preset
         }
     }
 
@@ -566,35 +550,6 @@ public class Config
         public double RateLimit { get; set; }
         public double Maximum { get; set; }
 
-        public class LimiterConverter : JsonConverter<LimiterConfig>
-        {
-            public override void WriteJson(JsonWriter writer, LimiterConfig? value, JsonSerializer serializer)
-            {
-                if (value == null)
-                {
-                    writer.WriteValue("0/1");
-                }
-                else
-                {
-                    var str = Math.Round(value.RateLimit) == value.RateLimit ? $"{(int) value.RateLimit}" : $"{value.RateLimit}";
-                    str += "/";
-                    str += Math.Round(value.Maximum) == value.Maximum ? $"{(int) value.Maximum}" : $"{value.Maximum}";
-                    writer.WriteValue(str);
-                }
-            }
-
-            public override LimiterConfig ReadJson(JsonReader reader, Type objectType, LimiterConfig? existingValue, bool hasExistingValue, JsonSerializer serializer)
-            {
-                var s = reader?.Value?.ToString() ?? "0/1";
-                var split = s.Split('/');
-                return new LimiterConfig
-                {
-                    RateLimit = double.Parse(split[0]),
-                    Maximum = double.Parse(split[1])
-                };
-            }
-        }
-
         public static explicit operator Limiter(LimiterConfig config)
         {
             return new Limiter
@@ -602,6 +557,40 @@ public class Config
                 Config = config
             };
         }
+    }
+
+    public static Config Deserialize(string value)
+    {
+        var jss = new JsonSerializerSettings
+        {
+            ObjectCreationHandling = ObjectCreationHandling.Replace,
+            Converters = new List<JsonConverter>
+            {
+                new LimiterConverter(),
+                new StringEnumConverter(),
+            },
+            ContractResolver = new OptionalSerializeContractResolver(),
+            Formatting = Formatting.Indented,
+        };
+
+        return JsonConvert.DeserializeObject<Config>(value, jss) ?? throw new Exception("Config is null");
+    }
+
+    public static string Serialize(Config value, bool skip = true)
+    {
+        var jss = new JsonSerializerSettings
+        {
+            ObjectCreationHandling = ObjectCreationHandling.Replace,
+            Converters = new List<JsonConverter>
+            {
+                new LimiterConverter(),
+                new StringEnumConverter(),
+            },
+            ContractResolver = skip ? new OptionalSerializeContractResolver() : new DefaultContractResolver(),
+            Formatting = Formatting.Indented,
+        };
+
+        return JsonConvert.SerializeObject(value, jss);
     }
 }
 
@@ -623,4 +612,54 @@ public class Limiter
             return true;
         }
     }
+}
+
+public abstract class Optional
+{
+    public abstract bool IsDefaultValue();
+    public abstract object ObjectValue { get; set; }
+    public static Optional<T> Default<T>(T value)
+    {
+        return new Optional<T>(value);
+    }
+}
+
+public class Optional<T> : Optional
+{
+    public bool IsDefault { private set; get; }
+    private readonly T _defaultValue;
+    private T? _value;
+    public T Value
+    {
+        get => this.IsDefault ? this._defaultValue : this._value!;
+        set
+        {
+            if (EqualityComparer<T>.Default.Equals(value, this._defaultValue))
+            {
+                this.IsDefault = true;
+            }
+            else
+            {
+                this.IsDefault = false;
+                this._value = value;
+            }
+        }
+    }
+    public override bool IsDefaultValue()
+    {
+        return this.IsDefault;
+    }
+    public override object ObjectValue
+    {
+        get => this.Value!;
+        set => this.Value = (T) value;
+    }
+
+    public Optional(T value)
+    {
+        this.IsDefault = true;
+        this._defaultValue = value;
+    }
+
+    public static implicit operator T(Optional<T> self) => self.Value;
 }

@@ -191,7 +191,7 @@ public partial class Plugin
         {
             // Right one
         }
-        else if (parm[0] == "*" || this.config.PlayerWildcardFormat.Contains(parm[0]))
+        else if (parm[0] == "*" || this.config.PlayerWildcardFormat.Value.Contains(parm[0]))
         {
             player = Utils.ActivePlayers.ToList();
         }
@@ -489,7 +489,7 @@ public partial class Plugin
     }
 
     private (int Tick, DateTime Time) _tickCheck = (-1, DateTime.MinValue);
-    [Command("UpsCheck", "chireiden.omni.admin.upscheck", "_ups")]
+    [Command("Admin.UpsCheck", "chireiden.omni.admin.upscheck", "_ups")]
     private void Command_TicksPerSec(CommandArgs args)
     {
         if (this._tickCheck.Tick == -1)
@@ -507,9 +507,22 @@ public partial class Plugin
         }
     }
 
-    [Command("ApplyDefaultPermission", "chireiden.omni.admin.setupperm", "_setperm")]
+    [Command("Admin.ApplyDefaultPermission", "chireiden.omni.admin.setupperm", "_setperm")]
     private void Command_SetupPermission(CommandArgs args)
     {
         this.PermissionSetup();
+    }
+
+    [Command("Admin.GenerateFullConfig", "chireiden.omni.admin.genconfig", "genconfig")]
+    private void Command_GenerateFullConfig(CommandArgs args)
+    {
+        try
+        {
+            File.WriteAllText(this.ConfigPath, Config.Serialize(this.config, false));
+        }
+        catch (Exception ex)
+        {
+            args.Player.SendErrorMessage($"Failed to save config: {ex.Message}");
+        }
     }
 }

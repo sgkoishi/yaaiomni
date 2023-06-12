@@ -15,7 +15,7 @@ public partial class Plugin
         for (var i = 0; i < args.Parameters.Count; i++)
         {
             var arg = args.Parameters[i];
-            if (this.config.PlayerWildcardFormat.Contains(arg))
+            if (this.config.PlayerWildcardFormat.Value.Contains(arg))
             {
                 args.Handled = true;
                 foreach (var player in Utils.ActivePlayers)
@@ -31,6 +31,6 @@ public partial class Plugin
 
     private List<TSPlayer> Detour_Wildcard_GetPlayers(Func<string, List<TSPlayer>> orig, string name)
     {
-        return this.config.ServerWildcardFormat.Contains(name) ? new List<TSPlayer> { TSPlayer.Server } : orig(name);
+        return this.config.ServerWildcardFormat.Value.Contains(name) ? new List<TSPlayer> { TSPlayer.Server } : orig(name);
     }
 }

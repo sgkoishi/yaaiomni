@@ -15,7 +15,7 @@ public partial class Plugin
             {
                 return data;
             }
-            data = new AttachedData(player, this.config.Mitigation.ChatSpamRestrict);
+            data = new AttachedData(player, this.config.Mitigation.Value.ChatSpamRestrict);
             this._playerData.Add(player, data);
             return data;
         }

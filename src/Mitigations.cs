@@ -53,7 +53,7 @@ public partial class Plugin
             return;
         }
 
-        var mitigation = this.config.Mitigation;
+        var mitigation = this.config.Mitigation.Value;
         if (!mitigation.Enabled)
         {
             return;
@@ -189,7 +189,7 @@ public partial class Plugin
             }
             case (int) PacketTypes.SyncExtraValue:
             {
-                switch (mitigation.ExpertExtraCoin)
+                switch (mitigation.ExpertExtraCoin.Value)
                 {
                     case Config.MitigationSettings.ExpertCoinHandler.AsIs:
                     {
@@ -197,8 +197,8 @@ public partial class Plugin
                     }
                     case Config.MitigationSettings.ExpertCoinHandler.DisableValue:
                     case Config.MitigationSettings.ExpertCoinHandler.ServerSide:
-                    case Config.MitigationSettings.ExpertCoinHandler.Preset:
                     {
+                        this.Statistics.MitigationCoinReduced += BitConverter.ToInt32(args.Instance.readBuffer.AsSpan(args.ReadOffset + 2, 4));
                         args.Result = OTAPI.HookResult.Cancel;
                         // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
                         args.PacketId = byte.MaxValue;
@@ -221,7 +221,7 @@ public partial class Plugin
             return;
         }
 
-        var mitigation = this.config.Mitigation;
+        var mitigation = this.config.Mitigation.Value;
         if (!mitigation.Enabled)
         {
             return;
@@ -239,7 +239,7 @@ public partial class Plugin
 
     private void TAHook_Mitigation_GameUpdate(EventArgs _)
     {
-        var mitigation = this.config.Mitigation;
+        var mitigation = this.config.Mitigation.Value;
         if (!mitigation.Enabled)
         {
             return;
@@ -262,14 +262,13 @@ public partial class Plugin
 
         if (Terraria.Main.expertMode)
         {
-            switch (mitigation.ExpertExtraCoin)
+            switch (mitigation.ExpertExtraCoin.Value)
             {
                 case Config.MitigationSettings.ExpertCoinHandler.AsIs:
                 case Config.MitigationSettings.ExpertCoinHandler.DisableValue:
                 {
                     break;
                 }
-                case Config.MitigationSettings.ExpertCoinHandler.Preset:
                 case Config.MitigationSettings.ExpertCoinHandler.ServerSide:
                 {
                     foreach (var item in Terraria.Main.item)
@@ -278,8 +277,20 @@ public partial class Plugin
                         {
                             continue;
                         }
-
+                        var weight = item.type switch
+                        {
+                            71 => 1,
+                            72 => 100,
+                            73 => 10000,
+                            74 => 1000000,
+                            _ => throw new SwitchExpressionException($"Unexpected coin {item.type}")
+                        };
+                        var stack = item.stack;
                         item.GetPickedUpByMonsters_Money(item.whoAmI);
+                        if (item.stack != stack)
+                        {
+                            this.Statistics.MitigationCoinReduced -= (stack - item.stack) * weight;
+                        }
                     }
                     break;
                 }
@@ -291,7 +302,8 @@ public partial class Plugin
         && !(Environment.GetEnvironmentVariable("TERM")?.Contains("xterm") ?? false);
     private void Detour_Mitigation_SetTitle(Action<TShockAPI.Utils, bool> orig, TShockAPI.Utils self, bool empty)
     {
-        if (this.config.Mitigation.Enabled && this.config.Mitigation.SuppressTitle)
+        var mitigation = this.config.Mitigation.Value;
+        if (mitigation.Enabled && mitigation.SuppressTitle)
         {
             if (ShouldSuppressTitle)
             {
@@ -339,35 +351,40 @@ public partial class Plugin
     private readonly ConnectionStore _connPool = new ConnectionStore();
     private void MMHook_Mitigation_OnConnectionAccepted(On.Terraria.Netplay.orig_OnConnectionAccepted orig, Terraria.Net.Sockets.ISocket client)
     {
-        var mitigation = this.config.Mitigation;
-        if (mitigation.Enabled && mitigation.ConnectionLimit.Count != 0)
+        var mitigation = this.config.Mitigation.Value;
+        if (mitigation.Enabled)
         {
-            if (client.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa && Utils.PublicIPv4Address(tcpa.Address))
+            var cl = mitigation.ConnectionLimit.Value;
+            if (cl.Count != 0)
             {
-                var addrs = tcpa.Address.ToString();
-                var cd = this._connPool.Connections.GetOrAdd(addrs, _ => new ConnectionStore.Connection
+                if (client.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa && Utils.PublicIPv4Address(tcpa.Address))
                 {
-                    Address = tcpa.Address,
-                    Limit = new ConcurrentBag<Limiter>(mitigation.ConnectionLimit.Select(lc => (Limiter) lc)),
-                });
-                var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
-                this._connPool.ConnectTime.Add(client, new Float64Object
-                {
-                    Value = time,
-                });
-                foreach (var limiter in cd.Limit)
-                {
-                    if (!limiter.Allowed)
+                    var addrs = tcpa.Address.ToString();
+                    var cd = this._connPool.Connections.GetOrAdd(addrs, _ => new ConnectionStore.Connection
                     {
-                        Interlocked.Increment(ref this.Statistics.MitigationRejectedConnection);
-                        client.Close();
-                        TShockAPI.TShock.Log.ConsoleInfo($"Connection from {tcpa.Address} ({tcpa.Port}) rejected due to connection limit.");
-                        return;
+                        Address = tcpa.Address,
+                        Limit = new ConcurrentBag<Limiter>(cl.Select(lc => (Limiter) lc)),
+                    });
+                    var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
+                    this._connPool.ConnectTime.Add(client, new Float64Object
+                    {
+                        Value = time,
+                    });
+                    foreach (var limiter in cd.Limit)
+                    {
+                        if (!limiter.Allowed)
+                        {
+                            Interlocked.Increment(ref this.Statistics.MitigationRejectedConnection);
+                            client.Close();
+                            TShockAPI.TShock.Log.ConsoleInfo($"Connection from {tcpa.Address} ({tcpa.Port}) rejected due to connection limit.");
+                            return;
+                        }
                     }
+                    this.CheckConnectionTimeout();
                 }
-                this.CheckConnectionTimeout();
             }
         }
+
         orig(client);
     }
 
@@ -392,7 +409,7 @@ public partial class Plugin
 
                 var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
 
-                foreach (var (state, timeout) in this.config.Mitigation.ConnectionStateTimeout)
+                foreach (var (state, timeout) in this.config.Mitigation.Value.ConnectionStateTimeout.Value)
                 {
                     var elapsed = time - ct.Value;
                     if (Terraria.Netplay.Clients[i].State == state && elapsed > timeout)
@@ -411,18 +428,17 @@ public partial class Plugin
 
     private void ILHook_Mitigation_DisabledInvincible(ILContext context)
     {
-        var mitigation = this.config.Mitigation;
+        var mitigation = this.config.Mitigation.Value;
         if (mitigation.Enabled)
         {
             var cursor = new ILCursor(context);
             try
             {
                 cursor.GotoNext(MoveType.After, (i) => i.MatchCallvirt<TShockAPI.TSPlayer>(nameof(TShockAPI.TSPlayer.IsBeingDisabled)));
-                switch (mitigation.DisabledDamageHandler)
+                switch (mitigation.DisabledDamageHandler.Value)
                 {
                     case Config.MitigationSettings.DisabledDamageAction.AsIs:
                         break;
-                    case Config.MitigationSettings.DisabledDamageAction.Preset:
                     case Config.MitigationSettings.DisabledDamageAction.Hurt:
                         cursor.Emit(OpCodes.Pop);
                         cursor.Emit(OpCodes.Ldc_I4_0);
@@ -443,7 +459,7 @@ public partial class Plugin
         // FIXME: This is a backport of Pryaxis/TShock#2925
         try
         {
-            var mitigation = this.config.Mitigation;
+            var mitigation = this.config.Mitigation.Value;
             if (mitigation.Enabled && mitigation.KeepRestAlive)
             {
                 var cursor = new ILCursor(context);
@@ -463,7 +479,8 @@ public partial class Plugin
         // Pryaxis/TShock#2914
         Terraria.UI.Chat.ChatManager.Commands._localizedCommands.Clear();
         orig();
-        if (this.config.Mitigation.Enabled && this.config.Mitigation.UseEnglishCommand)
+        var mitigation = this.config.Mitigation.Value;
+        if (mitigation.Enabled && mitigation.UseEnglishCommand)
         {
             var currentLanguage = Terraria.Localization.LanguageManager.Instance.ActiveCulture;
             Terraria.Localization.LanguageManager.Instance.LoadLanguage(Terraria.Localization.GameCulture.FromCultureName(Terraria.Localization.GameCulture.CultureName.English));

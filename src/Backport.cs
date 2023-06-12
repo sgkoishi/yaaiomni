@@ -5,6 +5,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin
 {
+    #region MyRegion
     [Obsolete]
     private void ILHook_Backport_2892(ILContext context)
     {
@@ -21,7 +22,23 @@ public partial class Plugin
         return player.State >= 10 && orig(self, player, fromCommand);
     }
 
-    private void Detour_Backport_2934(Action orig)
+    [Obsolete("Pre 5.2.0")]
+    public void Run()
+    {
+        this.Detour(
+            nameof(this.Detour_Backport_2894),
+            typeof(TShockAPI.DB.CharacterManager)
+                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), _bfany)!,
+            this.Detour_Backport_2894);
+
+        this.ILHook(
+            nameof(this.ILHook_Backport_2892),
+            typeof(TShockAPI.Utils).GetMethod(nameof(TShockAPI.Utils.GetItemFromTag), _bfany)!,
+            this.ILHook_Backport_2892);
+    }
+    #endregion
+
+private void Detour_Backport_2934(Action orig)
     {
         orig();
         if (!Terraria.Netplay.HasClients)
@@ -57,17 +74,6 @@ public partial class Plugin
     private void Backports()
     {
         this.Backport_Inferno();
-
-        this.Detour(
-            nameof(this.Detour_Backport_2894),
-            typeof(TShockAPI.DB.CharacterManager)
-                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), _bfany)!,
-            this.Detour_Backport_2894);
-
-        this.ILHook(
-            nameof(this.ILHook_Backport_2892),
-            typeof(TShockAPI.Utils).GetMethod(nameof(TShockAPI.Utils.GetItemFromTag), _bfany)!,
-            this.ILHook_Backport_2892);
 
         this.Detour(
             nameof(this.Detour_Backport_2934),

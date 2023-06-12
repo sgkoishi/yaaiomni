@@ -6,7 +6,7 @@ public partial class Plugin
 {
     private void VanillaSetup()
     {
-        var vanillaMode = this.config.Mode.Vanilla;
+        var vanillaMode = this.config.Mode.Value.Vanilla.Value;
         if (!vanillaMode.Enabled)
         {
             return;
@@ -55,8 +55,8 @@ public partial class Plugin
 
     private void DefaultPermissionSetup()
     {
-        var preset = this.config.Permission.Preset;
-        var vanillaMode = this.config.Mode.Vanilla.Enabled;
+        var preset = this.config.Permission.Value.Preset.Value;
+        var vanillaMode = this.config.Mode.Value.Vanilla.Value.Enabled;
         if (!preset.Enabled && !vanillaMode && !preset.AlwaysApply)
         {
             return;
@@ -72,8 +72,8 @@ public partial class Plugin
 
     private void PermissionSetup()
     {
-        var preset = this.config.Permission.Preset;
-        var vanillaMode = this.config.Mode.Vanilla.Enabled;
+        var preset = this.config.Permission.Value.Preset.Value;
+        var vanillaMode = this.config.Mode.Value.Vanilla.Value.Enabled;
         var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
         if (preset.AllowRestricted || vanillaMode)
         {
@@ -109,6 +109,7 @@ public partial class Plugin
             Permissions.Admin.DebugStat,
             Permissions.Admin.PvPStatus,
             Permissions.Admin.TeamStatus,
+            Permissions.Admin.UpsCheck,
             Permissions.SetTimeout,
             Permissions.SetInterval,
             Permissions.ClearInterval,
@@ -122,7 +123,9 @@ public partial class Plugin
             Permissions.Admin.RawBroadcast,
             Permissions.Admin.TerminateSocket,
             Permissions.Admin.ResetCharacterOther,
-            Permissions.Admin.ExportCharacter);
+            Permissions.Admin.ExportCharacter,
+            Permissions.Admin.ApplyDefaultPermission,
+            Permissions.Admin.GenerateFullConfig);
 
         AliasPermission(TShockAPI.Permissions.su,
             Permissions.Admin.Sudo,

@@ -11,7 +11,7 @@ public partial class Plugin
             return;
         }
 
-        if (!this.config.Soundness.QuickStackRestriction)
+        if (!this.config.Soundness.Value.QuickStackRestriction)
         {
             return;
         }
@@ -30,7 +30,7 @@ public partial class Plugin
             return;
         }
 
-        if (!this.config.Soundness.SignEditRestriction)
+        if (!this.config.Soundness.Value.SignEditRestriction)
         {
             return;
         }
