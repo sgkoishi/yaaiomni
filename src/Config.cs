@@ -645,10 +645,12 @@ public class Optional<T> : Optional
             }
         }
     }
+
     public override bool IsDefaultValue()
     {
         return this.IsDefault;
     }
+
     public override object ObjectValue
     {
         get => this.Value!;

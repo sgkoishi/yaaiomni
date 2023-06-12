@@ -17,6 +17,8 @@ public partial class Plugin
         public int MitigationRejectedSicknessHeal;
         public int MitigationTerminatedConnection;
         public int MitigationCoinReduced;
+        public int ModdedEarlyChatSpam;
+        public int ModdedFakeName;
     }
 
     [Command("Admin.DebugStat", "chireiden.omni.admin.debugstat", "_debugstat")]
