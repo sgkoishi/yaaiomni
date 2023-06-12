@@ -42,15 +42,18 @@ public class OptionalConverter : JsonConverter
 
     public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
-        var type = objectType.GenericTypeArguments[0];
-        var obj = serializer.Deserialize(reader, type);
-        if (existingValue is Optional o)
+        if (existingValue is not Optional o)
         {
-            o.ObjectValue = obj!;
+            throw new Exception("Unreachable code: ReadJson is not a Optional");
         }
-        else
+        var type = objectType.GenericTypeArguments[0];
+        try
         {
-            throw new Exception("Unreachable code: WriteJson is not a Optional");
+            o.ObjectValue = serializer.Deserialize(reader, type);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
         }
         return existingValue;
     }

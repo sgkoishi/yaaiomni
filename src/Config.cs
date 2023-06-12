@@ -566,6 +566,7 @@ public class Config
             ObjectCreationHandling = ObjectCreationHandling.Replace,
             Converters = new List<JsonConverter>
             {
+                new OptionalConverter(),
                 new LimiterConverter(),
                 new StringEnumConverter(),
             },
@@ -583,6 +584,7 @@ public class Config
             ObjectCreationHandling = ObjectCreationHandling.Replace,
             Converters = new List<JsonConverter>
             {
+                new OptionalConverter(),
                 new LimiterConverter(),
                 new StringEnumConverter(),
             },
@@ -617,7 +619,7 @@ public class Limiter
 public abstract class Optional
 {
     public abstract bool IsDefaultValue();
-    public abstract object ObjectValue { get; set; }
+    public abstract object? ObjectValue { get; set; }
     public static Optional<T> Default<T>(T value)
     {
         return new Optional<T>(value);
@@ -651,10 +653,16 @@ public class Optional<T> : Optional
         return this.IsDefault;
     }
 
-    public override object ObjectValue
+    public override object? ObjectValue
     {
-        get => this.Value!;
-        set => this.Value = (T) value;
+        get => this.Value;
+        set
+        {
+            if (value is T t)
+            {
+                this.Value = t;
+            }
+        }
     }
 
     public Optional(T value)

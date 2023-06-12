@@ -57,6 +57,7 @@ jobs:
         with:
           prerelease: true
           tag_name: v${{ steps.setenvo.outputs.TAG_NAME }}
+          target_commitish: ${{ github.sha }}
           name: Release v${{ steps.setenvo.outputs.TAG_NAME }}
           files: |
             Artifact.tar
