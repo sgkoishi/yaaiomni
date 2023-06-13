@@ -100,6 +100,12 @@ public class Config
         public Optional<bool> SyncVersion = Optional.Default(false);
 
         /// <summary>
+        /// Fix the broken default language detect.
+        /// <see href="https://github.com/Pryaxis/TShock/issues/2957" />
+        /// </summary>
+        public Optional<bool> DefaultLanguageDetect = Optional.Default(true);
+
+        /// <summary>
         /// Action for TShock's update
         /// </summary>
         public Optional<UpdateOptions> SuppressUpdate = Optional.Default(UpdateOptions.Silent);

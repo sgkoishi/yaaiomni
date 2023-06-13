@@ -38,7 +38,7 @@ public partial class Plugin
     }
     #endregion
 
-private void Detour_Backport_2934(Action orig)
+    private void Detour_Backport_2934(Action orig)
     {
         orig();
         if (!Terraria.Netplay.HasClients)

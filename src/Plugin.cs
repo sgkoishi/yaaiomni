@@ -94,6 +94,11 @@ public partial class Plugin : TerrariaPlugin
             typeof(Rests.Rest)
                 .GetMethod("OnRequest", _bfany)!,
             this.ILHook_Mitigation_KeepRestAlive);
+
+        if (this.config.Enhancements.Value.DefaultLanguageDetect)
+        {
+            typeof(System.Globalization.CultureInfo).GetField("s_currentThreadUICulture", _bfany)?.SetValue(null, null);
+        }
     }
 
     private void LoadConfig(TSPlayer? initiator)

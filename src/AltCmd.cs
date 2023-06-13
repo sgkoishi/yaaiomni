@@ -73,9 +73,9 @@ public partial class Plugin
         return orig(player, text);
     }
 
-    private static MethodInfo _uncatchedHandleCommand = Utils.Method(() =>
+    private static readonly MethodInfo _uncatchedHandleCommand = Utils.Method(() =>
             new Plugin(null!).HandleCommandUncatched(null!, null!, null!))!;
-    private static MethodInfo _catchedHandleCommand = Utils.Method(() =>
+    private static readonly MethodInfo _catchedHandleCommand = Utils.Method(() =>
             new Plugin(null!).HandleCommandCatched(null!, null!, null!))!;
 
     private bool Detour_Command_Run(Func<Command, string, bool, TSPlayer, List<string>, bool> orig, Command instance, string msg, bool silent, TSPlayer ply, List<string> parms)
