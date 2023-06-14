@@ -17,30 +17,138 @@ public static class Utils
         return (x, y) => (player?.HasBuildPermission(x, y) ?? false) && action(x, y);
     }
 
-    public static bool TryParseGameCulture(string s, [NotNullWhen(returnValue: true)] out GameCulture? culture)
+    public static bool SingleOfEither<T>(this IEnumerable<T> collection, bool skipMultiple, out T? value, params Func<T, bool>[] predicate)
     {
-        if (int.TryParse(s, out var number))
+        foreach (var p in predicate)
         {
-            if (GameCulture._legacyCultures.TryGetValue(number, out culture))
+            var col = collection.Where(p);
+            if (col.Any())
+            {
+                var t2 = col.Take(2);
+                if (t2.Count() == 1)
+                {
+                    value = t2.First();
+                    return true;
+                }
+                else if (!skipMultiple)
+                {
+                    break;
+                }
+            }
+        }
+        value = default(T);
+        return false;
+    }
+
+    public static bool FirstOfEither<T>(this IEnumerable<T> collection, out T? value, params Func<T, bool>[] predicate)
+    {
+        foreach (var p in predicate)
+        {
+            var col = collection.Where(p);
+            if (col.Any())
+            {
+                value = col.First();
+                return true;
+            }
+        }
+        value = default(T);
+        return false;
+    }
+
+    public static bool TryParseGameCulture(string s, [NotNullWhen(returnValue: true)] out GameCulture? culture, bool nearby = true)
+    {
+        if (int.TryParse(s, out var number) && GameCulture._legacyCultures.TryGetValue(number, out culture))
+        {
+            return true;
+        }
+
+        static bool ToGameCulture(CultureInfo culture, [NotNullWhen(returnValue: true)] out GameCulture? gameCulture)
+        {
+            var (distance, nc) = GameCulture._legacyCultures.Values
+               .Select(v => (Distance: Distance(v.CultureInfo, culture), Culture: v))
+               .OrderBy(c => c.Distance)
+               .First();
+
+            if (distance != 1)
+            {
+                gameCulture = nc;
+                return true;
+            }
+
+            gameCulture = null;
+            return false;
+        }
+
+        static bool MatchCulture(IEnumerable<CultureInfo> culture, string criteria, out CultureInfo result)
+        {
+            return culture.SingleOfEither(skipMultiple: true, out result!,
+                c => c.Name == criteria,
+                c => c.TwoLetterISOLanguageName == criteria,
+                c => c.DisplayName == criteria,
+                c => c.NativeName == criteria,
+                c => c.NativeName.Contains(criteria));
+        }
+
+        if (MatchCulture(GameCulture._legacyCultures.Values.Select(v => v.CultureInfo), s, out var targetCulture)
+            && ToGameCulture(targetCulture, out culture))
+        {
+            return true;
+        }
+        
+        if (!nearby)
+        {
+            culture = null;
+            return false;
+        }
+
+        try
+        {
+            // Sometimes the CultureInfo.GetCultures(CultureTypes.AllCultures) does not contains the default culture
+            // So we try to create it and check if that works
+            if (ToGameCulture(CultureInfo.GetCultureInfo(s), out culture))
             {
                 return true;
             }
         }
+        catch 
+        {
+        }
 
-        culture = GameCulture._legacyCultures.Values.SingleOrDefault(c => c.Name == s);
-        if (culture != null)
+        if (MatchCulture(CultureInfo.GetCultures(CultureTypes.AllCultures), s, out targetCulture)
+            && ToGameCulture(targetCulture, out culture))
         {
             return true;
         }
+        
+        culture = null;
+        return false;
+    }
 
-        culture = GameCulture._legacyCultures.Values.SingleOrDefault(c => c.CultureInfo.NativeName == s);
-        if (culture != null)
+    public static double Distance(CultureInfo a, CultureInfo b)
+    {
+        static CultureInfo[] Parents(CultureInfo i)
         {
-            return true;
+            var result = new List<CultureInfo>();
+            while (i != CultureInfo.InvariantCulture)
+            {
+                result.Add(i);
+                i = i.Parent;
+            }
+            return result.Reverse<CultureInfo>().ToArray();
         }
 
-        culture = GameCulture._legacyCultures.Values.SingleOrDefault(c => c.CultureInfo.NativeName.Contains(s));
-        return culture != null;
+        var ap = Parents(a);
+        var bp = Parents(b);
+        var weight = 1.0;
+        for (var i = 0; i < Math.Min(ap.Length, bp.Length); i++)
+        {
+            if (!ap[i].Equals(bp[i])) // Equals, not ==
+            {
+                return weight;
+            }
+            weight /= 2;
+        }
+        return ap.Length == bp.Length ? 0 : weight;
     }
 
     public static CultureInfo CultureRedirect(CultureInfo cultureInfo)

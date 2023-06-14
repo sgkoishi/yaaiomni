@@ -97,7 +97,7 @@ public partial class Plugin : TerrariaPlugin
 
         if (this.config.Enhancements.Value.DefaultLanguageDetect)
         {
-            typeof(System.Globalization.CultureInfo).GetField("s_currentThreadUICulture", _bfany)?.SetValue(null, null);
+            this.ResetGameLocale();
         }
     }
 
@@ -117,6 +117,10 @@ public partial class Plugin : TerrariaPlugin
         }
         try
         {
+            if (!Directory.Exists(TShockAPI.TShock.SavePath))
+            {
+                Directory.CreateDirectory(TShockAPI.TShock.SavePath);
+            }
             File.WriteAllText(this.ConfigPath, Config.Serialize(this.config));
         }
         catch (Exception ex)
