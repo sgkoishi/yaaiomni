@@ -107,7 +107,7 @@ public partial class Plugin : TerrariaPlugin
         {
             if (File.Exists(this.ConfigPath))
             {
-                this.config = Config.Deserialize(File.ReadAllText(this.ConfigPath));
+                this.config = Utils.DeserializeConfig(File.ReadAllText(this.ConfigPath));
             }
         }
         catch (Exception ex)
@@ -121,7 +121,7 @@ public partial class Plugin : TerrariaPlugin
             {
                 Directory.CreateDirectory(TShockAPI.TShock.SavePath);
             }
-            File.WriteAllText(this.ConfigPath, Config.Serialize(this.config));
+            File.WriteAllText(this.ConfigPath, Utils.SerializeConfig(this.config));
         }
         catch (Exception ex)
         {

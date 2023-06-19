@@ -1,9 +1,4 @@
-﻿using Chireiden.TShock.Omni.Json;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
-
-namespace Chireiden.TShock.Omni;
+﻿namespace Chireiden.TShock.Omni;
 
 /// <summary>
 /// This is the config file for Omni.
@@ -73,7 +68,7 @@ public class Config
 
     public Optional<MitigationSettings> Mitigation = Optional.Default(new MitigationSettings());
 
-    public class EnhancementsSettings
+    public record class EnhancementsSettings
     {
         /// <summary>
         /// Remove unused client-side objects to save memory.
@@ -193,7 +188,7 @@ public class Config
         }
     }
 
-    public class LavaSettings
+    public record class LavaSettings
     {
         public Optional<bool> Enabled = Optional.Default(false);
         public Optional<bool> AllowHellstone = Optional.Default(false);
@@ -203,11 +198,11 @@ public class Config
         public Optional<bool> AllowLavabat = Optional.Default(false);
     }
 
-    public class DebugPacketSettings
+    public record class DebugPacketSettings
     {
-        public Optional<bool> In = Optional.Default(false);
-        public Optional<bool> Out = Optional.Default(false);
-        public Optional<bool> BytesOut = Optional.Default(false);
+        public Optional<PacketFilter> In = Optional.Default(new PacketFilter(false));
+        public Optional<PacketFilter> Out = Optional.Default(new PacketFilter(false));
+        public Optional<PacketFilter> BytesOut = Optional.Default(new PacketFilter(false));
         public Optional<CatchedException> ShowCatchedException = Optional.Default(CatchedException.Uncommon);
 
         public enum CatchedException
@@ -216,9 +211,65 @@ public class Config
             Uncommon,
             All,
         }
+
+        public class PacketFilter : IEquatable<PacketFilter>
+        {
+            public static readonly byte MaxPacket = (byte) Enum.GetValues(typeof(PacketTypes)).Cast<int>().Max();
+            private readonly bool[] _matches;
+
+            public PacketFilter(bool accept)
+            {
+                this._matches = new bool[MaxPacket + 1];
+                Array.Fill(this._matches, accept);
+            }
+
+            public PacketFilter(params byte[] accept)
+            {
+                this._matches = new bool[MaxPacket + 1];
+                foreach (var value in accept)
+                {
+                    this._matches[value] = true;
+                }
+            }
+
+            public bool Handle(byte type)
+            {
+                return this._matches[type];
+            }
+
+            public bool Handle(int type)
+            {
+                return this._matches[(byte) type];
+            }
+
+            public bool Handle(PacketTypes type)
+            {
+                return this._matches[(byte) type];
+            }
+
+            public bool Equals(PacketFilter? other)
+            {
+                return other is PacketFilter pf && this._matches.SequenceEqual(pf._matches);
+            }
+
+            public override bool Equals(object? obj)
+            {
+                return obj is PacketFilter pf && this.Equals(pf);
+            }
+
+            public override int GetHashCode()
+            {
+                var h = 0;
+                for (var i = 0; i < MaxPacket + 1; i++)
+                {
+                    h ^= Convert.ToInt32(this._matches[i]) << (i % 32);
+                }
+                return h;
+            }
+        }
     }
 
-    public class SoundnessSettings
+    public record class SoundnessSettings
     {
         /// <summary>
         /// Permission restrict server-side tile modification projectiles like liquid bombs &amp; rockets, dirt bombs.
@@ -236,13 +287,13 @@ public class Config
         public Optional<bool> SignEditRestriction = Optional.Default(true);
     }
 
-    public class PermissionSettings
+    public record class PermissionSettings
     {
         public Optional<PermissionLogSettings> Log = Optional.Default(new PermissionLogSettings());
         public Optional<RestrictSettings> Restrict = Optional.Default(new RestrictSettings());
         public Optional<PresetSettings> Preset = Optional.Default(new PresetSettings());
 
-        public class PermissionLogSettings
+        public record class PermissionLogSettings
         {
             public Optional<bool> Enabled = Optional.Default(true);
             public Optional<int> LogCount = Optional.Default(50);
@@ -251,7 +302,7 @@ public class Config
             public Optional<bool> LogStackTrace = Optional.Default(false);
         }
 
-        public class RestrictSettings
+        public record class RestrictSettings
         {
             public Optional<bool> Enabled = Optional.Default(false);
             public Optional<bool> ToggleTeam = Optional.Default(true);
@@ -260,7 +311,7 @@ public class Config
             public Optional<bool> SummonBoss = Optional.Default(true);
         }
 
-        public class PresetSettings
+        public record class PresetSettings
         {
             public Optional<bool> Enabled = Optional.Default(true);
             public Optional<bool> AlwaysApply = Optional.Default(false);
@@ -269,23 +320,23 @@ public class Config
         }
     }
 
-    public class Modes
+    public record class Modes
     {
         public Optional<BuildingMode> Building = Optional.Default(new BuildingMode());
         public Optional<PvPMode> PvP = Optional.Default(new PvPMode());
         public Optional<VanillaMode> Vanilla = Optional.Default(new VanillaMode());
 
-        public class BuildingMode
+        public record class BuildingMode
         {
             public Optional<bool> Enabled = Optional.Default(false);
         }
 
-        public class PvPMode
+        public record class PvPMode
         {
             public Optional<bool> Enabled = Optional.Default(false);
         }
 
-        public class VanillaMode
+        public record class VanillaMode
         {
             public Optional<bool> Enabled = Optional.Default(false);
             public Optional<List<string>> Permissions = Optional.Default(new List<string> {
@@ -327,14 +378,14 @@ public class Config
             public Optional<bool> IgnoreAntiCheat = Optional.Default(false);
             public Optional<VanillaAntiCheat> AntiCheat = Optional.Default(new VanillaAntiCheat());
 
-            public class VanillaAntiCheat
+            public record class VanillaAntiCheat
             {
                 public Optional<bool> Enabled = Optional.Default(false);
             }
         }
     }
 
-    public class MitigationSettings
+    public record class MitigationSettings
     {
         public Optional<bool> Enabled = Optional.Default(true);
 
@@ -551,7 +602,7 @@ public class Config
         }
     }
 
-    public class LimiterConfig
+    public record class LimiterConfig
     {
         public double RateLimit { get; set; }
         public double Maximum { get; set; }
@@ -563,42 +614,6 @@ public class Config
                 Config = config
             };
         }
-    }
-
-    public static Config Deserialize(string value)
-    {
-        var jss = new JsonSerializerSettings
-        {
-            ObjectCreationHandling = ObjectCreationHandling.Replace,
-            Converters = new List<JsonConverter>
-            {
-                new OptionalConverter(),
-                new LimiterConverter(),
-                new StringEnumConverter(),
-            },
-            ContractResolver = new OptionalSerializeContractResolver(),
-            Formatting = Formatting.Indented,
-        };
-
-        return JsonConvert.DeserializeObject<Config>(value, jss) ?? throw new Exception("Config is null");
-    }
-
-    public static string Serialize(Config value, bool skip = true)
-    {
-        var jss = new JsonSerializerSettings
-        {
-            ObjectCreationHandling = ObjectCreationHandling.Replace,
-            Converters = new List<JsonConverter>
-            {
-                new OptionalConverter(),
-                new LimiterConverter(),
-                new StringEnumConverter(),
-            },
-            ContractResolver = skip ? new OptionalSerializeContractResolver() : new DefaultContractResolver(),
-            Formatting = Formatting.Indented,
-        };
-
-        return JsonConvert.SerializeObject(value, jss);
     }
 }
 
@@ -632,7 +647,7 @@ public abstract class Optional
     }
 }
 
-public class Optional<T> : Optional
+public class Optional<T> : Optional, IEquatable<Optional<T>>
 {
     public bool IsDefault { private set; get; }
     private readonly T _defaultValue;
@@ -659,6 +674,13 @@ public class Optional<T> : Optional
         return this.IsDefault;
     }
 
+    public bool Equals(Optional<T>? other)
+    {
+        return this.IsDefault == other?.IsDefault
+            && EqualityComparer<T>.Default.Equals(this._defaultValue, other._defaultValue)
+            && EqualityComparer<T>.Default.Equals(this._value, other._value);
+    }
+
     public override object? ObjectValue
     {
         get => this.Value;
@@ -678,4 +700,21 @@ public class Optional<T> : Optional
     }
 
     public static implicit operator T(Optional<T> self) => self.Value;
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Optional<T> ot && this.Equals(ot);
+    }
+
+    public override int GetHashCode()
+    {
+        if (this._defaultValue is null)
+        {
+            return 0;
+        }
+        var v = this._value is null
+            ? 0
+            : EqualityComparer<T>.Default.GetHashCode(this._value);
+        return EqualityComparer<T>.Default.GetHashCode(this._defaultValue) ^ v;
+    }
 }

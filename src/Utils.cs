@@ -10,7 +10,7 @@ using TileCollection = ModFramework.ICollection<Terraria.ITile>;
 
 namespace Chireiden.TShock.Omni;
 
-public static class Utils
+public static partial class Utils
 {
     internal static TileActionAttempt WithPermissionCheck(TileActionAttempt action, TSPlayer? player)
     {
@@ -36,7 +36,7 @@ public static class Utils
                 }
             }
         }
-        value = default(T);
+        value = default;
         return false;
     }
 
@@ -51,7 +51,7 @@ public static class Utils
                 return true;
             }
         }
-        value = default(T);
+        value = default;
         return false;
     }
 
@@ -94,7 +94,7 @@ public static class Utils
         {
             return true;
         }
-        
+
         if (!nearby)
         {
             culture = null;
@@ -110,7 +110,7 @@ public static class Utils
                 return true;
             }
         }
-        catch 
+        catch
         {
         }
 
@@ -119,7 +119,7 @@ public static class Utils
         {
             return true;
         }
-        
+
         culture = null;
         return false;
     }

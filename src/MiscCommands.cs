@@ -518,7 +518,7 @@ public partial class Plugin
     {
         try
         {
-            File.WriteAllText(this.ConfigPath, Config.Serialize(this.config, false));
+            File.WriteAllText(this.ConfigPath, Utils.SerializeConfig(this.config, false));
         }
         catch (Exception ex)
         {
