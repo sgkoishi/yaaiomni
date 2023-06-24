@@ -183,23 +183,24 @@ public class CommandsGenerator : IIncrementalGenerator
         {
             if (arg.NameEquals != null)
             {
-                if (arg.NameEquals.Name.Identifier.ValueText == "AllowServer")
+                var flag = arg.NameEquals.Name.Identifier.ValueText;
+                switch (flag)
                 {
-                    if (!bool.TryParse(arg.Expression.ToString(), out var r) || !r)
+                    case "AllowServer" when !bool.TryParse(arg.Expression.ToString(), out var r) || !r:
                     {
                         extras.Add("AllowServer = false");
+                        break;
                     }
-                }
-                else if (arg.NameEquals.Name.Identifier.ValueText == "DoLog")
-                {
-                    if (!bool.TryParse(arg.Expression.ToString(), out var r) || !r)
+                    case "DoLog" when !bool.TryParse(arg.Expression.ToString(), out var r) || !r:
                     {
                         extras.Add("DoLog = false");
+                        break;
                     }
-                }
-                else if (arg.NameEquals.Name.Identifier.ValueText == "HelpText")
-                {
-                    extras.Add("HelpText = " + arg.Expression.ToString());
+                    case "HelpText":
+                    {
+                        extras.Add("HelpText = " + arg.Expression.ToString());
+                        break;
+                    }
                 }
             }
             else

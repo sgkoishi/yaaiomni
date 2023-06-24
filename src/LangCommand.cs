@@ -81,9 +81,15 @@ public partial class Plugin
 
     private void ResetGameLocale()
     {
-        typeof(System.Globalization.CultureInfo).GetField("s_currentThreadUICulture", _bfany)?.SetValue(null, null);
-        _ = Utils.TryParseGameCulture(System.Globalization.CultureInfo.CurrentUICulture.ToString(), out var result, true);
-        Terraria.Localization.LanguageManager.Instance.SetLanguage(result!);
-        CultureInfo.CurrentUICulture = Utils.CultureRedirect(CultureInfo.CurrentUICulture);
+        typeof(CultureInfo).GetField("s_currentThreadUICulture", _bfany)?.SetValue(null, null);
+        if (Utils.TryParseGameCulture(CultureInfo.CurrentUICulture.ToString(), out var result, true))
+        {
+            LanguageManager.Instance.SetLanguage(result);
+            CultureInfo.CurrentUICulture = Utils.CultureRedirect(CultureInfo.CurrentUICulture);
+        }
+        else
+        {
+            this.ShowError($"Failed to find nearest language for {CultureInfo.CurrentUICulture}");
+        }
     }
 }

@@ -1,7 +1,4 @@
-﻿using Org.BouncyCastle.Bcpg;
-using static MonoMod.InlineRT.MonoModRule;
-
-namespace Chireiden.TShock.Omni;
+﻿namespace Chireiden.TShock.Omni;
 
 public partial class Plugin
 {
