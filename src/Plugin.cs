@@ -34,65 +34,65 @@ public partial class Plugin : TerrariaPlugin
         this.Detour(
             nameof(this.Detour_UpdateCheckAsync),
             typeof(UpdateManager)
-                .GetMethod(nameof(UpdateManager.UpdateCheckAsync), _bfany)!,
+                .GetMethod(nameof(UpdateManager.UpdateCheckAsync), _bfany),
             this.Detour_UpdateCheckAsync);
         this.Detour(
             nameof(this.Detour_HasPermission),
             typeof(TSPlayer)
-                .GetMethod(nameof(TSPlayer.HasPermission), _bfany, new[] { typeof(string) })!,
+                .GetMethod(nameof(TSPlayer.HasPermission), _bfany, new[] { typeof(string) }),
             this.Detour_HasPermission);
         this.Detour(
             nameof(this.Detour_PlayerActive),
             typeof(TSPlayer)
-                .GetProperty(nameof(TSPlayer.Active), _bfany)!
-                .GetMethod!,
+                .GetProperty(nameof(TSPlayer.Active), _bfany)?
+                .GetMethod,
             this.Detour_PlayerActive);
         this.Detour(
             nameof(this.Detour_Lava_HitEffect),
             typeof(NPC)
-                .GetMethod(nameof(NPC.HitEffect), _bfany)!,
+                .GetMethod(nameof(NPC.HitEffect), _bfany),
             this.Detour_Lava_HitEffect);
         this.Detour(
             nameof(this.Detour_Lava_KillTile),
             typeof(WorldGen)
-                .GetMethod(nameof(WorldGen.KillTile), _bfany)!,
+                .GetMethod(nameof(WorldGen.KillTile), _bfany),
             this.Detour_Lava_KillTile);
         this.Detour(
             nameof(this.Detour_Wildcard_GetPlayers),
             typeof(TSPlayer)
-                .GetMethod(nameof(TSPlayer.FindByNameOrID), _bfany)!,
+                .GetMethod(nameof(TSPlayer.FindByNameOrID), _bfany),
             this.Detour_Wildcard_GetPlayers);
         this.Detour(
             nameof(this.Detour_Mitigation_SetTitle),
             typeof(TShockAPI.Utils)
-                .GetMethod("SetConsoleTitle", _bfany)!,
+                .GetMethod("SetConsoleTitle", _bfany),
             this.Detour_Mitigation_SetTitle);
         this.Detour(
             nameof(this.Detour_Command_Alternative),
             typeof(TShockAPI.Commands)
-                .GetMethod(nameof(TShockAPI.Commands.HandleCommand), _bfany)!,
+                .GetMethod(nameof(TShockAPI.Commands.HandleCommand), _bfany),
             this.Detour_Command_Alternative);
         this.Detour(
             nameof(this.Detour_Mitigation_I18nCommand),
             typeof(Terraria.Initializers.ChatInitializer)
-                .GetMethod(nameof(Terraria.Initializers.ChatInitializer.Load), _bfany)!,
+                .GetMethod(nameof(Terraria.Initializers.ChatInitializer.Load), _bfany),
             this.Detour_Mitigation_I18nCommand);
         this.Detour(
             nameof(this.Detour_CheckBan_IP),
             typeof(BanManager)
                 .GetNestedTypes(_bfany)
                 .SelectMany(i => i.GetMethods(_bfany).Where(m => m.Name.Contains("CheckBan")))
-                .First(),
+                .FirstOrDefault(),
             this.Detour_CheckBan_IP);
         this.ILHook(
             nameof(this.ILHook_Mitigation_DisabledInvincible),
             Utils.TShockType("Bouncer")
-                .GetMethod("OnPlayerDamage", _bfany)!,
+                .GetMethod("OnPlayerDamage", _bfany),
             this.ILHook_Mitigation_DisabledInvincible);
         this.ILHook(
             nameof(this.ILHook_Mitigation_KeepRestAlive),
             typeof(Rests.Rest)
-                .GetMethod("OnRequest", _bfany)!,
+                .GetMethod("OnRequest", _bfany),
             this.ILHook_Mitigation_KeepRestAlive);
 
         if (this.config.Enhancements.Value.DefaultLanguageDetect)
@@ -168,7 +168,7 @@ public partial class Plugin : TerrariaPlugin
             initiator?.SendInfoMessage("ChatSpam limit applied:");
             foreach (var limiter in spamlim)
             {
-                initiator?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} messages per {Math.Round(limiter.Maximum / 60, 1):G} seconds");
+                initiator?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} messages per {Math.Round(limiter.Maximum, 1):G} seconds");
             }
         }
         var connlim = this.config.Mitigation.Value.ConnectionLimit.Value;

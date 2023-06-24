@@ -28,12 +28,12 @@ public partial class Plugin
         this.Detour(
             nameof(this.Detour_Backport_2894),
             typeof(TShockAPI.DB.CharacterManager)
-                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), _bfany)!,
+                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), _bfany),
             this.Detour_Backport_2894);
 
         this.ILHook(
             nameof(this.ILHook_Backport_2892),
-            typeof(TShockAPI.Utils).GetMethod(nameof(TShockAPI.Utils.GetItemFromTag), _bfany)!,
+            typeof(TShockAPI.Utils).GetMethod(nameof(TShockAPI.Utils.GetItemFromTag), _bfany),
             this.ILHook_Backport_2892);
     }
     #endregion
@@ -77,7 +77,7 @@ public partial class Plugin
 
         this.Detour(
             nameof(this.Detour_Backport_2934),
-            typeof(Terraria.Netplay).GetMethod(nameof(Terraria.Netplay.UpdateConnectedClients), _bfany)!,
+            typeof(Terraria.Netplay).GetMethod(nameof(Terraria.Netplay.UpdateConnectedClients), _bfany),
             this.Detour_Backport_2934);
     }
 }
