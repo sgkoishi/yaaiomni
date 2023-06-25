@@ -438,12 +438,11 @@ public partial class Plugin
                 switch (mitigation.DisabledDamageHandler.Value)
                 {
                     case Config.MitigationSettings.DisabledDamageAction.AsIs:
+                    case Config.MitigationSettings.DisabledDamageAction.Ghost:
                         break;
                     case Config.MitigationSettings.DisabledDamageAction.Hurt:
                         cursor.Emit(OpCodes.Pop);
                         cursor.Emit(OpCodes.Ldc_I4_0);
-                        break;
-                    case Config.MitigationSettings.DisabledDamageAction.Ghost:
                         break;
                 }
             }

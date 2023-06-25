@@ -82,7 +82,7 @@ public partial class Plugin
     private void ResetGameLocale()
     {
         typeof(CultureInfo).GetField("s_currentThreadUICulture", _bfany)?.SetValue(null, null);
-        Console.WriteLine($"Existing culture: {CultureInfo.CurrentUICulture}.");
+        Console.WriteLine($"Existing culture: \"{CultureInfo.CurrentUICulture}\" ({CultureInfo.CurrentUICulture.EnglishName}).");
         if (Utils.TryParseGameCulture(CultureInfo.CurrentUICulture.ToString(), out var result, true))
         {
             LanguageManager.Instance.SetLanguage(result);
@@ -91,7 +91,7 @@ public partial class Plugin
         }
         else
         {
-            this.ShowError($"Failed to find nearest language for {CultureInfo.CurrentUICulture}.");
+            this.ShowError($"Failed to find nearest language for \"{CultureInfo.CurrentUICulture}\" ({CultureInfo.CurrentUICulture.EnglishName}).");
         }
     }
 }

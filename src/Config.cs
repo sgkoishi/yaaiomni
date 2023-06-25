@@ -234,17 +234,17 @@ public class Config
 
             public bool Handle(byte type)
             {
-                return this._matches[type];
+                return type < this._matches.Length && this._matches[type];
             }
 
             public bool Handle(int type)
             {
-                return this._matches[(byte) type];
+                return this.Handle((byte) type);
             }
 
             public bool Handle(PacketTypes type)
             {
-                return this._matches[(byte) type];
+                return this.Handle((byte) type);
             }
 
             public bool Equals(PacketFilter? other)
