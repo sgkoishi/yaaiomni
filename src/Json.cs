@@ -136,38 +136,31 @@ public static class JsonUtils
 
     public class PacketFilterConverter : JsonConverter<PacketFilter>
     {
-        public override void WriteJson(JsonWriter writer, PacketFilter? value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, PacketFilter value, JsonSerializer serializer)
         {
-            if (value == null)
+            var trueflag = true;
+            var falseflag = false;
+            foreach (var index in Enumerable.Range(0, Config.DebugPacketSettings.PacketFilter.MaxPacket + 1))
             {
-                writer.WriteNull();
+                var item = value.Handle(index);
+                trueflag &= item;
+                falseflag |= item;
             }
-            else
+            if (trueflag)
             {
-                var trueflag = true;
-                var falseflag = false;
-                foreach (var index in Enumerable.Range(0, Config.DebugPacketSettings.PacketFilter.MaxPacket + 1))
-                {
-                    var item = value.Handle(index);
-                    trueflag &= item;
-                    falseflag |= item;
-                }
-                if (trueflag)
-                {
-                    writer.WriteValue(true);
-                    return;
-                }
-                if (!falseflag)
-                {
-                    writer.WriteValue(false);
-                    return;
-                }
-                var str = string.Join(",", Enumerable.Range(0, PacketFilter.MaxPacket + 1).Where(index => value.Handle(index)));
-                writer.WriteValue(str);
+                writer.WriteValue(true);
+                return;
             }
+            if (!falseflag)
+            {
+                writer.WriteValue(false);
+                return;
+            }
+            var str = string.Join(",", Enumerable.Range(0, PacketFilter.MaxPacket + 1).Where(index => value.Handle(index)));
+            writer.WriteValue(str);
         }
 
-        public override PacketFilter ReadJson(JsonReader reader, Type objectType, PacketFilter? existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override PacketFilter ReadJson(JsonReader reader, Type objectType, PacketFilter existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             static byte ParsePacket(string value)
             {

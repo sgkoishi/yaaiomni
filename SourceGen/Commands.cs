@@ -78,16 +78,16 @@ public class CommandsGenerator : IIncrementalGenerator
         return sb.Append(new string(' ', value * 4));
     }
 
-    private static void WriteCommands(ValueTree<List<string>> ca, ref StringBuilder sb, ref int indent)
+    private static void WriteItems(ValueTree<List<string>> ca, bool single, ref StringBuilder sb, ref int indent)
     {
         foreach ((var cmdName, var aliases) in ca.Values)
         {
             Indent(sb, indent)
-                .Append("public static string ")
+                .Append(single ? "public static string " : "public static List<string> ")
                 .Append(cmdName)
-                .Append(" => ")
-                .Append(aliases[0])
-                .Append(";")
+                .Append(single ? " => " : " => new List<string> { ")
+                .Append(single ? aliases[0] : string.Join(", ", aliases))
+                .Append(single ? ";" : " };")
                 .AppendLine();
         }
         foreach ((var childName, var sub) in ca.Children)
@@ -95,59 +95,13 @@ public class CommandsGenerator : IIncrementalGenerator
             Indent(sb, indent).Append("public static partial class ").Append(childName).AppendLine();
             Indent(sb, indent).Append("{").AppendLine();
             indent += 1;
-            WriteCommands(sub, ref sb, ref indent);
+            WriteItems(sub, single, ref sb, ref indent);
             indent -= 1;
             Indent(sb, indent).Append("}").AppendLine();
         }
     }
 
-    private static void WriteAliases(ValueTree<List<string>> ca, ref StringBuilder sb, ref int indent)
-    {
-        foreach ((var cmdName, var aliases) in ca.Values)
-        {
-            Indent(sb, indent)
-                .Append("public static List<string> ")
-                .Append(cmdName)
-                .Append(" => new List<string> { ")
-                .Append(string.Join(", ", aliases))
-                .Append(" };")
-                .AppendLine();
-        }
-        foreach ((var childName, var sub) in ca.Children)
-        {
-            Indent(sb, indent).Append("public static partial class ").Append(childName).AppendLine();
-            Indent(sb, indent).Append("{").AppendLine();
-            indent += 1;
-            WriteAliases(sub, ref sb, ref indent);
-            indent -= 1;
-            Indent(sb, indent).Append("}").AppendLine();
-        }
-    }
-
-    private static void WritePermission(ValueTree<string> ca, ref StringBuilder sb, ref int indent)
-    {
-        foreach ((var cmdName, var aliases) in ca.Values)
-        {
-            Indent(sb, indent)
-                .Append("public static string ")
-                .Append(cmdName)
-                .Append(" => ")
-                .Append(aliases)
-                .Append(";")
-                .AppendLine();
-        }
-        foreach ((var childName, var sub) in ca.Children)
-        {
-            Indent(sb, indent).Append("public static partial class ").Append(childName).AppendLine();
-            Indent(sb, indent).Append("{").AppendLine();
-            indent += 1;
-            WritePermission(sub, ref sb, ref indent);
-            indent -= 1;
-            Indent(sb, indent).Append("}").AppendLine();
-        }
-    }
-
-    private static (Diagnostic? Diagnostic, (string Key, string Permission, (string AddCode, List<string> Aliases)? AddStyle)? Result) Extract(DeclaredCommand attribute, SemanticModel semanticModel)
+    private static (string Key, List<string> Permissions, (string AddCode, List<string> Aliases)? AddStyle) Extract(DeclaredCommand attribute, SemanticModel semanticModel)
     {
         var methodIdentifier = attribute.MethodIdentifier;
         var args = attribute.AttributeSyntax.ArgumentList!.Arguments.ToArray();
@@ -155,31 +109,37 @@ public class CommandsGenerator : IIncrementalGenerator
         {
             if (arg.NameColon != null)
             {
-                return (Diagnostic.Create(new DiagnosticDescriptor("TSCG01", "Use positional arguments instead of named arguments", "Expecting positional arguments but got {0}", "", DiagnosticSeverity.Warning, true), arg.Expression.GetLocation(), arg.Expression.ToString()), null);
+                throw new DiagnosticException(Diagnostic.Create(new DiagnosticDescriptor("TSCG01", "Use positional arguments instead of named arguments", "Expecting positional arguments but got {0}", "", DiagnosticSeverity.Warning, true), arg.Expression.GetLocation(), arg.Expression.ToString()));
             }
         }
-        if (args.Length < 2)
+        if (args.Length == 0)
         {
-            return (Diagnostic.Create(new DiagnosticDescriptor("TSCG03", "Incorrect Attribute Arguments", "Expecting at least two but got {0}", "", DiagnosticSeverity.Warning, true), args[0].Expression.GetLocation(), attribute.AttributeSyntax.ArgumentList.ToString()), null);
+            throw new DiagnosticException(Diagnostic.Create(new DiagnosticDescriptor("TSCG03", "Incorrect Attribute Arguments", "Expecting at least one but got 0", "", DiagnosticSeverity.Error, true), args[0].Expression.GetLocation()));
         }
         if (args[0].Expression is not LiteralExpressionSyntax les)
         {
-            return (Diagnostic.Create(new DiagnosticDescriptor("TSCG02", "Non-literal value is used for attribute", "Expecting literal value but got {0}", "", DiagnosticSeverity.Warning, true), args[0].Expression.GetLocation(), args[0].Expression.ToString()), null);
+            throw new DiagnosticException(Diagnostic.Create(new DiagnosticDescriptor("TSCG02", "Non-literal value is used for attribute", "Expecting literal value but got {0}", "", DiagnosticSeverity.Error, true), args[0].Expression.GetLocation(), args[0].Expression.ToString()));
         }
-        var commandName = les.Token.ValueText;
-        var commandPermission = args[1].Expression.ToString();
         var symbol = semanticModel.GetSymbolInfo(attribute.AttributeSyntax).Symbol;
         if (symbol is not IMethodSymbol attributeSymbol)
         {
-            return (Diagnostic.Create(new DiagnosticDescriptor("TSCG04", "Unable to resolve known attribute", "Failed to get symbol of {0}", "", DiagnosticSeverity.Warning, true), args[0].Expression.GetLocation(), attribute.AttributeSyntax.ToString()), null);
+            throw new DiagnosticException(Diagnostic.Create(new DiagnosticDescriptor("TSCG04", "Unable to resolve known attribute", "Failed to get symbol of {0}", "", DiagnosticSeverity.Error, true), args[0].Expression.GetLocation(), attribute.AttributeSyntax.ToString()));
         }
         if (attributeSymbol.ContainingType.ToDisplayString() == "Chireiden.TShock.RelatedPermissionAttribute")
         {
-            return (null, (commandName, commandPermission, null));
+            if (args.Length == 1)
+            {
+                var diag = Diagnostic.Create(new DiagnosticDescriptor("TSCG03", "Incorrect Attribute Arguments", "Expecting at least two but got one", "", DiagnosticSeverity.Error, true), args[0].Expression.GetLocation());
+                throw new DiagnosticException(diag);
+            }
+            return (les.Token.ValueText, new List<string> { args[1].Expression.ToString() }, null);
         }
+
+        var commandName = les.Token.ValueText;
+        var commandPermissions = new List<string>();
         var aliases = new List<string>();
         var extras = new List<string>();
-        foreach (var arg in args.Skip(2))
+        foreach (var arg in args.Skip(1))
         {
             if (arg.NameEquals != null)
             {
@@ -201,6 +161,15 @@ public class CommandsGenerator : IIncrementalGenerator
                         extras.Add("HelpText = " + arg.Expression.ToString());
                         break;
                     }
+                    case "Permission":
+                    {
+                        commandPermissions = new List<string> { arg.Expression.ToString() };
+                        break;
+                    }
+                    case "Permissions":
+                    {
+                        throw new DiagnosticException(Diagnostic.Create(new DiagnosticDescriptor("TSCG06", "Impl Permissions", "{0}", "", DiagnosticSeverity.Error, true), args[0].Expression.GetLocation(), arg.Expression.ToString()));
+                    }
                 }
             }
             else
@@ -208,13 +177,13 @@ public class CommandsGenerator : IIncrementalGenerator
                 aliases.Add(arg.Expression.ToString());
             }
         }
-        var addCommand = $"Commands.ChatCommands.Add(new Command({commandPermission}, {methodIdentifier}, {string.Join(", ", aliases)})";
+        var addCommand = $"Commands.ChatCommands.Add(new Command(DefinedConsts.PermissionsList.{commandName}, {methodIdentifier}, DefinedConsts.CommandAliases.{commandName}.ToArray())";
         if (extras.Any())
         {
             addCommand += $" {{ {string.Join(", ", extras)} }}";
         }
         addCommand += ");";
-        return (null, (commandName, commandPermission, (addCommand, aliases)));
+        return (commandName, commandPermissions, (addCommand, aliases));
     }
 
     private static void Execute(SourceProductionContext context, (Compilation Compilation, ImmutableArray<DeclaredCommand?> Commands) values)
@@ -225,17 +194,22 @@ public class CommandsGenerator : IIncrementalGenerator
             var className = group.First().ClassIdentifier;
             var addCommand = new List<string>();
             var commandAliases = new ValueTree<List<string>>();
-            var commandPermissions = new ValueTree<string>();
+            var commandPermissions = new ValueTree<List<string>>();
 
             foreach (var attribute in group)
             {
-                var (diag, result) = Extract(attribute, values.Compilation.GetSemanticModel(attribute.AttributeSyntax.SyntaxTree));
-                if (diag != null)
+                string key;
+                List<string> permission;
+                (string AddCode, List<string> Aliases)? add;
+                try
                 {
-                    context.ReportDiagnostic(diag);
+                    (key, permission, add) = Extract(attribute, values.Compilation.GetSemanticModel(attribute.AttributeSyntax.SyntaxTree));
+                }
+                catch (DiagnosticException de)
+                {
+                    context.ReportDiagnostic(de.Diagnostic);
                     continue;
                 }
-                var (key, permission, add) = result!.Value;
                 commandPermissions.Add(key, permission);
                 if (add.HasValue)
                 {
@@ -293,19 +267,25 @@ public class CommandsGenerator : IIncrementalGenerator
                 Indent(source, indent).Append("public static partial class Commands").AppendLine();
                 Indent(source, indent).Append("{").AppendLine();
                 indent += 1;
-                WriteCommands(commandAliases, ref source, ref indent);
+                WriteItems(commandAliases, true, ref source, ref indent);
                 indent -= 1;
                 Indent(source, indent).Append("}").AppendLine();
                 Indent(source, indent).Append("public static partial class CommandAliases").AppendLine();
                 Indent(source, indent).Append("{").AppendLine();
                 indent += 1;
-                WriteAliases(commandAliases, ref source, ref indent);
+                WriteItems(commandAliases, false, ref source, ref indent);
                 indent -= 1;
                 Indent(source, indent).Append("}").AppendLine();
-                Indent(source, indent).Append("public static partial class Permissions").AppendLine();
+                Indent(source, indent).Append("public static partial class Permission").AppendLine();
                 Indent(source, indent).Append("{").AppendLine();
                 indent += 1;
-                WritePermission(commandPermissions, ref source, ref indent);
+                WriteItems(commandPermissions, true, ref source, ref indent);
+                indent -= 1;
+                Indent(source, indent).Append("}").AppendLine();
+                Indent(source, indent).Append("public static partial class PermissionsList").AppendLine();
+                Indent(source, indent).Append("{").AppendLine();
+                indent += 1;
+                WriteItems(commandPermissions, false, ref source, ref indent);
                 indent -= 1;
                 Indent(source, indent).Append("}").AppendLine();
                 context.AddSource($"{namespaceName}.{className}.consts.g.cs", SourceText.From(source.ToString(), Encoding.UTF8));
@@ -327,12 +307,10 @@ namespace Chireiden.TShock
         public bool AllowServer { get; set; }
         public bool DoLog { get; set; }
         public string HelpText { get; set; }
+        public string Permission { get; set; }
+        public string[] Permissions { get; set; }
 
-        public CommandAttribute(string key, string permission, string name)
-        {
-        }
-
-        public CommandAttribute(string key, string permission, string name, params string[] aliases)
+        public CommandAttribute(string key, string name, params string[] aliases)
         {
         }
     }
@@ -353,5 +331,14 @@ namespace Chireiden.TShock
 
         var combined = initContext.CompilationProvider.Combine(methods);
         initContext.RegisterSourceOutput(combined, Execute);
+    }
+}
+
+public class DiagnosticException : Exception
+{
+    public Diagnostic Diagnostic;
+    public DiagnosticException(Diagnostic diagnostic)
+    {
+        this.Diagnostic = diagnostic;
     }
 }

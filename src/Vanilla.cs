@@ -78,60 +78,60 @@ public partial class Plugin
         if (preset.AllowRestricted || vanillaMode)
         {
             AddPermission(guest,
-                Permissions.TogglePvP,
-                Permissions.ToggleTeam,
-                Permissions.SyncLoadout,
-                Permissions.PvPStatus,
-                Permissions.TeamStatus);
+                Permission.TogglePvP,
+                Permission.ToggleTeam,
+                Permission.SyncLoadout,
+                Permission.PvPStatus,
+                Permission.TeamStatus);
         }
 
-        AddPermission(guest, Permissions.Ping);
-        AddPermission(guest, Permissions.Echo);
+        AddPermission(guest, Permission.Ping);
+        AddPermission(guest, Permission.Echo);
 
-        AliasPermission(TShockAPI.Permissions.canchat, Permissions.Chat);
-        AliasPermission(Permissions.TogglePvP, $"{Permissions.TogglePvP}.*");
-        AliasPermission(Permissions.ToggleTeam, $"{Permissions.ToggleTeam}.*");
-        AliasPermission(TShockAPI.Permissions.summonboss, $"{Permissions.SummonBoss}.*");
-        AliasPermission(TShockAPI.Permissions.startinvasion, $"{Permissions.SummonBoss}.*");
+        AliasPermission(TShockAPI.Permissions.canchat, Permission.Chat);
+        AliasPermission(Permission.TogglePvP, $"{Permission.TogglePvP}.*");
+        AliasPermission(Permission.ToggleTeam, $"{Permission.ToggleTeam}.*");
+        AliasPermission(TShockAPI.Permissions.summonboss, $"{Permission.SummonBoss}.*");
+        AliasPermission(TShockAPI.Permissions.startinvasion, $"{Permission.SummonBoss}.*");
 
         if (preset.DebugForAdminOnly)
         {
-            AliasPermission(TShockAPI.Permissions.kick, Permissions.Whynot);
+            AliasPermission(TShockAPI.Permissions.kick, Permission.Whynot);
         }
         else
         {
-            AddPermission(guest, Permissions.Whynot);
+            AddPermission(guest, Permission.Whynot);
         }
 
         AliasPermission(TShockAPI.Permissions.kick,
-            Permissions.Admin.Ghost,
-            Permissions.Admin.ManageLanguage,
-            Permissions.Admin.DebugStat,
-            Permissions.Admin.PvPStatus,
-            Permissions.Admin.TeamStatus,
-            Permissions.Admin.UpsCheck,
-            Permissions.SetTimeout,
-            Permissions.SetInterval,
-            Permissions.ClearInterval,
-            Permissions.ShowTimeout,
-            Permissions.ResetCharacter);
+            Permission.Admin.Ghost,
+            Permission.Admin.ManageLanguage,
+            Permission.Admin.DebugStat,
+            Permission.Admin.PvPStatus,
+            Permission.Admin.TeamStatus,
+            Permission.Admin.UpsCheck,
+            Permission.SetTimeout,
+            Permission.SetInterval,
+            Permission.ClearInterval,
+            Permission.ShowTimeout,
+            Permission.ResetCharacter);
 
         AliasPermission(TShockAPI.Permissions.maintenance,
-            Permissions.Admin.MaxPlayers,
-            Permissions.Admin.TileProvider,
-            Permissions.Admin.GarbageCollect,
-            Permissions.Admin.RawBroadcast,
-            Permissions.Admin.TerminateSocket,
-            Permissions.Admin.ResetCharacterOther,
-            Permissions.Admin.ExportCharacter,
-            Permissions.Admin.ApplyDefaultPermission,
-            Permissions.Admin.GenerateFullConfig);
+            Permission.Admin.MaxPlayers,
+            Permission.Admin.TileProvider,
+            Permission.Admin.GarbageCollect,
+            Permission.Admin.RawBroadcast,
+            Permission.Admin.TerminateSocket,
+            Permission.Admin.ResetCharacterOther,
+            Permission.Admin.ExportCharacter,
+            Permission.Admin.ApplyDefaultPermission,
+            Permission.Admin.GenerateFullConfig);
 
         AliasPermission(TShockAPI.Permissions.su,
-            Permissions.Admin.Sudo,
-            Permissions.Admin.ListClients,
-            Permissions.Admin.DumpBuffer,
-            Permissions.Admin.ResetCharacterAll);
+            Permission.Admin.Sudo,
+            Permission.Admin.ListClients,
+            Permission.Admin.DumpBuffer,
+            Permission.Admin.ResetCharacterAll);
 
         File.WriteAllText(Path.Combine(TShockAPI.TShock.SavePath, Misc.PresetLock), string.Empty);
     }

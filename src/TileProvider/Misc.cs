@@ -23,7 +23,7 @@ partial class Plugin
         orig();
     }
 
-    [Command("Admin.TileProvider", "chireiden.omni.admin.tileprovider", "tileprovider")]
+    [Command("Admin.TileProvider", "tileprovider", Permission = "chireiden.omni.admin.tileprovider")]
     private void Command_TileProvider(CommandArgs args)
     {
         var opt = args.Parameters.Count == 0 ? string.Empty : args.Parameters[0].ToLower();

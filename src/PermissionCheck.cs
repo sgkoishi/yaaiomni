@@ -39,7 +39,7 @@ public partial class Plugin
         return result;
     }
 
-    [Command("Whynot", "chireiden.omni.whynot", "whynot", AllowServer = false)]
+    [Command("Whynot", "whynot", AllowServer = false, Permission = "chireiden.omni.whynot")]
     [RelatedPermission("Admin.DetailedPermissionStackTrace", "chireiden.omni.whynot.detailed")]
 
     private void Command_PermissionCheck(CommandArgs args)
@@ -62,7 +62,7 @@ public partial class Plugin
         }
 
         args.Player.SendInfoMessage("Permission check history:");
-        var detailed = args.Parameters.Contains("-v") && args.Player.HasPermission(DefinedConsts.Permissions.Admin.DetailedPermissionStackTrace);
+        var detailed = args.Parameters.Contains("-v") && args.Player.HasPermission(DefinedConsts.PermissionsList.Admin.DetailedPermissionStackTrace);
 
         foreach (var item in list)
         {

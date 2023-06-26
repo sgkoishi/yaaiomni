@@ -434,6 +434,18 @@ public static partial class Utils
         return (expression.Body as MethodCallExpression)?.Method;
     }
 
+    public static void CancelPacket(this OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
+    {
+        // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
+        args.Result = OTAPI.HookResult.Cancel;
+        args.PacketId = byte.MaxValue;
+    }
+
+    public static bool HasPermission(this TShockAPI.TSPlayer player, List<string> p)
+    {
+        return p.Any(player.HasPermission);
+    }
+
     internal class ConsolePlayer : TSPlayer
     {
         internal static ConsolePlayer Instance = new ConsolePlayer("Console");

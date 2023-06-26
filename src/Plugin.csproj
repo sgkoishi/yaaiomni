@@ -25,6 +25,7 @@
     <EmbedAllSources>true</EmbedAllSources>
     <PrivateRepositoryUrl>https://github.com/sgkoishi/yaaiomni</PrivateRepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

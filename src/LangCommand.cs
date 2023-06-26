@@ -12,7 +12,7 @@ public partial class Plugin
     private readonly Type _tshockI18n = Utils.TShockType("I18n");
     private MethodInfo _tscinfo = null!;
 
-    [Command("Admin.ManageLanguage", "chireiden.omni.setlang", "setlang")]
+    [Command("Admin.ManageLanguage", "setlang", Permission = "chireiden.omni.setlang")]
     private void Command_Lang(CommandArgs args)
     {
         this._tscinfo ??= this._tshockI18n

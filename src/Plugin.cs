@@ -218,16 +218,12 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.MessageBuffer.GetData += this.MMHook_PatchVersion_GetData;
         On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor += this.MMHook_MemoryTrim_DisplayDoll;
         On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor += this.MMHook_MemoryTrim_HatRack;
-        On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_SendData;
-        On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_GetData;
         On.Terraria.Projectile.Kill += this.MMHook_Soundness_ProjectileKill;
         On.Terraria.WorldGen.clearWorld += this.MMHook_TileProvider_ClearWorld;
         On.Terraria.Netplay.OnConnectionAccepted += this.MMHook_Mitigation_OnConnectionAccepted;
         On.Terraria.Main.ReadLineInput += this.MMHook_CliConfig_ReadLine;
         On.Terraria.Localization.Language.GetTextValue_string += this.MMHook_CliConfig_LanguageText;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_Ghost_SendBytes;
-        OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_DebugPacket_SendBytes;
-        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SyncLoadout;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Ping_GetData;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SummonBoss;
@@ -244,6 +240,7 @@ public partial class Plugin : TerrariaPlugin
         TShockAPI.GetDataHandlers.TogglePvp.Register(this.GDHook_Permission_TogglePvp);
         TShockAPI.GetDataHandlers.PlayerTeam.Register(this.GDHook_Permission_PlayerTeam);
         TShockAPI.GetDataHandlers.Sign.Register(this.GDHook_Permission_Sign);
+        TShockAPI.GetDataHandlers.NPCAddBuff.Register(this.GDHook_Mitigation_NpcAddBuff);
     }
 
     protected override void Dispose(bool disposing)
@@ -304,9 +301,12 @@ public partial class Plugin : TerrariaPlugin
     private void OnGamePostInitialize(EventArgs args)
     {
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Mitigation_GetData;
+        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
+        OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_DebugPacket_SendBytes;
+        On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_SendData;
+        On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_GetData;
         On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_CatchSend;
         On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_CatchGet;
-        TShockAPI.GetDataHandlers.NPCAddBuff.Register(this.GDHook_Mitigation_NpcAddBuff);
     }
 
     private void PostTShockInitialize()

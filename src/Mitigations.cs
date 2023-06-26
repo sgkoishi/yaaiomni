@@ -66,7 +66,7 @@ public partial class Plugin
                 var index = args.Instance.whoAmI;
                 if (Mitigations.HandleInventorySlotPE((byte) index, args.Instance.readBuffer.AsSpan(args.ReadOffset, args.Length - 1)))
                 {
-                    args.Result = OTAPI.HookResult.Cancel;
+                    args.CancelPacket();
                     this.Statistics.MitigationSlotPE++;
                     var player = TShockAPI.TShock.Players[index];
                     if (player == null)
@@ -100,7 +100,7 @@ public partial class Plugin
                 var index = args.Instance.whoAmI;
                 if (args.Instance.readBuffer[args.ReadOffset] != index)
                 {
-                    args.Result = OTAPI.HookResult.Cancel;
+                    args.CancelPacket();
                     break;
                 }
                 if (Terraria.Main.player[index].inventory[Terraria.Main.player[index].selectedItem].potion)
@@ -115,7 +115,7 @@ public partial class Plugin
                 var index = args.Instance.whoAmI;
                 if (args.Instance.readBuffer[args.ReadOffset] != index)
                 {
-                    args.Result = OTAPI.HookResult.Cancel;
+                    args.CancelPacket();
                     break;
                 }
                 var buffcount = (args.Length - 1) / 2;
@@ -147,7 +147,7 @@ public partial class Plugin
                 var index = args.Instance.whoAmI;
                 if (args.Instance.readBuffer[args.ReadOffset] != index)
                 {
-                    args.Result = OTAPI.HookResult.Cancel;
+                    args.CancelPacket();
                     break;
                 }
                 Terraria.BitsByte control = args.Instance.readBuffer[args.ReadOffset + 1];
@@ -155,7 +155,7 @@ public partial class Plugin
                 if (Terraria.Main.player[index].controlUseItem && control[5] && selectedItem != Terraria.Main.player[index].selectedItem)
                 {
                     this.Statistics.MitigationRejectedSwapWhileUse++;
-                    args.Result = OTAPI.HookResult.Cancel;
+                    args.CancelPacket();
                     Terraria.Main.player[index].controlUseItem = false;
                     Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, -1, null, index);
                     break;
@@ -178,9 +178,7 @@ public partial class Plugin
                         if (!limiter.Allowed)
                         {
                             this.Statistics.MitigationRejectedChat++;
-                            args.Result = OTAPI.HookResult.Cancel;
-                            // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
-                            args.PacketId = byte.MaxValue;
+                            args.CancelPacket();
                             break;
                         }
                     }
@@ -199,9 +197,7 @@ public partial class Plugin
                     case Config.MitigationSettings.ExpertCoinHandler.ServerSide:
                     {
                         this.Statistics.MitigationCoinReduced += BitConverter.ToInt32(args.Instance.readBuffer.AsSpan(args.ReadOffset + 2, 4));
-                        args.Result = OTAPI.HookResult.Cancel;
-                        // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
-                        args.PacketId = byte.MaxValue;
+                        args.CancelPacket();
                         break;
                     }
                 }

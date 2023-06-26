@@ -7,7 +7,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin
 {
-    [Command("PvPStatus", "chireiden.omni.setpvp", "_pvp")]
+    [Command("PvPStatus", "_pvp", Permission = "chireiden.omni.setpvp")]
     [RelatedPermission("Admin.PvPStatus", "chireiden.omni.admin.setpvp")]
     private void Command_PvP(CommandArgs args)
     {
@@ -19,7 +19,7 @@ public partial class Plugin
 
         if (args.Parameters.Count > 1)
         {
-            if (!args.Player.HasPermission(DefinedConsts.Permissions.Admin.PvPStatus))
+            if (!args.Player.HasPermission(DefinedConsts.PermissionsList.Admin.PvPStatus))
             {
                 args.Player.SendErrorMessage("You don't have permission to set other players' PvP status.");
                 return;
@@ -59,7 +59,7 @@ public partial class Plugin
         }
     }
 
-    [Command("TeamStatus", "chireiden.omni.setteam", "_team")]
+    [Command("TeamStatus", "_team", Permission = "chireiden.omni.setteam")]
     [RelatedPermission("Admin.TeamStatus", "chireiden.omni.admin.setteam")]
     private void Command_Team(CommandArgs args)
     {
@@ -80,7 +80,7 @@ public partial class Plugin
 
         if (args.Parameters.Count > 1)
         {
-            if (!args.Player.HasPermission(DefinedConsts.Permissions.Admin.TeamStatus))
+            if (!args.Player.HasPermission(DefinedConsts.PermissionsList.Admin.TeamStatus))
             {
                 args.Player.SendErrorMessage("You don't have permission to set other players' team.");
                 return;
@@ -120,7 +120,7 @@ public partial class Plugin
         }
     }
 
-    [Command("Admin.GarbageCollect", "chireiden.omni.admin.gc", "_gc")]
+    [Command("Admin.GarbageCollect", "_gc", Permission = "chireiden.omni.admin.gc")]
     private void Command_GC(CommandArgs args)
     {
         if (args.Parameters.Contains("-f"))
@@ -135,7 +135,7 @@ public partial class Plugin
         args.Player.SendSuccessMessage("GC Triggered.");
     }
 
-    [Command("Admin.MaxPlayers", "chireiden.omni.admin.maxplayers", "maxplayers")]
+    [Command("Admin.MaxPlayers", "maxplayers", Permission = "chireiden.omni.admin.maxplayers")]
     private void Command_MaxPlayers(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -155,7 +155,7 @@ public partial class Plugin
         }
     }
 
-    [Command("Admin.RawBroadcast", "chireiden.omni.admin.rawbroadcast", "rbc", "rawbroadcast")]
+    [Command("Admin.RawBroadcast", "rbc", "rawbroadcast", Permission = "chireiden.omni.admin.rawbroadcast")]
     private void Command_RawBroadcast(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -168,7 +168,7 @@ public partial class Plugin
         TSPlayer.All.SendMessage(args.Parameters[0], 0, 0, 0);
     }
 
-    [Command("Admin.Sudo", "chireiden.omni.admin.sudo", "runas")]
+    [Command("Admin.Sudo", "runas", Permission = "chireiden.omni.admin.sudo")]
     private void Command_Sudo(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -225,7 +225,7 @@ public partial class Plugin
         }
     }
 
-    [Command("Admin.ListClients", "chireiden.omni.admin.listclients", "listclients")]
+    [Command("Admin.ListClients", "listclients", Permission = "chireiden.omni.admin.listclients")]
     private void Command_ListConnected(CommandArgs args)
     {
         foreach (var client in Terraria.Netplay.Clients)
@@ -239,7 +239,7 @@ public partial class Plugin
         }
     }
 
-    [Command("Admin.DumpBuffer", "chireiden.omni.admin.dumpbuffer", "dumpbuffer")]
+    [Command("Admin.DumpBuffer", "dumpbuffer", Permission = "chireiden.omni.admin.dumpbuffer")]
     private void Command_DumpBuffer(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -260,7 +260,7 @@ public partial class Plugin
         File.WriteAllBytes(path, Terraria.NetMessage.buffer[index].readBuffer[..Terraria.NetMessage.buffer[index].totalData]);
     }
 
-    [Command("Admin.TerminateSocket", "chireiden.omni.admin.terminatesocket", "kc")]
+    [Command("Admin.TerminateSocket", "kc", Permission = "chireiden.omni.admin.terminatesocket")]
     private void Command_TerminateSocket(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -305,7 +305,7 @@ public partial class Plugin
         }
     }
 
-    [Command("ResetCharacter", "chireiden.omni.resetcharacter", "resetcharacter")]
+    [Command("ResetCharacter", "resetcharacter", Permission = "chireiden.omni.resetcharacter")]
     [RelatedPermission("Admin.ResetCharacterOther", "chireiden.omni.admin.resetcharacter")]
     [RelatedPermission("Admin.ResetCharacterAll", "chireiden.omni.admin.resetcharacter.all")]
     private void Command_ResetCharacter(CommandArgs args)
@@ -320,7 +320,7 @@ public partial class Plugin
         }
         else if (args.Parameters[0] == "*")
         {
-            if (args.Player.HasPermission(DefinedConsts.Permissions.Admin.ResetCharacterAll))
+            if (args.Player.HasPermission(DefinedConsts.PermissionsList.Admin.ResetCharacterAll))
             {
                 account = Utils.SearchUserAccounts(args.Parameters[0]).Select(a => a.ID).ToList();
             }
@@ -334,7 +334,7 @@ public partial class Plugin
             || args.Parameters[0].StartsWith("usr:")
             || args.Parameters[0].StartsWith("usi:"))
         {
-            if (args.Player.HasPermission(DefinedConsts.Permissions.Admin.ResetCharacterOther))
+            if (args.Player.HasPermission(DefinedConsts.PermissionsList.Admin.ResetCharacterOther))
             {
                 account = Utils.SearchUserAccounts(args.Parameters[0]).Select(a => a.ID).ToList();
             }
@@ -422,7 +422,7 @@ public partial class Plugin
         }
     }
 
-    [Command("Chat", "chireiden.omni.chat", "_chat")]
+    [Command("Chat", "_chat", Permission = "chireiden.omni.chat")]
     private void Command_Chat(CommandArgs args)
     {
         var index = args.Player.Index;
@@ -435,7 +435,7 @@ public partial class Plugin
         TerrariaApi.Server.ServerApi.Hooks.ServerChat.Invoke(scea);
     }
 
-    [Command("Admin.ExportCharacter", "chireiden.omni.admin.exportcharacter", "exportcharacter")]
+    [Command("Admin.ExportCharacter", "exportcharacter", Permission = "chireiden.omni.admin.exportcharacter")]
     private void Command_ExportCharacter(CommandArgs args)
     {
         var accounts = args.Parameters.Count == 0
@@ -482,14 +482,14 @@ public partial class Plugin
         }
     }
 
-    [Command("Echo", "chireiden.omni.echo", "echo", AllowServer = false)]
+    [Command("Echo", "echo", AllowServer = false, Permission = "chireiden.omni.echo")]
     private void Command_Echo(CommandArgs args)
     {
         args.Player.SendInfoMessage(string.Join(" ", args.Parameters));
     }
 
     private (int Tick, DateTime Time) _tickCheck = (-1, DateTime.MinValue);
-    [Command("Admin.UpsCheck", "chireiden.omni.admin.upscheck", "_ups")]
+    [Command("Admin.UpsCheck", "_ups", Permission = "chireiden.omni.admin.upscheck")]
     private void Command_TicksPerSec(CommandArgs args)
     {
         if (this._tickCheck.Tick == -1)
@@ -507,13 +507,13 @@ public partial class Plugin
         }
     }
 
-    [Command("Admin.ApplyDefaultPermission", "chireiden.omni.admin.setupperm", "_setperm")]
+    [Command("Admin.ApplyDefaultPermission", "_setperm", Permission = "chireiden.omni.admin.setupperm")]
     private void Command_SetupPermission(CommandArgs args)
     {
         this.PermissionSetup();
     }
 
-    [Command("Admin.GenerateFullConfig", "chireiden.omni.admin.genconfig", "genconfig")]
+    [Command("Admin.GenerateFullConfig", "genconfig", Permission = "chireiden.omni.admin.genconfig")]
     private void Command_GenerateFullConfig(CommandArgs args)
     {
         try

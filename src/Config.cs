@@ -212,60 +212,70 @@ public class Config
             All,
         }
 
-        public class PacketFilter : IEquatable<PacketFilter>
+        public unsafe struct PacketFilter : IEquatable<PacketFilter>
         {
             public static readonly byte MaxPacket = (byte) Enum.GetValues(typeof(PacketTypes)).Cast<int>().Max();
-            private readonly bool[] _matches;
+            private fixed bool _matches[byte.MaxValue];
 
             public PacketFilter(bool accept)
             {
-                this._matches = new bool[MaxPacket + 1];
-                Array.Fill(this._matches, accept);
+                for (var i = 0; i < byte.MaxValue; i++)
+                {
+                    this._matches[i] = accept;
+                }
             }
 
             public PacketFilter(params byte[] accept)
             {
-                this._matches = new bool[MaxPacket + 1];
                 foreach (var value in accept)
                 {
                     this._matches[value] = true;
                 }
             }
 
-            public bool Handle(byte type)
+            public readonly bool Handle(byte type)
             {
-                return type < this._matches.Length && this._matches[type];
+                return this._matches[type];
             }
 
-            public bool Handle(int type)
-            {
-                return this.Handle((byte) type);
-            }
-
-            public bool Handle(PacketTypes type)
+            public readonly bool Handle(int type)
             {
                 return this.Handle((byte) type);
             }
 
-            public bool Equals(PacketFilter? other)
+            public readonly bool Handle(PacketTypes type)
             {
-                return other is PacketFilter pf && this._matches.SequenceEqual(pf._matches);
+                return this.Handle((byte) type);
             }
 
-            public override bool Equals(object? obj)
+            public readonly bool Equals(PacketFilter other)
+            {
+                var eq = true;
+                for (var i = 0; i < byte.MaxValue; i++)
+                {
+                    eq &= this._matches[i] == other._matches[i];
+                }
+                return eq;
+            }
+
+            public override readonly bool Equals(object? obj)
             {
                 return obj is PacketFilter pf && this.Equals(pf);
             }
 
-            public override int GetHashCode()
+            public override readonly int GetHashCode()
             {
                 var h = 0;
-                for (var i = 0; i < MaxPacket + 1; i++)
+                for (var i = 0; i < byte.MaxValue; i++)
                 {
                     h ^= Convert.ToInt32(this._matches[i]) << (i % 32);
                 }
                 return h;
             }
+
+            public static bool operator ==(PacketFilter left, PacketFilter right) => left.Equals(right);
+
+            public static bool operator !=(PacketFilter left, PacketFilter right) => !(left == right);
         }
     }
 
@@ -369,10 +379,10 @@ public class Config
                 TShockAPI.Permissions.canchat,
                 TShockAPI.Permissions.synclocalarea,
                 TShockAPI.Permissions.sendemoji,
-                DefinedConsts.Permissions.TogglePvP,
-                DefinedConsts.Permissions.ToggleTeam,
-                DefinedConsts.Permissions.SyncLoadout,
-                DefinedConsts.Permissions.Ping
+                DefinedConsts.Permission.TogglePvP,
+                DefinedConsts.Permission.ToggleTeam,
+                DefinedConsts.Permission.SyncLoadout,
+                DefinedConsts.Permission.Ping
             });
             public Optional<bool> AllowJourney = Optional.Default(false);
             public Optional<bool> IgnoreAntiCheat = Optional.Default(false);

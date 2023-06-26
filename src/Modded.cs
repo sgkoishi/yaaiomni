@@ -69,9 +69,7 @@ public partial class Plugin
             // Stop handling any data
             Terraria.Netplay.Clients[whoAmI].PendingTermination = true;
             Terraria.Netplay.Clients[whoAmI].PendingTerminationApproved = true;
-            args.Result = OTAPI.HookResult.Cancel;
-            // FIXME: TSAPI is not respecting args.Result, so we have to craft invalid packet.
-            args.PacketId = byte.MaxValue;
+            args.CancelPacket();
         }
 
         if (args.PacketId == (byte) PacketTypes.PlayerInfo)
@@ -82,8 +80,7 @@ public partial class Plugin
                 this.Statistics.ModdedFakeName++;
                 Terraria.Netplay.Clients[whoAmI].PendingTermination = true;
                 Terraria.Netplay.Clients[whoAmI].PendingTerminationApproved = true;
-                args.Result = OTAPI.HookResult.Cancel;
-                args.PacketId = byte.MaxValue;
+                args.CancelPacket();
             }
         }
     }

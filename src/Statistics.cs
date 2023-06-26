@@ -21,7 +21,7 @@ public partial class Plugin
         public int ModdedFakeName;
     }
 
-    [Command("Admin.DebugStat", "chireiden.omni.admin.debugstat", "_debugstat")]
+    [Command("Admin.DebugStat", "_debugstat", Permission = "chireiden.omni.admin.debugstat")]
     private void Command_DebugStat(CommandArgs args)
     {
         args.Player.SendInfoMessage(JsonConvert.SerializeObject(this.Statistics, Formatting.Indented));

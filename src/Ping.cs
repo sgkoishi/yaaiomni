@@ -83,7 +83,7 @@ public partial class Plugin
         }
     }
 
-    [Command("Ping", "chireiden.omni.ping", "_ping", AllowServer = false)]
+    [Command("Ping", "_ping", AllowServer = false, Permission = "chireiden.omni.ping")]
     private void Command_Ping(CommandArgs args)
     {
         try
