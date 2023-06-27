@@ -353,7 +353,7 @@ public static partial class Utils
         }
     }
 
-    internal static bool PublicIPv4Address(System.Net.IPAddress address)
+    internal static bool PrivateIPv4Address(System.Net.IPAddress address)
     {
         if (address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
         {

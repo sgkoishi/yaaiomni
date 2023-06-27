@@ -353,7 +353,7 @@ public partial class Plugin
             var cl = mitigation.ConnectionLimit.Value;
             if (cl.Count != 0)
             {
-                if (client.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa && Utils.PublicIPv4Address(tcpa.Address))
+                if (client.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa && !Utils.PrivateIPv4Address(tcpa.Address))
                 {
                     var addrs = tcpa.Address.ToString();
                     var cd = this._connPool.Connections.GetOrAdd(addrs, _ => new ConnectionStore.Connection
