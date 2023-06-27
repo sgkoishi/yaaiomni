@@ -33,7 +33,7 @@ public partial class Plugin
         }
     }
 
-    [Command("Admin.Ghost", "ghost", Permission = "chireiden.omni.ghost", AllowServer = false )]
+    [Command("Admin.Ghost", "ghost", Permission = "chireiden.omni.ghost", AllowServer = false)]
     private void Command_Ghost(CommandArgs args)
     {
         if (args.Parameters.Contains("-v"))

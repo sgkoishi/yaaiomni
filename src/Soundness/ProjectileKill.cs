@@ -9,67 +9,55 @@ public partial class Plugin
     {
         if (this.config.Soundness.Value.ProjectileKillMapEditRestriction)
         {
-            if (self.type is ProjectileID.DirtBomb or
-                ProjectileID.DirtStickyBomb)
+            switch (self.type)
             {
-                self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
-                    self.Center.ToTileCoordinates(),
-                    4.2f,
+                case ProjectileID.DirtBomb:
+                case ProjectileID.DirtStickyBomb:
+                    self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
+                        self.Center.ToTileCoordinates(), 4.2f,
                     Utils.WithPermissionCheck(DelegateMethods.SpreadDirt, TShockAPI.TShock.Players[self.owner]));
-                self.active = false;
-                return;
-            }
-            if (self.type is ProjectileID.WetRocket or
-                ProjectileID.WetGrenade or
-                ProjectileID.WetMine or
-                ProjectileID.WetSnowmanRocket or
-                ProjectileID.WetBomb)
-            {
-                self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
-                    self.Center.ToTileCoordinates(),
-                    3f,
+                    self.active = false;
+                    return;
+                case ProjectileID.WetRocket:
+                case ProjectileID.WetGrenade:
+                case ProjectileID.WetMine:
+                case ProjectileID.WetSnowmanRocket:
+                case ProjectileID.WetBomb:
+                    self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
+                        self.Center.ToTileCoordinates(), 3f,
                     Utils.WithPermissionCheck(DelegateMethods.SpreadWater, TShockAPI.TShock.Players[self.owner]));
-                self.active = false;
-                return;
-            }
-            if (self.type is ProjectileID.LavaRocket or
-                ProjectileID.LavaGrenade or
-                ProjectileID.LavaMine or
-                ProjectileID.LavaSnowmanRocket or
-                ProjectileID.LavaBomb)
-            {
-                self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
-                    self.Center.ToTileCoordinates(),
-                    3f,
+                    self.active = false;
+                    return;
+                case ProjectileID.LavaRocket:
+                case ProjectileID.LavaGrenade:
+                case ProjectileID.LavaMine:
+                case ProjectileID.LavaSnowmanRocket:
+                case ProjectileID.LavaBomb:
+                    self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
+                        self.Center.ToTileCoordinates(), 3f,
                     Utils.WithPermissionCheck(DelegateMethods.SpreadLava, TShockAPI.TShock.Players[self.owner]));
-                self.active = false;
-                return;
-            }
-            if (self.type is ProjectileID.HoneyRocket or
-                ProjectileID.HoneyGrenade or
-                ProjectileID.HoneyMine or
-                ProjectileID.HoneySnowmanRocket or
-                ProjectileID.HoneyBomb)
-            {
-                self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
-                    self.Center.ToTileCoordinates(),
-                    3f,
-                    Utils.WithPermissionCheck(DelegateMethods.SpreadHoney, TShockAPI.TShock.Players[self.owner]));
-                self.active = false;
-                return;
-            }
-            if (self.type is ProjectileID.DryRocket or
-                ProjectileID.DryGrenade or
-                ProjectileID.DryMine or
-                ProjectileID.DrySnowmanRocket or
-                ProjectileID.DryBomb)
-            {
-                self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
-                    self.Center.ToTileCoordinates(),
-                    3.5f,
+                    self.active = false;
+                    return;
+                case ProjectileID.HoneyRocket:
+                case ProjectileID.HoneyGrenade:
+                case ProjectileID.HoneyMine:
+                case ProjectileID.HoneySnowmanRocket:
+                case ProjectileID.HoneyBomb:
+                    self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
+                        self.Center.ToTileCoordinates(), 3f,
+                        Utils.WithPermissionCheck(DelegateMethods.SpreadHoney, TShockAPI.TShock.Players[self.owner]));
+                    self.active = false;
+                    return;
+                case ProjectileID.DryRocket:
+                case ProjectileID.DryGrenade:
+                case ProjectileID.DryMine:
+                case ProjectileID.DrySnowmanRocket:
+                case ProjectileID.DryBomb:
+                    self.Kill_DirtAndFluidProjectiles_RunDelegateMethodPushUpForHalfBricks(
+                        self.Center.ToTileCoordinates(), 3.5f,
                     Utils.WithPermissionCheck(DelegateMethods.SpreadDry, TShockAPI.TShock.Players[self.owner]));
-                self.active = false;
-                return;
+                    self.active = false;
+                    return;
             }
         }
         orig(self);

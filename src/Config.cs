@@ -56,11 +56,11 @@ public class Config
 
     public Optional<EnhancementsSettings> Enhancements = Optional.Default(new EnhancementsSettings());
 
-    public Optional<LavaSettings> LavaHandler = Optional.Default(new LavaSettings());
+    public Optional<LavaSettings> LavaHandler = Optional.Default(new LavaSettings(), true);
 
     public Optional<DebugPacketSettings> DebugPacket = Optional.Default(new DebugPacketSettings());
 
-    public Optional<SoundnessSettings> Soundness = Optional.Default(new SoundnessSettings());
+    public Optional<SoundnessSettings> Soundness = Optional.Default(new SoundnessSettings(), true);
 
     public Optional<PermissionSettings> Permission = Optional.Default(new PermissionSettings());
 
@@ -73,7 +73,7 @@ public class Config
         /// <summary>
         /// Remove unused client-side objects to save memory.
         /// </summary>
-        public Optional<bool> TrimMemory = Optional.Default(true);
+        public Optional<bool> TrimMemory = Optional.Default(true, true);
 
         /// <summary>
         /// Alternative command syntax implementation.
@@ -87,7 +87,7 @@ public class Config
         /// <summary>
         /// Override config file with CLI input (port, maxplayers)
         /// </summary>
-        public Optional<bool> CLIoverConfig = Optional.Default(true);
+        public Optional<bool> CLIoverConfig = Optional.Default(true, true);
 
         /// <summary>
         /// Disable vanilla version check.
@@ -98,7 +98,7 @@ public class Config
         /// Fix the broken default language detect.
         /// <see href="https://github.com/Pryaxis/TShock/issues/2957" />
         /// </summary>
-        public Optional<bool> DefaultLanguageDetect = Optional.Default(true);
+        public Optional<bool> DefaultLanguageDetect = Optional.Default(true, true);
 
         /// <summary>
         /// Action for TShock's update
@@ -108,16 +108,16 @@ public class Config
         /// <summary>
         /// Socket Provider
         /// </summary>
-        public Optional<SocketType> Socket = Optional.Default(SocketType.AnotherAsyncSocketAsFallback);
+        public Optional<SocketType> Socket = Optional.Default(SocketType.AnotherAsyncSocketAsFallback, true);
 
-        public Optional<NameCollisionAction> NameCollision = Optional.Default(NameCollisionAction.Unhandled);
+        public Optional<NameCollisionAction> NameCollision = Optional.Default(NameCollisionAction.Unhandled, true);
 
-        public Optional<TileProviderOptions> TileProvider = Optional.Default(TileProviderOptions.AsIs);
+        public Optional<TileProviderOptions> TileProvider = Optional.Default(TileProviderOptions.AsIs, true);
 
         /// <summary>
         /// Support regex (`namea:player.*`) and IP mask (`ipa:1.1.0.0/16`).
         /// </summary>
-        public Optional<bool> BanPattern = Optional.Default(true);
+        public Optional<bool> BanPattern = Optional.Default(true, true);
 
         public enum UpdateOptions
         {
@@ -200,9 +200,9 @@ public class Config
 
     public record class DebugPacketSettings
     {
-        public Optional<PacketFilter> In = Optional.Default(new PacketFilter(false));
-        public Optional<PacketFilter> Out = Optional.Default(new PacketFilter(false));
-        public Optional<PacketFilter> BytesOut = Optional.Default(new PacketFilter(false));
+        public Optional<PacketFilter> In = Optional.Default(new PacketFilter(false), true);
+        public Optional<PacketFilter> Out = Optional.Default(new PacketFilter(false), true);
+        public Optional<PacketFilter> BytesOut = Optional.Default(new PacketFilter(false), true);
         public Optional<CatchedException> ShowCatchedException = Optional.Default(CatchedException.Uncommon);
 
         public enum CatchedException
@@ -300,16 +300,16 @@ public class Config
     public record class PermissionSettings
     {
         public Optional<PermissionLogSettings> Log = Optional.Default(new PermissionLogSettings());
-        public Optional<RestrictSettings> Restrict = Optional.Default(new RestrictSettings());
+        public Optional<RestrictSettings> Restrict = Optional.Default(new RestrictSettings(), true);
         public Optional<PresetSettings> Preset = Optional.Default(new PresetSettings());
 
         public record class PermissionLogSettings
         {
             public Optional<bool> Enabled = Optional.Default(true);
             public Optional<int> LogCount = Optional.Default(50);
-            public Optional<bool> LogDuplicate = Optional.Default(false);
-            public Optional<double> LogDistinctTime = Optional.Default(1.0);
-            public Optional<bool> LogStackTrace = Optional.Default(false);
+            public Optional<bool> LogDuplicate = Optional.Default(false, true);
+            public Optional<double> LogDistinctTime = Optional.Default(1.0, true);
+            public Optional<bool> LogStackTrace = Optional.Default(false, true);
         }
 
         public record class RestrictSettings
@@ -324,16 +324,16 @@ public class Config
         public record class PresetSettings
         {
             public Optional<bool> Enabled = Optional.Default(true);
-            public Optional<bool> AlwaysApply = Optional.Default(false);
+            public Optional<bool> AlwaysApply = Optional.Default(false, true);
             public Optional<bool> DebugForAdminOnly = Optional.Default(false);
-            public Optional<bool> AllowRestricted = Optional.Default(true);
+            public Optional<bool> AllowRestricted = Optional.Default(true, true);
         }
     }
 
     public record class Modes
     {
-        public Optional<BuildingMode> Building = Optional.Default(new BuildingMode());
-        public Optional<PvPMode> PvP = Optional.Default(new PvPMode());
+        public Optional<BuildingMode> Building = Optional.Default(new BuildingMode(), true);
+        public Optional<PvPMode> PvP = Optional.Default(new PvPMode(), true);
         public Optional<VanillaMode> Vanilla = Optional.Default(new VanillaMode());
 
         public record class BuildingMode
@@ -386,7 +386,7 @@ public class Config
             });
             public Optional<bool> AllowJourney = Optional.Default(false);
             public Optional<bool> IgnoreAntiCheat = Optional.Default(false);
-            public Optional<VanillaAntiCheat> AntiCheat = Optional.Default(new VanillaAntiCheat());
+            public Optional<VanillaAntiCheat> AntiCheat = Optional.Default(new VanillaAntiCheat(), true);
 
             public record class VanillaAntiCheat
             {
@@ -397,7 +397,7 @@ public class Config
 
     public record class MitigationSettings
     {
-        public Optional<bool> Enabled = Optional.Default(true);
+        public Optional<bool> Enabled = Optional.Default(true, true);
 
         /// <summary>
         /// <para>
@@ -411,7 +411,7 @@ public class Config
         /// </para>
         /// Tracking: <see href="https://forums.terraria.org/index.php?threads/network-broadcast-storm.117270/"/>
         /// </summary>
-        public Optional<bool> InventorySlotPE = Optional.Default(true);
+        public Optional<bool> InventorySlotPE = Optional.Default(true, true);
 
         /// <summary>
         /// <para>
@@ -425,7 +425,7 @@ public class Config
         /// </para>
         /// Tracking: <see href="https://forums.terraria.org/index.php?threads/almost-invincible-by-healing-with-potions-but-without-cooldown.117269/"/>
         /// </summary>
-        public Optional<bool> PotionSicknessPE = Optional.Default(true);
+        public Optional<bool> PotionSicknessPE = Optional.Default(true, true);
 
         /// <summary>
         /// <para>
@@ -439,7 +439,7 @@ public class Config
         /// </para>
         /// Tracking: <see href="https://forums.terraria.org/index.php?threads/almost-invincible-by-healing-with-potions-but-without-cooldown.117269/"/>
         /// </summary>
-        public Optional<bool> SwapWhileUsePE = Optional.Default(true);
+        public Optional<bool> SwapWhileUsePE = Optional.Default(true, true);
 
         /// <summary>
         /// <para>
@@ -470,7 +470,7 @@ public class Config
         /// Use with caution.
         /// </para>
         /// </summary>
-        public Optional<bool> NpcUpdateBuffRateLimit = Optional.Default(false);
+        public Optional<bool> NpcUpdateBuffRateLimit = Optional.Default(false, true);
 
         /// <summary>
         /// <para>
@@ -487,7 +487,7 @@ public class Config
         /// This will prevent the title from being set if TERM has no xterm.
         /// </para>
         /// </summary>
-        public Optional<bool> SuppressTitle = Optional.Default(true);
+        public Optional<bool> SuppressTitle = Optional.Default(true, true);
 
         /// <summary>
         /// <para>
@@ -527,7 +527,7 @@ public class Config
         public Optional<Dictionary<int, double>> ConnectionStateTimeout = Optional.Default(new Dictionary<int, double> {
             { 0, 1 },
             { 1, 4 },
-        });
+        }, true);
 
         /// <summary>
         /// <para>
@@ -539,7 +539,7 @@ public class Config
         /// </para>
         /// <see href="https://github.com/Pryaxis/TShock/issues/1151" />
         /// </summary>
-        public Optional<DisabledDamageAction> DisabledDamageHandler = Optional.Default(DisabledDamageAction.Hurt);
+        public Optional<DisabledDamageAction> DisabledDamageHandler = Optional.Default(DisabledDamageAction.Hurt, true);
 
         /// <summary>
         /// <para>
@@ -553,7 +553,7 @@ public class Config
         /// </para>
         /// <see href="https://github.com/Pryaxis/TShock/issues/2004"/>
         /// </summary>
-        public Optional<ExpertCoinHandler> ExpertExtraCoin = Optional.Default(ExpertCoinHandler.ServerSide);
+        public Optional<ExpertCoinHandler> ExpertExtraCoin = Optional.Default(ExpertCoinHandler.ServerSide, true);
 
         /// <summary>
         /// <para>
@@ -566,7 +566,7 @@ public class Config
         /// </para>
         /// <see href="https://github.com/Pryaxis/TShock/issues/2923"/>
         /// </summary>
-        public Optional<bool> KeepRestAlive = Optional.Default(true);
+        public Optional<bool> KeepRestAlive = Optional.Default(true, true);
 
         /// <summary>
         /// <para>
@@ -586,7 +586,7 @@ public class Config
         /// </para>
         /// <see href="https://github.com/Pryaxis/TShock/issues/2914"/>
         /// </summary>
-        public Optional<bool> UseEnglishCommand = Optional.Default(true);
+        public Optional<bool> UseEnglishCommand = Optional.Default(true, true);
 
         public enum DisabledDamageAction
         {
@@ -649,17 +649,18 @@ public class Limiter
 
 public abstract class Optional
 {
-    public abstract bool IsDefaultValue();
+    public abstract bool IsHiddenValue();
     public abstract object? ObjectValue { get; set; }
-    public static Optional<T> Default<T>(T value)
+    public static Optional<T> Default<T>(T value, bool hide = false)
     {
-        return new Optional<T>(value);
+        return new Optional<T>(value, hide);
     }
 }
 
 public class Optional<T> : Optional, IEquatable<Optional<T>>
 {
     public bool IsDefault { private set; get; }
+    public bool HideWhenDefault { private set; get; }
     private readonly T _defaultValue;
     private T? _value;
     public T Value
@@ -679,9 +680,9 @@ public class Optional<T> : Optional, IEquatable<Optional<T>>
         }
     }
 
-    public override bool IsDefaultValue()
+    public override bool IsHiddenValue()
     {
-        return this.IsDefault;
+        return this.IsDefault && this.HideWhenDefault;
     }
 
     public bool Equals(Optional<T>? other)
@@ -703,10 +704,11 @@ public class Optional<T> : Optional, IEquatable<Optional<T>>
         }
     }
 
-    public Optional(T value)
+    public Optional(T value, bool hide = false)
     {
         this.IsDefault = true;
         this._defaultValue = value;
+        this.HideWhenDefault = hide;
     }
 
     public static implicit operator T(Optional<T> self) => self.Value;

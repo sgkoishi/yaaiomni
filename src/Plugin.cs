@@ -135,7 +135,7 @@ public partial class Plugin : TerrariaPlugin
         this.LoadConfig(initiator);
         if (this.config.ShowConfig)
         {
-            initiator?.SendInfoMessage(JsonConvert.SerializeObject(this.config, Formatting.Indented));
+            initiator?.SendInfoMessage(Utils.SerializeConfig(this.config));
         }
         switch (this.config.Enhancements.Value.TileProvider.Value)
         {

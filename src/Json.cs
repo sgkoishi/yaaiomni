@@ -48,6 +48,7 @@ public static partial class Utils
         return JsonConvert.SerializeObject(value, jss);
     }
 }
+
 public static class JsonUtils
 {
     public class OptionalSerializeContractResolver : DefaultContractResolver
@@ -57,7 +58,7 @@ public static class JsonUtils
             var property = base.CreateProperty(member, memberSerialization);
             if (property.PropertyType?.IsGenericType == true && typeof(Optional<>) == property.PropertyType.GetGenericTypeDefinition())
             {
-                property.ShouldSerialize = value => property.ValueProvider?.GetValue(value) is Optional o ? !o.IsDefaultValue() : true;
+                property.ShouldSerialize = value => property.ValueProvider?.GetValue(value) is not Optional o || !o.IsHiddenValue();
             }
             return property;
         }
