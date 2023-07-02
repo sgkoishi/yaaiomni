@@ -1,6 +1,8 @@
 ﻿using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 using System.Runtime.CompilerServices;
 
@@ -487,5 +489,50 @@ public partial class Plugin
             }
             Terraria.Localization.LanguageManager.Instance.LoadLanguage(currentLanguage);
         }
+    }
+
+    delegate JObject ConfigUpdateAction(JObject cfg, out bool requiredUpgrade);
+    private JObject Detour_Mitigation_ConfigUpdate(ConfigUpdateAction orig, JObject cfg, out bool requiredUpgrade)
+    {
+        var result = orig(cfg, out requiredUpgrade);
+        var mitigation = this.config.Mitigation.Value;
+        if (mitigation.Enabled && result.Children().Count() > 1)
+        {
+            switch (mitigation.AcceptPartialUpdatedConfig.Value)
+            {
+                case Config.MitigationSettings.PartialConfigAction.Ignore:
+                {
+                    break;
+                }
+                case Config.MitigationSettings.PartialConfigAction.Replace:
+                {
+                    if (result.SelectToken("Settings") is not JObject root)
+                    {
+                        break;
+                    }
+
+                    foreach (var field in result.Children())
+                    {
+                        if (field is not JProperty jp || jp.Name == "Settings")
+                        {
+                            continue;
+                        }
+
+                        if (!root.TryAdd(jp.Name, jp.Value))
+                        {
+                            root[jp.Name] = jp.Value;
+                        }
+
+                        Console.WriteLine($"Set field \"{jp.Name}\" to \"{jp.Value}\".");
+                    }
+                    break;
+                }
+                default:
+                {
+                    throw new SwitchExpressionException($"Unexpected AcceptPartialUpdatedConfig {mitigation.AcceptPartialUpdatedConfig.Value}");
+                }
+            }
+        }
+        return result;
     }
 }

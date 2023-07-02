@@ -10,38 +10,32 @@ namespace Chireiden.TShock.Omni;
 
 public static partial class Utils
 {
+    private static readonly List<JsonConverter> _jsonconverters = new List<JsonConverter>
+    {
+        new OptionalConverter(),
+        new LimiterConverter(),
+        new StringEnumConverter(),
+        new PacketFilterConverter(),
+    };
+
     public static Config DeserializeConfig(string value)
     {
         var jss = new JsonSerializerSettings
         {
             ObjectCreationHandling = ObjectCreationHandling.Replace,
-            Converters = new List<JsonConverter>
-            {
-                new OptionalConverter(),
-                new LimiterConverter(),
-                new StringEnumConverter(),
-                new PacketFilterConverter(),
-            },
-            ContractResolver = new OptionalSerializeContractResolver(),
-            Formatting = Formatting.Indented,
+            Converters = _jsonconverters,
+            ContractResolver = new CustomContractResolver { WarnExtensionData = true },
         };
 
-        return JsonConvert.DeserializeObject<Config>(value, jss) ?? throw new Exception("Config is null");
+        return JsonConvert.DeserializeObject<Config>(value, jss) ?? throw new NullReferenceException("The config is empty");
     }
 
     public static string SerializeConfig(Config value, bool skip = true)
     {
         var jss = new JsonSerializerSettings
         {
-            ObjectCreationHandling = ObjectCreationHandling.Replace,
-            Converters = new List<JsonConverter>
-            {
-                new OptionalConverter(),
-                new LimiterConverter(),
-                new StringEnumConverter(),
-                new PacketFilterConverter(),
-            },
-            ContractResolver = skip ? new OptionalSerializeContractResolver() : new DefaultContractResolver(),
+            Converters = _jsonconverters,
+            ContractResolver = new CustomContractResolver { SkipOptionalDefault = skip },
             Formatting = Formatting.Indented,
         };
 
@@ -51,16 +45,35 @@ public static partial class Utils
 
 public static class JsonUtils
 {
-    public class OptionalSerializeContractResolver : DefaultContractResolver
+    public class CustomContractResolver : DefaultContractResolver
     {
+        public bool SkipOptionalDefault { get; set; } = false;
+        public bool WarnExtensionData { get; set; } = false;
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var property = base.CreateProperty(member, memberSerialization);
-            if (property.PropertyType?.IsGenericType == true && typeof(Optional<>) == property.PropertyType.GetGenericTypeDefinition())
+            if (this.SkipOptionalDefault
+                && property.PropertyType?.IsGenericType == true
+                && typeof(Optional<>) == property.PropertyType.GetGenericTypeDefinition())
             {
                 property.ShouldSerialize = value => property.ValueProvider?.GetValue(value) is not Optional o || !o.IsHiddenValue();
             }
             return property;
+        }
+
+        public override JsonContract ResolveContract(Type type)
+        {
+            var jc = base.ResolveContract(type);
+            if (this.WarnExtensionData && jc is JsonObjectContract joc)
+            {
+                var orig = joc.ExtensionDataSetter;
+                joc.ExtensionDataSetter = (obj, key, value) =>
+                {
+                    Console.WriteLine($"Json deserialize got undefined pair in object {obj.GetType()} (\"{key}\": {value})");
+                    orig?.Invoke(obj, key, value);
+                };
+            }
+            return jc;
         }
     }
 

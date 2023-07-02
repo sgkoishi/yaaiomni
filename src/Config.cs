@@ -397,7 +397,7 @@ public class Config
 
     public record class MitigationSettings
     {
-        public Optional<bool> Enabled = Optional.Default(true, true);
+        public Optional<bool> Enabled = Optional.Default(true);
 
         /// <summary>
         /// <para>
@@ -588,6 +588,20 @@ public class Config
         /// </summary>
         public Optional<bool> UseEnglishCommand = Optional.Default(true, true);
 
+        /// <summary>
+        /// <para>
+        /// TShock update legacy config { "key1": "value1", "key2": "value2" } to
+        /// the new format { "Settings": { "key1": "value1", "key2": "value2" } }.
+        /// If the config is partially updated, { "key1": "value1", "Settings": { 
+        /// "key2": "value2" } }, the key1 is discarded.
+        /// </para>
+        /// <para>Cause some config options not being applied.</para>
+        /// <para>
+        /// This will allow those partially updated config.
+        /// </para>
+        /// </summary>
+        public Optional<PartialConfigAction> AcceptPartialUpdatedConfig = Optional.Default(PartialConfigAction.Replace, true);
+
         public enum DisabledDamageAction
         {
             AsIs,
@@ -609,6 +623,13 @@ public class Config
             /// Untouched like vanilla.
             /// <para>
             AsIs,
+        }
+
+        public enum PartialConfigAction
+        {
+            Ignore,
+            Replace,
+            // Merge
         }
     }
 
