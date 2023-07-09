@@ -38,8 +38,6 @@ public class Config
 
     public Optional<List<string>> HideCommands = Optional.Default(new List<string> {
         DefinedConsts.Commands.Whynot,
-        DefinedConsts.Commands.PvPStatus,
-        DefinedConsts.Commands.TeamStatus,
         DefinedConsts.Commands.Admin.GarbageCollect,
         DefinedConsts.Commands.Admin.DebugStat,
         DefinedConsts.Commands.ResetCharacter,
@@ -55,8 +53,6 @@ public class Config
     public Optional<Dictionary<string, List<string>>> CommandRenames = Optional.Default(new Dictionary<string, List<string>>());
 
     public Optional<EnhancementsSettings> Enhancements = Optional.Default(new EnhancementsSettings());
-
-    public Optional<LavaSettings> LavaHandler = Optional.Default(new LavaSettings(), true);
 
     public Optional<DebugPacketSettings> DebugPacket = Optional.Default(new DebugPacketSettings());
 
@@ -186,16 +182,6 @@ public class Config
             CheckedTypedCollection,
             CheckedGenericCollection,
         }
-    }
-
-    public record class LavaSettings
-    {
-        public Optional<bool> Enabled = Optional.Default(false);
-        public Optional<bool> AllowHellstone = Optional.Default(false);
-        public Optional<bool> AllowCrispyHoneyBlock = Optional.Default(false);
-        public Optional<bool> AllowHellbat = Optional.Default(false);
-        public Optional<bool> AllowLavaSlime = Optional.Default(false);
-        public Optional<bool> AllowLavabat = Optional.Default(false);
     }
 
     public record class DebugPacketSettings
@@ -682,7 +668,7 @@ public class Optional<T> : Optional, IEquatable<Optional<T>>
 {
     public bool IsDefault { private set; get; }
     public bool HideWhenDefault { private set; get; }
-    private readonly T _defaultValue;
+    internal T _defaultValue;
     private T? _value;
     public T Value
     {

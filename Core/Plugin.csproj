@@ -19,7 +19,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageType>TShockPlugin</PackageType>
     <Copyright>Copyright (c) Chireiden 2023</Copyright>
-    <IncludeSymbols>true</IncludeSymbols>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <!-- https://github.com/Pryaxis/TShock/issues/2895 -->
     <!-- <GenerateDocumentationFile>true</GenerateDocumentationFile> -->
     <EmbedAllSources>true</EmbedAllSources>

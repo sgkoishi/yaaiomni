@@ -1,4 +1,4 @@
-﻿namespace Chireiden.TShock.Omni;
+﻿namespace Chireiden.TShock.Omni.Misc;
 
 public partial class Plugin
 {

@@ -446,7 +446,7 @@ public partial class Plugin
             }
             catch
             {
-                this.ShowError($"Attempt hook {nameof(Config.Mitigation)}.{nameof(Config.MitigationSettings.DisabledDamageHandler)} failed, might be already fixed.");
+                Utils.ShowError($"Attempt hook {nameof(Config.Mitigation)}.{nameof(Config.MitigationSettings.DisabledDamageHandler)} failed, might be already fixed.");
             }
         }
     }
@@ -467,7 +467,7 @@ public partial class Plugin
         }
         catch
         {
-            this.ShowError($"Attempt hook {nameof(Config.Mitigation)}.{nameof(Config.MitigationSettings.KeepRestAlive)} failed, might be already fixed.");
+            Utils.ShowError($"Attempt hook {nameof(Config.Mitigation)}.{nameof(Config.MitigationSettings.KeepRestAlive)} failed, might be already fixed.");
         }
     }
 

@@ -26,7 +26,7 @@ public partial class Plugin
             var v = args.Exception.ToString();
             if (this.exceptions.Add(v))
             {
-                this.ShowError($"New First Chance: {v}");
+                Utils.ShowError($"New First Chance: {v}");
             }
         }
         catch

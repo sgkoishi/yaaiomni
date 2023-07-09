@@ -446,9 +446,21 @@ public static partial class Utils
         return p.Any(player.HasPermission);
     }
 
-    internal class ConsolePlayer : TSPlayer
+    public static void ShowError(string value)
     {
-        internal static ConsolePlayer Instance = new ConsolePlayer("Console");
+        if (TShockAPI.TShock.Log != null)
+        {
+            TShockAPI.TShock.Log.Error(value);
+        }
+        else
+        {
+            Console.WriteLine(value);
+        }
+    }
+
+    public class ConsolePlayer : TSPlayer
+    {
+        public static ConsolePlayer Instance = new ConsolePlayer("Console");
         private static readonly Dictionary<ConsoleColor, int> _consoleColorMap = new Dictionary<ConsoleColor, int>
         {
             [ConsoleColor.Red] = 0xFF0000,

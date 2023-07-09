@@ -298,11 +298,31 @@ public class CommandsGenerator : IIncrementalGenerator
         initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
             "Attributes.g.cs",
             SourceText.From(@"using System;
+using System.Reflection;
+
+namespace Chireiden
+{
+    [AttributeUsage(AttributeTargets.Assembly, Inherited = false, AllowMultiple = false)]
+    internal class CommitHashAttribute : Attribute
+    {
+        public string CommitHash { get; }
+        public CommitHashAttribute(string value)
+        {
+            this.CommitHash = value;
+        }
+
+        public static string GetCommitHash()
+        {
+            var attr = Assembly.GetExecutingAssembly().GetCustomAttribute<CommitHashAttribute>();
+            return attr?.CommitHash ?? string.Empty;
+        }
+    }
+}
 
 namespace Chireiden.TShock
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class CommandAttribute : Attribute
+    internal class CommandAttribute : Attribute
     {
         public bool AllowServer { get; set; }
         public bool DoLog { get; set; }
@@ -316,7 +336,7 @@ namespace Chireiden.TShock
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class RelatedPermissionAttribute : Attribute
+    internal class RelatedPermissionAttribute : Attribute
     {
         public RelatedPermissionAttribute(string key, string permission)
         {

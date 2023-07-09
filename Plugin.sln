@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.32916.344
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugin", "src\Plugin.csproj", "{9E57A437-1480-492C-A171-FDC4179B9116}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugin", "Core\Plugin.csproj", "{9E57A437-1480-492C-A171-FDC4179B9116}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGen", "SourceGen\SourceGen.csproj", "{342F5C8D-0453-4FEF-A2AE-875EB6E621C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceGen", "SourceGen\SourceGen.csproj", "{342F5C8D-0453-4FEF-A2AE-875EB6E621C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Misc", "Misc\Misc.csproj", "{D81DE2CB-0679-49C0-8644-EA2D66B1E181}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{342F5C8D-0453-4FEF-A2AE-875EB6E621C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{342F5C8D-0453-4FEF-A2AE-875EB6E621C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{342F5C8D-0453-4FEF-A2AE-875EB6E621C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D81DE2CB-0679-49C0-8644-EA2D66B1E181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D81DE2CB-0679-49C0-8644-EA2D66B1E181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D81DE2CB-0679-49C0-8644-EA2D66B1E181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D81DE2CB-0679-49C0-8644-EA2D66B1E181}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

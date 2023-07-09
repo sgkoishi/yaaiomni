@@ -91,7 +91,7 @@ public partial class Plugin
         }
         else
         {
-            this.ShowError($"Failed to find nearest language for \"{CultureInfo.CurrentUICulture}\" ({CultureInfo.CurrentUICulture.EnglishName}).");
+            Utils.ShowError($"Failed to find nearest language for \"{CultureInfo.CurrentUICulture}\" ({CultureInfo.CurrentUICulture.EnglishName}).");
         }
     }
 }

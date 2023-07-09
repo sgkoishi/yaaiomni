@@ -23,7 +23,6 @@ public partial class Plugin : TerrariaPlugin
     private const BindingFlags _bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
     public Config config;
-    internal bool _TShockInit = false;
 
     public Plugin(Main game) : base(game)
     {
@@ -47,16 +46,6 @@ public partial class Plugin : TerrariaPlugin
                 .GetProperty(nameof(TSPlayer.Active), _bfany)?
                 .GetMethod,
             this.Detour_PlayerActive);
-        this.Detour(
-            nameof(this.Detour_Lava_HitEffect),
-            typeof(NPC)
-                .GetMethod(nameof(NPC.HitEffect), _bfany),
-            this.Detour_Lava_HitEffect);
-        this.Detour(
-            nameof(this.Detour_Lava_KillTile),
-            typeof(WorldGen)
-                .GetMethod(nameof(WorldGen.KillTile), _bfany),
-            this.Detour_Lava_KillTile);
         this.Detour(
             nameof(this.Detour_Wildcard_GetPlayers),
             typeof(TSPlayer)
@@ -101,13 +90,15 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
+    public event Action<Plugin> OnConfigLoad;
+
     private void LoadConfig(TSPlayer? initiator)
     {
         try
         {
             if (File.Exists(this.ConfigPath))
             {
-                this.config = Utils.DeserializeConfig(File.ReadAllText(this.ConfigPath));
+                this.config = Json.JsonUtils.DeserializeConfig<Config>(File.ReadAllText(this.ConfigPath));
             }
         }
         catch (Exception ex)
@@ -115,13 +106,16 @@ public partial class Plugin : TerrariaPlugin
             initiator?.SendErrorMessage($"Failed to load config: {ex.Message}");
             return;
         }
+
+        OnConfigLoad?.Invoke(this);
+
         try
         {
             if (!Directory.Exists(TShockAPI.TShock.SavePath))
             {
                 Directory.CreateDirectory(TShockAPI.TShock.SavePath);
             }
-            File.WriteAllText(this.ConfigPath, Utils.SerializeConfig(this.config));
+            File.WriteAllText(this.ConfigPath, Json.JsonUtils.SerializeConfig(this.config));
         }
         catch (Exception ex)
         {
@@ -135,7 +129,7 @@ public partial class Plugin : TerrariaPlugin
         this.LoadConfig(initiator);
         if (this.config.ShowConfig)
         {
-            initiator?.SendInfoMessage(Utils.SerializeConfig(this.config));
+            initiator?.SendInfoMessage(Json.JsonUtils.SerializeConfig(this.config));
         }
         switch (this.config.Enhancements.Value.TileProvider.Value)
         {
@@ -311,22 +305,9 @@ public partial class Plugin : TerrariaPlugin
 
     private void PostTShockInitialize()
     {
-        this._TShockInit = true;
         this.Backports();
         OTAPI.Hooks.Netplay.CreateTcpListener += this.OTHook_Socket_OnCreate;
         this.InitCommands();
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
-    }
-
-    private void ShowError(string value)
-    {
-        if (this._TShockInit)
-        {
-            TShockAPI.TShock.Log.Error(value);
-        }
-        else
-        {
-            Console.WriteLine(value);
-        }
     }
 }
