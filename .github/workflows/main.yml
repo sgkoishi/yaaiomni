@@ -28,7 +28,7 @@ jobs:
           New-Item -ItemType Directory Artifact
           Copy-Item **/bin/Debug/net6.0/* Artifact
           Copy-Item **/bin/Debug/*.nupkg Artifact
-          Copy-Item LICENSE README.md Artifact
+          Copy-Item LICENSE,README.md Artifact
 
       - name: CI Artifact
         uses: actions/upload-artifact@v3
