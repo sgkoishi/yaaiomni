@@ -1,7 +1,7 @@
 ﻿using Terraria.Localization;
 using TerrariaApi.Server;
 
-namespace Chireiden.TShock.Omni;
+namespace Chireiden.TShock.Omni.Misc;
 
 public partial class Plugin : TerrariaPlugin
 {

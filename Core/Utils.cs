@@ -458,6 +458,26 @@ public static partial class Utils
         }
     }
 
+    public static void AliasPermission(string orig, params string[] equiv)
+    {
+        foreach (var group in TShockAPI.TShock.Groups.groups)
+        {
+            if (group.HasPermission(orig) && (group.Parent?.HasPermission(orig) != true))
+            {
+                AddPermission(group, equiv);
+            }
+        }
+    }
+
+    public static void AddPermission(TShockAPI.Group? group, params string[] perm)
+    {
+        if (group == null)
+        {
+            return;
+        }
+        TShockAPI.TShock.Groups.AddPermissions(group!.Name, perm.ToList());
+    }
+
     public class ConsolePlayer : TSPlayer
     {
         public static ConsolePlayer Instance = new ConsolePlayer("Console");

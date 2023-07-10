@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria.Localization;
+﻿using Terraria.Localization;
+using TerrariaApi.Server;
 using TShockAPI;
 
 namespace Chireiden.TShock.Omni.Misc;
@@ -121,6 +116,38 @@ public partial class Plugin
 
             args.Player.TPlayer.team = team;
             Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerTeam, -1, -1, NetworkText.Empty, args.Player.Index);
+        }
+    }
+
+    [Command("Chat", "_chat", Permission = "chireiden.omni.chat")]
+    private void Command_Chat(CommandArgs args)
+    {
+        var index = args.Player.Index;
+        var scea = new ServerChatEventArgs();
+        var command = Terraria.Chat.ChatCommandId.FromType<Terraria.Chat.Commands.SayChatCommand>();
+        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.Buffer))!.SetValue(scea, Terraria.NetMessage.buffer[index]);
+        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.Who))!.SetValue(scea, index);
+        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.Text))!.SetValue(scea, string.Join(" ", args.Parameters));
+        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.CommandId))!.SetValue(scea, command);
+        TerrariaApi.Server.ServerApi.Hooks.ServerChat.Invoke(scea);
+    }
+
+    [Command("Echo", "echo", AllowServer = false, Permission = "chireiden.omni.echo")]
+    private void Command_Echo(CommandArgs args)
+    {
+        args.Player.SendInfoMessage(string.Join(" ", args.Parameters));
+    }
+
+    [Command("Admin.GenerateFullConfig", "genconfig", Permission = "chireiden.omni.admin.genconfig")]
+    private void Command_GenerateFullConfig(CommandArgs args)
+    {
+        try
+        {
+            File.WriteAllText(this.ConfigPath, Json.JsonUtils.SerializeConfig(this.config, false));
+        }
+        catch (Exception ex)
+        {
+            args.Player.SendErrorMessage($"Failed to save config: {ex.Message}");
         }
     }
 }

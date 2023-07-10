@@ -70,45 +70,28 @@ public partial class Plugin
         this.PermissionSetup();
     }
 
+    public event Action<Plugin>? OnPermissionSetup;
     private void PermissionSetup()
     {
+        OnPermissionSetup?.Invoke(this);
+
         var preset = this.config.Permission.Value.Preset.Value;
-        var vanillaMode = this.config.Mode.Value.Vanilla.Value.Enabled;
         var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
-        if (preset.AllowRestricted || vanillaMode)
-        {
-            AddPermission(guest,
-                Permission.TogglePvP,
-                Permission.ToggleTeam,
-                Permission.SyncLoadout,
-                Permission.PvPStatus,
-                Permission.TeamStatus);
-        }
-
-        AddPermission(guest, Permission.Ping);
-        AddPermission(guest, Permission.Echo);
-
-        AliasPermission(TShockAPI.Permissions.canchat, Permission.Chat);
-        AliasPermission(Permission.TogglePvP, $"{Permission.TogglePvP}.*");
-        AliasPermission(Permission.ToggleTeam, $"{Permission.ToggleTeam}.*");
-        AliasPermission(TShockAPI.Permissions.summonboss, $"{Permission.SummonBoss}.*");
-        AliasPermission(TShockAPI.Permissions.startinvasion, $"{Permission.SummonBoss}.*");
+        Utils.AddPermission(guest, Permission.Ping);
 
         if (preset.DebugForAdminOnly)
         {
-            AliasPermission(TShockAPI.Permissions.kick, Permission.Whynot);
+            Utils.AliasPermission(TShockAPI.Permissions.kick, Permission.Whynot);
         }
         else
         {
-            AddPermission(guest, Permission.Whynot);
+            Utils.AddPermission(guest, Permission.Whynot);
         }
 
-        AliasPermission(TShockAPI.Permissions.kick,
+        Utils.AliasPermission(TShockAPI.Permissions.kick,
             Permission.Admin.Ghost,
             Permission.Admin.ManageLanguage,
             Permission.Admin.DebugStat,
-            Permission.Admin.PvPStatus,
-            Permission.Admin.TeamStatus,
             Permission.Admin.UpsCheck,
             Permission.SetTimeout,
             Permission.SetInterval,
@@ -116,7 +99,7 @@ public partial class Plugin
             Permission.ShowTimeout,
             Permission.ResetCharacter);
 
-        AliasPermission(TShockAPI.Permissions.maintenance,
+        Utils.AliasPermission(TShockAPI.Permissions.maintenance,
             Permission.Admin.MaxPlayers,
             Permission.Admin.TileProvider,
             Permission.Admin.GarbageCollect,
@@ -127,32 +110,12 @@ public partial class Plugin
             Permission.Admin.ApplyDefaultPermission,
             Permission.Admin.GenerateFullConfig);
 
-        AliasPermission(TShockAPI.Permissions.su,
+        Utils.AliasPermission(TShockAPI.Permissions.su,
             Permission.Admin.Sudo,
             Permission.Admin.ListClients,
             Permission.Admin.DumpBuffer,
             Permission.Admin.ResetCharacterAll);
 
         File.WriteAllText(Path.Combine(TShockAPI.TShock.SavePath, Misc.PresetLock), string.Empty);
-    }
-
-    private static void AliasPermission(string orig, params string[] equiv)
-    {
-        foreach (var group in TShockAPI.TShock.Groups.groups)
-        {
-            if (group.HasPermission(orig) && (group.Parent?.HasPermission(orig) != true))
-            {
-                AddPermission(group, equiv);
-            }
-        }
-    }
-
-    private static void AddPermission(TShockAPI.Group? group, params string[] perm)
-    {
-        if (group == null)
-        {
-            return;
-        }
-        TShockAPI.TShock.Groups.AddPermissions(group!.Name, perm.ToList());
     }
 }

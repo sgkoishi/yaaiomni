@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Reflection;
+﻿using System.Reflection;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -90,7 +89,7 @@ public partial class Plugin : TerrariaPlugin
         }
     }
 
-    public event Action<Plugin> OnConfigLoad;
+    public event Action<Plugin>? OnConfigLoad;
 
     private void LoadConfig(TSPlayer? initiator)
     {
@@ -218,9 +217,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.Main.ReadLineInput += this.MMHook_CliConfig_ReadLine;
         On.Terraria.Localization.Language.GetTextValue_string += this.MMHook_CliConfig_LanguageText;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_Ghost_SendBytes;
-        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SyncLoadout;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Ping_GetData;
-        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SummonBoss;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.TAHook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.TAHook_Update);
@@ -231,8 +228,6 @@ public partial class Plugin : TerrariaPlugin
         TShockAPI.Hooks.PlayerHooks.PlayerPermission += this.TSHook_Sudo_OnPlayerPermission;
         TShockAPI.Hooks.GeneralHooks.ReloadEvent += this.OnReload;
         TShockAPI.TShock.Initialized += this.PostTShockInitialize;
-        TShockAPI.GetDataHandlers.TogglePvp.Register(this.GDHook_Permission_TogglePvp);
-        TShockAPI.GetDataHandlers.PlayerTeam.Register(this.GDHook_Permission_PlayerTeam);
         TShockAPI.GetDataHandlers.Sign.Register(this.GDHook_Permission_Sign);
         TShockAPI.GetDataHandlers.NPCAddBuff.Register(this.GDHook_Mitigation_NpcAddBuff);
     }
@@ -256,10 +251,8 @@ public partial class Plugin : TerrariaPlugin
             OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_Ghost_SendBytes;
             OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_DebugPacket_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Mitigation_GetData;
-            OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Permission_SyncLoadout;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Modded_GetData;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Ping_GetData;
-            OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Permission_SummonBoss;
             OTAPI.Hooks.Netplay.CreateTcpListener -= this.OTHook_Socket_OnCreate;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.TAHook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);
@@ -270,8 +263,6 @@ public partial class Plugin : TerrariaPlugin
             TShockAPI.Hooks.PlayerHooks.PlayerPermission -= this.TSHook_Sudo_OnPlayerPermission;
             TShockAPI.Hooks.GeneralHooks.ReloadEvent -= this.OnReload;
             TShockAPI.TShock.Initialized -= this.PostTShockInitialize;
-            TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.GDHook_Permission_TogglePvp);
-            TShockAPI.GetDataHandlers.PlayerTeam.UnRegister(this.GDHook_Permission_PlayerTeam);
             TShockAPI.GetDataHandlers.NPCAddBuff.UnRegister(this.GDHook_Mitigation_NpcAddBuff);
             TShockAPI.GetDataHandlers.Sign.UnRegister(this.GDHook_Permission_Sign);
             var asm = Assembly.GetExecutingAssembly();

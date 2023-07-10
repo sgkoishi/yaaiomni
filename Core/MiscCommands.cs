@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using Terraria.Localization;
-using TerrariaApi.Server;
 using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
@@ -309,19 +307,6 @@ public partial class Plugin
         }
     }
 
-    [Command("Chat", "_chat", Permission = "chireiden.omni.chat")]
-    private void Command_Chat(CommandArgs args)
-    {
-        var index = args.Player.Index;
-        var scea = new ServerChatEventArgs();
-        var command = Terraria.Chat.ChatCommandId.FromType<Terraria.Chat.Commands.SayChatCommand>();
-        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.Buffer))!.SetValue(scea, Terraria.NetMessage.buffer[index]);
-        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.Who))!.SetValue(scea, index);
-        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.Text))!.SetValue(scea, string.Join(" ", args.Parameters));
-        typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.CommandId))!.SetValue(scea, command);
-        TerrariaApi.Server.ServerApi.Hooks.ServerChat.Invoke(scea);
-    }
-
     [Command("Admin.ExportCharacter", "exportcharacter", Permission = "chireiden.omni.admin.exportcharacter")]
     private void Command_ExportCharacter(CommandArgs args)
     {
@@ -367,12 +352,6 @@ public partial class Plugin
                 args.Player.SendErrorMessage($"Failed to export {account.Name}.");
             }
         }
-    }
-
-    [Command("Echo", "echo", AllowServer = false, Permission = "chireiden.omni.echo")]
-    private void Command_Echo(CommandArgs args)
-    {
-        args.Player.SendInfoMessage(string.Join(" ", args.Parameters));
     }
 
     private (int Tick, DateTime Time) _tickCheck = (-1, DateTime.MinValue);

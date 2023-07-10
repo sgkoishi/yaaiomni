@@ -2,7 +2,6 @@
 using System.Reflection;
 using Terraria;
 using TerrariaApi.Server;
-using TShockAPI;
 
 namespace Chireiden.TShock.Omni.Misc;
 
@@ -39,20 +38,66 @@ public partial class Plugin : TerrariaPlugin
 
     public override void Initialize()
     {
-        ServerApi.Plugins.Get<Omni.Plugin>()!.OnConfigLoad += (plugin) =>
+        var core = ServerApi.Plugins.Get<Omni.Plugin>();
+        if (core is null)
+        {
+            throw new Exception("Core Omni is null.");
+        }
+        core.OnConfigLoad += (plugin) =>
         {
             plugin.config.HideCommands.Mutate(list => list.AddRange(new List<string> {
                 DefinedConsts.Commands.PvPStatus,
                 DefinedConsts.Commands.TeamStatus,
+                DefinedConsts.Commands.Chat,
+                DefinedConsts.Commands.Echo,
+            }));
+            plugin.config.Mode.Value.Vanilla.Value.Permissions.Mutate(list => list.AddRange(new List<string>
+            {
+                DefinedConsts.Permission.TogglePvP,
+                DefinedConsts.Permission.ToggleTeam,
+                DefinedConsts.Permission.SyncLoadout,
             }));
         };
+        core.OnPermissionSetup += (plugin) =>
+        {
+            var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
+            if (this.config.Permission.Value.Preset.Value.AllowRestricted || plugin.config.Mode.Value.Vanilla.Value.Enabled)
+            {
+                Omni.Utils.AddPermission(guest,
+                    DefinedConsts.Permission.TogglePvP,
+                    DefinedConsts.Permission.ToggleTeam,
+                    DefinedConsts.Permission.SyncLoadout,
+                    DefinedConsts.Permission.PvPStatus,
+                    DefinedConsts.Permission.TeamStatus);
+
+                Omni.Utils.AddPermission(guest, DefinedConsts.Permission.Echo);
+                Omni.Utils.AliasPermission(TShockAPI.Permissions.canchat, DefinedConsts.Permission.Chat);
+                Omni.Utils.AliasPermission(DefinedConsts.Permission.TogglePvP, $"{DefinedConsts.Permission.TogglePvP}.*");
+                Omni.Utils.AliasPermission(DefinedConsts.Permission.ToggleTeam, $"{DefinedConsts.Permission.ToggleTeam}.*");
+
+                Omni.Utils.AliasPermission(TShockAPI.Permissions.summonboss, $"{DefinedConsts.Permission.SummonBoss}.*");
+                Omni.Utils.AliasPermission(TShockAPI.Permissions.startinvasion, $"{DefinedConsts.Permission.SummonBoss}.*");
+
+                Omni.Utils.AliasPermission(TShockAPI.Permissions.kick,
+                    DefinedConsts.Permission.Admin.PvPStatus,
+                    DefinedConsts.Permission.Admin.TeamStatus);
+            }
+        };
+
 
         this.InitCommands();
 
-        TShockAPI.Hooks.GeneralHooks.ReloadEvent += (args) => { };
+        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SyncLoadout;
+        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SummonBoss;
+        TShockAPI.GetDataHandlers.TogglePvp.Register(this.GDHook_Permission_TogglePvp);
+        TShockAPI.GetDataHandlers.PlayerTeam.Register(this.GDHook_Permission_PlayerTeam);
+        TShockAPI.Hooks.GeneralHooks.ReloadEvent += (args) =>
+        {
+            this.LoadConfig(TShockAPI.TSPlayer.Server);
+        };
     }
 
-    private void LoadConfig(TSPlayer? initiator)
+    private void LoadConfig(TShockAPI.TSPlayer? initiator)
     {
         try
         {
@@ -86,8 +131,12 @@ public partial class Plugin : TerrariaPlugin
     {
         if (disposing)
         {
+            OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Permission_SyncLoadout;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Permission_SummonBoss;
+            TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.GDHook_Permission_TogglePvp);
+            TShockAPI.GetDataHandlers.PlayerTeam.UnRegister(this.GDHook_Permission_PlayerTeam);
             var asm = Assembly.GetExecutingAssembly();
-            Commands.ChatCommands.RemoveAll(c => c.CommandDelegate.Method?.DeclaringType?.Assembly == asm);
+            TShockAPI.Commands.ChatCommands.RemoveAll(c => c.CommandDelegate.Method?.DeclaringType?.Assembly == asm);
             foreach (var detour in this._detours.Values)
             {
                 detour.Undo();

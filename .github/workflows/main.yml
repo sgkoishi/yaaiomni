@@ -24,32 +24,27 @@ jobs:
 
       - name: Build
         run: |
-          cd src
           dotnet build
+          New-Item -ItemType Directory Artifact
+          Copy-Item **/bin/Debug/net6.0/* Artifact
+          Copy-Item **/bin/Debug/*.nupkg Artifact
+          Copy-Item LICENSE README.md Artifact
 
       - name: CI Artifact
         uses: actions/upload-artifact@v3
         with:
           name: Plugin
           path: |
-            ./src/bin/Debug/net6.0/
-
-      - name: CI Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: NuGet Package
-          path: |
-            ./src/bin/Debug/*.symbols.nupkg
+            Artifact
 
       - name: Set env output and package
         id: setenvo
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
-          dotnet nuget push src/bin/Debug/*.symbols.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+          dotnet nuget push Artifact/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
           echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
-          Copy-Item ./src/bin/Debug/net6.0/* ./
-          tar cvf Artifact.tar Chireiden.TShock.Omni.* LICENSE README.md
-          Compress-Archive -Path Chireiden.TShock.Omni.*,LICENSE,README.md Artifact.zip
+          tar cvf Artifact.tar Artifact
+          Compress-Archive -Path Artifact Artifact.zip
 
       - name: Release
         uses: softprops/action-gh-release@v1

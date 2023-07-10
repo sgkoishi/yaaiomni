@@ -43,7 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Plugin.csproj" />
+    <ProjectReference Include="..\Core\Plugin.csproj">
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\SourceGen\SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 

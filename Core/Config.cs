@@ -42,8 +42,6 @@ public class Config
         DefinedConsts.Commands.Admin.DebugStat,
         DefinedConsts.Commands.ResetCharacter,
         DefinedConsts.Commands.Ping,
-        DefinedConsts.Commands.Chat,
-        DefinedConsts.Commands.Echo,
         DefinedConsts.Commands.Admin.UpsCheck,
         DefinedConsts.Commands.Admin.ApplyDefaultPermission
     });
@@ -286,7 +284,6 @@ public class Config
     public record class PermissionSettings
     {
         public Optional<PermissionLogSettings> Log = Optional.Default(new PermissionLogSettings());
-        public Optional<RestrictSettings> Restrict = Optional.Default(new RestrictSettings(), true);
         public Optional<PresetSettings> Preset = Optional.Default(new PresetSettings());
 
         public record class PermissionLogSettings
@@ -298,21 +295,11 @@ public class Config
             public Optional<bool> LogStackTrace = Optional.Default(false, true);
         }
 
-        public record class RestrictSettings
-        {
-            public Optional<bool> Enabled = Optional.Default(false);
-            public Optional<bool> ToggleTeam = Optional.Default(true);
-            public Optional<bool> TogglePvP = Optional.Default(true);
-            public Optional<bool> SyncLoadout = Optional.Default(true);
-            public Optional<bool> SummonBoss = Optional.Default(true);
-        }
-
         public record class PresetSettings
         {
             public Optional<bool> Enabled = Optional.Default(true);
             public Optional<bool> AlwaysApply = Optional.Default(false, true);
             public Optional<bool> DebugForAdminOnly = Optional.Default(false);
-            public Optional<bool> AllowRestricted = Optional.Default(true, true);
         }
     }
 
@@ -365,9 +352,6 @@ public class Config
                 TShockAPI.Permissions.canchat,
                 TShockAPI.Permissions.synclocalarea,
                 TShockAPI.Permissions.sendemoji,
-                DefinedConsts.Permission.TogglePvP,
-                DefinedConsts.Permission.ToggleTeam,
-                DefinedConsts.Permission.SyncLoadout,
                 DefinedConsts.Permission.Ping
             });
             public Optional<bool> AllowJourney = Optional.Default(false);
