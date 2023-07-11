@@ -27,7 +27,6 @@ jobs:
           dotnet build
           New-Item -ItemType Directory Artifact
           Copy-Item **/bin/Debug/net6.0/* Artifact
-          Copy-Item **/bin/Debug/*.nupkg Artifact
           Copy-Item LICENSE,README.md Artifact
 
       - name: CI Artifact
@@ -41,7 +40,7 @@ jobs:
         id: setenvo
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
-          dotnet nuget push Artifact/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+          dotnet nuget push **/bin/Debug/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
           echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
           tar cvf Artifact.tar Artifact
           Compress-Archive -Path Artifact Artifact.zip

@@ -18,13 +18,13 @@ public partial class Plugin
         {
             this._buffer += c;
         }
-        internal void EndSegment()
+        internal void EndSegment(bool keepEmpty = true)
         {
             if (string.IsNullOrEmpty(this.Command) && !string.IsNullOrWhiteSpace(this._buffer))
             {
                 this.Command = this._buffer.Trim();
             }
-            else
+            else if (keepEmpty || !string.IsNullOrEmpty(this._buffer))
             {
                 this.Parameters.Add(this._buffer);
             }

@@ -4,6 +4,7 @@ public partial class Plugin
 {
     private string? _pendingDefault;
     private PendingConfig _pendingConfig = PendingConfig.None;
+
     private string MMHook_CliConfig_LanguageText(On.Terraria.Localization.Language.orig_GetTextValue_string orig, string key)
     {
         if (this.config.Enhancements.Value.CLIoverConfig && this._pendingConfig != PendingConfig.Done)
@@ -16,7 +17,7 @@ public partial class Plugin
             }
             if (key == "CLI.SetInitialPort")
             {
-                this._pendingDefault = $"{TShockAPI.TShock.Config.Settings.ServerPort}";
+                this._pendingDefault = $"{Terraria.Netplay.ListenPort}";
                 this._pendingConfig = PendingConfig.Port;
                 return orig(key).Replace("7777", this._pendingDefault);
             }
@@ -89,8 +90,100 @@ public partial class Plugin
     internal enum PendingConfig
     {
         None,
+
+        /// <summary>
+        /// Order:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <term>-maxplayers, -players</term>
+        ///     <description>Terraria.Initializers.LaunchInitializer.LoadServerParameters</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>-config &gt; maxplayers=</term>
+        ///     <description>Terraria.Initializers.LaunchInitializer.LoadServerParameters</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>-maxplayers, -players</term>
+        ///     <description>TerrariaApi.Server.ServerApi.HandleCommandLine</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>config.json &gt; MaxSlots + ReservedSlots</term>
+        ///     <description>TShockAPI.TShock.OnConfigRead</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>Interactive</term>
+        ///     <description>Terraria.Main.DedServ</description>
+        ///   </item>
+        /// </list>
+        /// </summary>
+
         MaxPlayers,
+
+        /// <summary>
+        /// Order:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <term>-p, -port</term>
+        ///     <description>Terraria.Initializers.LaunchInitializer.LoadSharedParameters</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>-config &gt; port=</term>
+        ///     <description>Terraria.Initializers.LaunchInitializer.LoadServerParameters</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>-config &gt; port=</term>
+        ///     <description>TShockAPI.TShock.HandleCommandLine</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>-port</term>
+        ///     <description>TShockAPI.TShock.HandleCommandLine</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>config.json &gt; ServerPort</term>
+        ///     <description>TShockAPI.TShock.OnConfigRead</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>-port</term>
+        ///     <description>TShockAPI.TShock.HandleCommandLinePostConfigLoad</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>Interactive</term>
+        ///     <description>Terraria.Main.DedServ</description>
+        ///   </item>
+        /// </list>
+        /// </summary>
         Port,
+
+
+        /// <summary>
+        /// Order:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <term>-pass, -password</term>
+        ///     <description>Terraria.Initializers.LaunchInitializer.LoadServerParameters</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>-config &gt; password=</term>
+        ///     <description>Terraria.Initializers.LaunchInitializer.LoadServerParameters</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>-pass, -password</term>
+        ///     <description>TerrariaApi.Server.ServerApi.HandleCommandLine</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>Discard all the previous settings</term>
+        ///     <description>TShockAPI.TShock.OnConfigRead</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>Interactive</term>
+        ///     <description>Terraria.Main.DedServ</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>Use interactive to replace config.json > ServerPassword</term>
+        ///     <description>TShockAPI.TShock.OnPostInit</description>
+        ///   </item>
+        /// </list>
+        /// </summary>
         Password,
         Done,
     }

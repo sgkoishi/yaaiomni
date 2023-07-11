@@ -237,6 +237,11 @@ public static partial class Utils
             {
                 case '\"':
                     inQuote = !inQuote;
+                    if (!inQuote && currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
+                    {
+                        currentCommand.EndSegment(true);
+                        currentIndex++;
+                    }
                     break;
                 case '\\':
                     if (currentIndex + 1 < input.Length)
@@ -247,7 +252,7 @@ public static partial class Utils
                     break;
                 case '&' when !inQuote && currentIndex + 1 < input.Length && input[currentIndex + 1] == '&':
                 case ';' when !inQuote:
-                    currentCommand.EndSegment();
+                    currentCommand.EndSegment(false);
                     currentCommand.ContinueOnError = input[currentIndex] == ';';
                     result.Add(currentCommand);
                     currentCommand = new Plugin.ParsedCommand();
@@ -258,7 +263,7 @@ public static partial class Utils
                     }
                     break;
                 case char c when !inQuote && char.IsWhiteSpace(c):
-                    currentCommand.EndSegment();
+                    currentCommand.EndSegment(false);
                     while (currentIndex + 1 < input.Length && char.IsWhiteSpace(input[currentIndex + 1]))
                     {
                         currentIndex++;
