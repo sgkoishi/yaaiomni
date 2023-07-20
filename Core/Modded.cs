@@ -50,7 +50,7 @@ public partial class Plugin
             var newName = br.ReadString();
             if (newName != currentName)
             {
-                TShockAPI.TShock.Log.Info($"Unusual name change detected: {Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()} claimed the name \"{newName}\" but previously known as {currentName}");
+                TShockAPI.TShock.Log.ConsoleInfo($"Unusual name change detected: {Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()} claimed the name \"{newName}\" but previously known as {currentName}");
             }
             return false;
         }
@@ -65,7 +65,7 @@ public partial class Plugin
         {
             Terraria.NetMessage.TrySendData((int) PacketTypes.Disconnect, whoAmI, -1, Terraria.Lang.mp[1].ToNetworkText());
             this.Statistics.ModdedEarlyChatSpam++;
-            TShockAPI.TShock.Log.Info($"Unusual chat detected and disconnected. ({Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()})");
+            TShockAPI.TShock.Log.ConsoleInfo($"Unusual chat detected and disconnected. ({Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()})");
             // Stop handling any data
             Terraria.Netplay.Clients[whoAmI].PendingTermination = true;
             Terraria.Netplay.Clients[whoAmI].PendingTerminationApproved = true;

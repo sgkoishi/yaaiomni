@@ -95,6 +95,7 @@ public partial class Plugin : TerrariaPlugin
         {
             this.LoadConfig(TShockAPI.TSPlayer.Server);
         };
+        Utils.ConsolePlayer.Instance.SendSuccessMessage($"{this.Name} initialized.");
     }
 
     private void LoadConfig(TShockAPI.TSPlayer? initiator)

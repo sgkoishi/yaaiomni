@@ -94,7 +94,7 @@ public partial class Plugin
         catch (Exception e)
         {
             args.Player.SendErrorMessage("Ping failed.");
-            TShockAPI.TShock.Log.Error(e.ToString());
+            TShockAPI.TShock.Log.ConsoleError(e.ToString());
         }
     }
 }

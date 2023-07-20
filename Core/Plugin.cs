@@ -198,7 +198,7 @@ public partial class Plugin : TerrariaPlugin
             TShockAPI.Commands.HandleCommand(TShockAPI.TSPlayer.Server, command);
         }
         Terraria.Initializers.ChatInitializer.Load();
-        initiator?.SendSuccessMessage("Chireiden.Omni loaded.");
+        initiator?.SendSuccessMessage($"{this.Name} loaded.");
     }
 
     private void OnReload(ReloadEventArgs? e)

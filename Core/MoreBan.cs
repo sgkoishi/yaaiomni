@@ -25,7 +25,7 @@ public partial class Plugin
                 }
                 catch (ArgumentException ex)
                 {
-                    TShockAPI.TShock.Log.Error($"Ban pattern {pt} is invalid: {ex.Message}");
+                    TShockAPI.TShock.Log.ConsoleError($"Ban pattern {pt} is invalid: {ex.Message}");
                     return false;
                 }
             }
@@ -36,7 +36,7 @@ public partial class Plugin
                     || !IPAddress.TryParse(addr[0], out var subnetAddr)
                     || !int.TryParse(addr[1], out var subnetMask))
                 {
-                    TShockAPI.TShock.Log.Error($"Ban pattern {pattern} is invalid.");
+                    TShockAPI.TShock.Log.ConsoleError($"Ban pattern {pattern} is invalid.");
                     return false;
                 }
 

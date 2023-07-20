@@ -455,7 +455,7 @@ public static partial class Utils
     {
         if (TShockAPI.TShock.Log != null)
         {
-            TShockAPI.TShock.Log.Error(value);
+            TShockAPI.TShock.Log.ConsoleError(value);
         }
         else
         {
