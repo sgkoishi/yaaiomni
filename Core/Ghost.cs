@@ -42,6 +42,7 @@ public partial class Plugin
         }
         else if (args.Parameters.Contains("-a"))
         {
+            // May experience desync
             args.TPlayer.active = !args.TPlayer.active;
         }
         else if (args.Parameters.Contains("-u"))
@@ -52,11 +53,16 @@ public partial class Plugin
         }
         else
         {
+            // Server side AI may target them even when ghost
             var state = this[args.Player].Ghost ?? false;
             this[args.Player].Ghost = !state;
         }
         Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerInfo, -1, args.Player.Index, null, args.Player.Index);
         Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, args.Player.Index, null, args.Player.Index);
         Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerActive, -1, args.Player.Index, null, args.Player.Index, args.TPlayer.active.GetHashCode());
+        if (!args.TPlayer.ghost && args.TPlayer.active && this[args.Player].Ghost != true)
+        {
+            Terraria.NetMessage.SyncOnePlayer(args.Player.Index, -1, args.Player.Index);
+        }
     }
 }

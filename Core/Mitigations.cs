@@ -2,7 +2,6 @@
 using MonoMod.Cil;
 using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net;
 using System.Runtime.CompilerServices;
 
@@ -350,38 +349,40 @@ public partial class Plugin
     private void MMHook_Mitigation_OnConnectionAccepted(On.Terraria.Netplay.orig_OnConnectionAccepted orig, Terraria.Net.Sockets.ISocket client)
     {
         var mitigation = this.config.Mitigation.Value;
-        if (mitigation.Enabled)
+        var cl = mitigation.ConnectionLimit.Value;
+        var nl = mitigation.LimitedNetwork.Value;
+
+        if (!mitigation.Enabled
+            || cl.Count == 0 || client.GetRemoteAddress() is not Terraria.Net.TcpAddress tcpa
+            || nl is Config.MitigationSettings.NetworkLimit.None
+            || (nl is Config.MitigationSettings.NetworkLimit.Public && Utils.PrivateIPv4Address(tcpa.Address)))
         {
-            var cl = mitigation.ConnectionLimit.Value;
-            if (cl.Count != 0)
+            orig(client);
+            return;
+        }
+
+        var addrs = tcpa.Address.ToString();
+        var cd = this._connPool.Connections.GetOrAdd(addrs, _ => new ConnectionStore.Connection
+        {
+            Address = tcpa.Address,
+            Limit = new ConcurrentBag<Limiter>(cl.Select(lc => (Limiter) lc)),
+        });
+        var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
+        this._connPool.ConnectTime.Add(client, new Float64Object
+        {
+            Value = time,
+        });
+        foreach (var limiter in cd.Limit)
+        {
+            if (!limiter.Allowed)
             {
-                if (client.GetRemoteAddress() is Terraria.Net.TcpAddress tcpa && !Utils.PrivateIPv4Address(tcpa.Address))
-                {
-                    var addrs = tcpa.Address.ToString();
-                    var cd = this._connPool.Connections.GetOrAdd(addrs, _ => new ConnectionStore.Connection
-                    {
-                        Address = tcpa.Address,
-                        Limit = new ConcurrentBag<Limiter>(cl.Select(lc => (Limiter) lc)),
-                    });
-                    var time = new TimeSpan(DateTime.Now.Ticks).TotalSeconds;
-                    this._connPool.ConnectTime.Add(client, new Float64Object
-                    {
-                        Value = time,
-                    });
-                    foreach (var limiter in cd.Limit)
-                    {
-                        if (!limiter.Allowed)
-                        {
-                            Interlocked.Increment(ref this.Statistics.MitigationRejectedConnection);
-                            client.Close();
-                            TShockAPI.TShock.Log.ConsoleInfo($"Connection from {tcpa.Address} ({tcpa.Port}) rejected due to connection limit.");
-                            return;
-                        }
-                    }
-                    this.CheckConnectionTimeout();
-                }
+                Interlocked.Increment(ref this.Statistics.MitigationRejectedConnection);
+                client.Close();
+                TShockAPI.TShock.Log.ConsoleInfo($"Connection from {tcpa.Address} ({tcpa.Port}) rejected due to connection limit.");
+                return;
             }
         }
+        this.CheckConnectionTimeout();
 
         orig(client);
     }

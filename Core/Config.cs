@@ -480,6 +480,11 @@ public class Config
         });
 
         /// <summary>
+        /// The restricted network type - all, public ipv4, none
+        /// </summary>
+        public Optional<NetworkLimit> LimitedNetwork = Optional.Default(NetworkLimit.Public, true);
+
+        /// <summary>
         /// <para>
         /// Some script kiddies spam connection requests to the server and occupy the connection pool.
         /// </para>
@@ -600,6 +605,13 @@ public class Config
             Ignore,
             Replace,
             // Merge
+        }
+
+        public enum NetworkLimit
+        {
+            All,
+            Public,
+            None
         }
     }
 
