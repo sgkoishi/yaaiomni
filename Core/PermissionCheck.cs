@@ -29,11 +29,7 @@ public partial class Plugin
             var entry = new AttachedData.PermissionCheckHistory(permission, now, result, strgy.LogStackTrace ? new StackTrace() : null);
             lock (history)
             {
-                if (strgy.LogCount > 0 && history.Count == strgy.LogCount)
-                {
-                    history.Dequeue();
-                }
-                history.Enqueue(entry);
+                history.Add(entry);
             }
         }
         return result;

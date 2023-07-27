@@ -4,11 +4,11 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin
 {
-    private int _updateCounter = 0;
+    public int UpdateCounter { get; private set; }
 
     private void TAHook_Update(EventArgs _)
     {
-        this._updateCounter++;
+        this.UpdateCounter++;
         foreach (var player in Utils.ActivePlayers)
         {
             this.ProcessDelayCommand(this[player]);
@@ -21,7 +21,7 @@ public partial class Plugin
     {
         for (var i = 0; i < data.DelayCommands.Count; i++)
         {
-            if ((this._updateCounter - data.DelayCommands[i].Start) % data.DelayCommands[i].Timeout == 0)
+            if ((this.UpdateCounter - data.DelayCommands[i].Start) % data.DelayCommands[i].Timeout == 0)
             {
                 TShockAPI.Commands.HandleCommand(data.Player, data.DelayCommands[i].Command);
                 data.DelayCommands[i].Repeat -= 1;
@@ -54,7 +54,7 @@ public partial class Plugin
         }
 
         var commands = this[args.Player].DelayCommands;
-        var cmd = new AttachedData.DelayCommand(args.Parameters[0], start: this._updateCounter, timeout: timeout);
+        var cmd = new AttachedData.DelayCommand(args.Parameters[0], start: this.UpdateCounter, timeout: timeout);
         commands.Add(cmd);
         args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed once in the future (id: {(uint) cmd.GetHashCode()}).");
     }
@@ -78,7 +78,7 @@ public partial class Plugin
             return;
         }
         var commands = this[args.Player].DelayCommands;
-        var cmd = new AttachedData.DelayCommand(args.Parameters[0], start: this._updateCounter, timeout: interval, repeat: 0);
+        var cmd = new AttachedData.DelayCommand(args.Parameters[0], start: this.UpdateCounter, timeout: interval, repeat: 0);
         commands.Add(cmd);
         args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed in the future (id: {(uint) cmd.GetHashCode()}).");
     }

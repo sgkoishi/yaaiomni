@@ -524,3 +524,77 @@ public static partial class Utils
         }
     }
 }
+
+public class Ring<T> : IEnumerable<T>
+{
+    internal T[] _data;
+    internal int _start;
+    internal int _length;
+    public Ring(int length)
+    {
+        this._data = new T[length];
+        this._start = 0;
+        this._length = 0;
+    }
+
+    public T this[int index]
+    {
+        get
+        {
+            return this._data[(index + this._start) % this._data.Length];
+        }
+    }
+
+    public void Add(T item)
+    {
+        if (this._length < this._data.Length)
+        {
+            this._data[this._length++] = item;
+        }
+        else
+        {
+            this._data[this._start] = item;
+            this._start = (this._start + 1) % this._data.Length;
+        }
+    }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        return new RingEnumerator(this);
+    }
+
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    {
+        return new RingEnumerator(this);
+    }
+
+    private class RingEnumerator : IEnumerator<T>
+    {
+        private readonly Ring<T> _ring;
+        private int _index;
+
+        public T Current => _ring[_index];
+
+        object? System.Collections.IEnumerator.Current => _ring[_index];
+
+        public RingEnumerator(Ring<T> ring)
+        {
+            this._ring = ring;
+            this._index = -1;
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public bool MoveNext()
+        {
+            return ++this._index < this._ring._length;
+        }
+
+        public void Reset()
+        {
+            this._index = -1;
+        }
+    }
+}

@@ -77,7 +77,9 @@ public partial class Plugin
 
         var preset = this.config.Permission.Value.Preset.Value;
         var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
-        Utils.AddPermission(guest, Permission.Ping);
+        Utils.AddPermission(guest,
+            Permission.Ping,
+            Permission.Echo);
 
         if (preset.DebugForAdminOnly)
         {
@@ -92,7 +94,6 @@ public partial class Plugin
             Permission.Admin.Ghost,
             Permission.Admin.ManageLanguage,
             Permission.Admin.DebugStat,
-            Permission.Admin.UpsCheck,
             Permission.SetTimeout,
             Permission.SetInterval,
             Permission.ClearInterval,
@@ -102,9 +103,6 @@ public partial class Plugin
         Utils.AliasPermission(TShockAPI.Permissions.maintenance,
             Permission.Admin.MaxPlayers,
             Permission.Admin.TileProvider,
-            Permission.Admin.GarbageCollect,
-            Permission.Admin.RawBroadcast,
-            Permission.Admin.TerminateSocket,
             Permission.Admin.ResetCharacterOther,
             Permission.Admin.ExportCharacter,
             Permission.Admin.ApplyDefaultPermission,
@@ -112,8 +110,6 @@ public partial class Plugin
 
         Utils.AliasPermission(TShockAPI.Permissions.su,
             Permission.Admin.Sudo,
-            Permission.Admin.ListClients,
-            Permission.Admin.DumpBuffer,
             Permission.Admin.ResetCharacterAll);
 
         File.WriteAllText(Path.Combine(TShockAPI.TShock.SavePath, Misc.PresetLock), string.Empty);

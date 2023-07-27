@@ -38,11 +38,10 @@ public class Config
 
     public Optional<List<string>> HideCommands = Optional.Default(new List<string> {
         DefinedConsts.Commands.Whynot,
-        DefinedConsts.Commands.Admin.GarbageCollect,
         DefinedConsts.Commands.Admin.DebugStat,
         DefinedConsts.Commands.ResetCharacter,
         DefinedConsts.Commands.Ping,
-        DefinedConsts.Commands.Admin.UpsCheck,
+        DefinedConsts.Commands.Echo,
         DefinedConsts.Commands.Admin.ApplyDefaultPermission
     });
 
@@ -82,11 +81,6 @@ public class Config
         /// Override config file with CLI input (port, maxplayers)
         /// </summary>
         public Optional<bool> CLIoverConfig = Optional.Default(true, true);
-
-        /// <summary>
-        /// Disable vanilla version check.
-        /// </summary>
-        public Optional<bool> SyncVersion = Optional.Default(false);
 
         /// <summary>
         /// Fix the broken default language detect.

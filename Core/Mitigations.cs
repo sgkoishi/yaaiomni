@@ -244,7 +244,7 @@ public partial class Plugin
 
         if (mitigation.NpcUpdateBuffRateLimit)
         {
-            if (this._updateCounter % 10 == 0)
+            if (this.UpdateCounter % 10 == 0)
             {
                 for (var i = 0; i < Terraria.Main.npc.Length; i++)
                 {

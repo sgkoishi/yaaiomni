@@ -208,7 +208,6 @@ public partial class Plugin : TerrariaPlugin
 
     public override void Initialize()
     {
-        On.Terraria.MessageBuffer.GetData += this.MMHook_PatchVersion_GetData;
         On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor += this.MMHook_MemoryTrim_DisplayDoll;
         On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor += this.MMHook_MemoryTrim_HatRack;
         On.Terraria.Projectile.Kill += this.MMHook_Soundness_ProjectileKill;
@@ -236,7 +235,6 @@ public partial class Plugin : TerrariaPlugin
     {
         if (disposing)
         {
-            On.Terraria.MessageBuffer.GetData -= this.MMHook_PatchVersion_GetData;
             On.Terraria.GameContent.Tile_Entities.TEDisplayDoll.ctor -= this.MMHook_MemoryTrim_DisplayDoll;
             On.Terraria.GameContent.Tile_Entities.TEHatRack.ctor -= this.MMHook_MemoryTrim_HatRack;
             On.Terraria.NetMessage.SendData -= this.MMHook_DebugPacket_SendData;

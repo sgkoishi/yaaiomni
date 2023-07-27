@@ -5,9 +5,19 @@
 /// </summary>
 public class Config
 {
+    public Optional<EnhancementsSettings> Enhancements = Optional.Default(new EnhancementsSettings());
+
     public Optional<LavaSettings> LavaHandler = Optional.Default(new LavaSettings(), true);
 
     public Optional<PermissionSettings> Permission = Optional.Default(new PermissionSettings());
+
+    public record class EnhancementsSettings
+    {
+        /// <summary>
+        /// Disable vanilla version check.
+        /// </summary>
+        public Optional<bool> SyncVersion = Optional.Default(false);
+    }
 
     public record class LavaSettings
     {

@@ -15,7 +15,7 @@ public partial class Plugin
             {
                 return data;
             }
-            data = new AttachedData(player, this.config.Mitigation.Value.ChatSpamRestrict);
+            data = new AttachedData(player, this.config.Permission.Value.Log.Value.LogCount, this.config.Mitigation.Value.ChatSpamRestrict);
             this._playerData.Add(player, data);
             return data;
         }
@@ -31,7 +31,7 @@ public class AttachedData
     internal int DetectPE = 1;
     internal int PendingRevertHeal;
     public Limiter[] ChatSpamRestrict;
-    public Queue<PermissionCheckHistory> PermissionHistory;
+    public Ring<PermissionCheckHistory> PermissionHistory;
     internal PendingAck[] RecentPings;
     public Action<TimeSpan>? OnPingUpdated;
     public List<DelayCommand> DelayCommands;
@@ -52,10 +52,10 @@ public class AttachedData
         }
     }
 
-    public AttachedData(TShockAPI.TSPlayer player, List<Config.LimiterConfig> chatLimiter)
+    public AttachedData(TShockAPI.TSPlayer player, int logCount, List<Config.LimiterConfig> chatLimiter)
     {
         this.Player = player;
-        this.PermissionHistory = new Queue<PermissionCheckHistory>();
+        this.PermissionHistory = new Ring<PermissionCheckHistory>(logCount);
         this.RecentPings = Terraria.Main.item.Select(_ => new PendingAck()).ToArray();
         this.DelayCommands = new List<DelayCommand>();
         this.ChatSpamRestrict = chatLimiter.Select(lc => (Limiter) lc).ToArray();

@@ -34,6 +34,10 @@ public partial class Plugin : TerrariaPlugin
             typeof(WorldGen)
                 .GetMethod(nameof(WorldGen.KillTile), _bfany),
             this.Detour_Lava_KillTile);
+        this.Detour(
+            nameof(this.Detour_UpdateConnectedClients),
+            typeof(Terraria.Netplay).GetMethod(nameof(Terraria.Netplay.UpdateConnectedClients), _bfany),
+            this.Detour_UpdateConnectedClients);
     }
 
     public override void Initialize()
@@ -49,7 +53,8 @@ public partial class Plugin : TerrariaPlugin
                 DefinedConsts.Commands.PvPStatus,
                 DefinedConsts.Commands.TeamStatus,
                 DefinedConsts.Commands.Chat,
-                DefinedConsts.Commands.Echo,
+                DefinedConsts.Commands.Admin.GarbageCollect,
+                DefinedConsts.Commands.Admin.UpsCheck,
             }));
             plugin.config.Mode.Value.Vanilla.Value.Permissions.Mutate(list => list.AddRange(new List<string>
             {
@@ -63,30 +68,40 @@ public partial class Plugin : TerrariaPlugin
             var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
             if (this.config.Permission.Value.Preset.Value.AllowRestricted || plugin.config.Mode.Value.Vanilla.Value.Enabled)
             {
-                Omni.Utils.AddPermission(guest,
+                Utils.AddPermission(guest,
                     DefinedConsts.Permission.TogglePvP,
                     DefinedConsts.Permission.ToggleTeam,
                     DefinedConsts.Permission.SyncLoadout,
                     DefinedConsts.Permission.PvPStatus,
                     DefinedConsts.Permission.TeamStatus);
 
-                Omni.Utils.AddPermission(guest, DefinedConsts.Permission.Echo);
-                Omni.Utils.AliasPermission(TShockAPI.Permissions.canchat, DefinedConsts.Permission.Chat);
-                Omni.Utils.AliasPermission(DefinedConsts.Permission.TogglePvP, $"{DefinedConsts.Permission.TogglePvP}.*");
-                Omni.Utils.AliasPermission(DefinedConsts.Permission.ToggleTeam, $"{DefinedConsts.Permission.ToggleTeam}.*");
+                Utils.AliasPermission(TShockAPI.Permissions.canchat, DefinedConsts.Permission.Chat);
+                Utils.AliasPermission(DefinedConsts.Permission.TogglePvP, $"{DefinedConsts.Permission.TogglePvP}.*");
+                Utils.AliasPermission(DefinedConsts.Permission.ToggleTeam, $"{DefinedConsts.Permission.ToggleTeam}.*");
 
-                Omni.Utils.AliasPermission(TShockAPI.Permissions.summonboss, $"{DefinedConsts.Permission.SummonBoss}.*");
-                Omni.Utils.AliasPermission(TShockAPI.Permissions.startinvasion, $"{DefinedConsts.Permission.SummonBoss}.*");
+                Utils.AliasPermission(TShockAPI.Permissions.summonboss, $"{DefinedConsts.Permission.SummonBoss}.*");
+                Utils.AliasPermission(TShockAPI.Permissions.startinvasion, $"{DefinedConsts.Permission.SummonBoss}.*");
 
-                Omni.Utils.AliasPermission(TShockAPI.Permissions.kick,
+                Utils.AliasPermission(TShockAPI.Permissions.kick,
                     DefinedConsts.Permission.Admin.PvPStatus,
-                    DefinedConsts.Permission.Admin.TeamStatus);
+                    DefinedConsts.Permission.Admin.TeamStatus,
+                    DefinedConsts.Permission.Admin.UpsCheck);
+
+                Utils.AliasPermission(TShockAPI.Permissions.maintenance,
+                    DefinedConsts.Permission.Admin.GarbageCollect,
+                    DefinedConsts.Permission.Admin.RawBroadcast,
+                    DefinedConsts.Permission.Admin.TerminateSocket,
+                    DefinedConsts.Permission.Admin.GenerateFullConfig);
+
+                Utils.AliasPermission(TShockAPI.Permissions.su,
+                    DefinedConsts.Permission.Admin.ListClients,
+                    DefinedConsts.Permission.Admin.DumpBuffer);
             }
         };
 
-
         this.InitCommands();
 
+        On.Terraria.MessageBuffer.GetData += this.MMHook_PatchVersion_GetData;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SyncLoadout;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SummonBoss;
         TShockAPI.GetDataHandlers.TogglePvp.Register(this.GDHook_Permission_TogglePvp);
@@ -132,6 +147,7 @@ public partial class Plugin : TerrariaPlugin
     {
         if (disposing)
         {
+            On.Terraria.MessageBuffer.GetData -= this.MMHook_PatchVersion_GetData;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Permission_SyncLoadout;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Permission_SummonBoss;
             TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.GDHook_Permission_TogglePvp);

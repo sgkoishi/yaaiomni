@@ -5,21 +5,6 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin
 {
-    [Command("Admin.GarbageCollect", "_gc", Permission = "chireiden.omni.admin.gc")]
-    private void Command_GC(CommandArgs args)
-    {
-        if (args.Parameters.Contains("-f"))
-        {
-            System.Runtime.GCSettings.LargeObjectHeapCompactionMode = System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
-            GC.Collect();
-        }
-        else
-        {
-            GC.Collect(3, GCCollectionMode.Optimized, false);
-        }
-        args.Player.SendSuccessMessage("GC Triggered.");
-    }
-
     [Command("Admin.MaxPlayers", "maxplayers", Permission = "chireiden.omni.admin.maxplayers")]
     private void Command_MaxPlayers(CommandArgs args)
     {
@@ -38,19 +23,6 @@ public partial class Plugin
         {
             args.Player.SendErrorMessage("Invalid max players.");
         }
-    }
-
-    [Command("Admin.RawBroadcast", "rbc", "rawbroadcast", Permission = "chireiden.omni.admin.rawbroadcast")]
-    private void Command_RawBroadcast(CommandArgs args)
-    {
-        if (args.Parameters.Count == 0)
-        {
-            args.Player.SendErrorMessage("Invalid broadcast message.");
-            return;
-        }
-
-        // No need to log because TShock log every command already.
-        TSPlayer.All.SendMessage(args.Parameters[0], 0, 0, 0);
     }
 
     [Command("Admin.Sudo", "runas", Permission = "chireiden.omni.admin.sudo")]
@@ -108,59 +80,6 @@ public partial class Plugin
                 TShockAPI.Commands.HandleCommand(p, parm[1]);
             }
         }
-    }
-
-    [Command("Admin.ListClients", "listclients", Permission = "chireiden.omni.admin.listclients")]
-    private void Command_ListConnected(CommandArgs args)
-    {
-        foreach (var client in Terraria.Netplay.Clients)
-        {
-            if (client.IsConnected())
-            {
-                args.Player.SendInfoMessage($"Index: {client.Id} {client.Socket.GetRemoteAddress()} {client.Name} State: {client.State} Bytes: {Terraria.NetMessage.buffer[client.Id].totalData}");
-                args.Player.SendInfoMessage($"Status: {client.StatusText}");
-                args.Player.SendInfoMessage($"Status: {client.StatusText2}");
-            }
-        }
-    }
-
-    [Command("Admin.DumpBuffer", "dumpbuffer", Permission = "chireiden.omni.admin.dumpbuffer")]
-    private void Command_DumpBuffer(CommandArgs args)
-    {
-        if (args.Parameters.Count == 0)
-        {
-            args.Player.SendErrorMessage("Invalid player.");
-            return;
-        }
-
-        if (!byte.TryParse(args.Parameters[0], out var index))
-        {
-            args.Player.SendErrorMessage("Invalid player.");
-            return;
-        }
-
-        var path = args.Parameters.Count > 1 ? string.Join("_", args.Parameters[1].Split(Path.GetInvalidFileNameChars())) : "dump.bin";
-        path = Path.Combine(TShockAPI.TShock.SavePath, path);
-
-        File.WriteAllBytes(path, Terraria.NetMessage.buffer[index].readBuffer[..Terraria.NetMessage.buffer[index].totalData]);
-    }
-
-    [Command("Admin.TerminateSocket", "kc", Permission = "chireiden.omni.admin.terminatesocket")]
-    private void Command_TerminateSocket(CommandArgs args)
-    {
-        if (args.Parameters.Count == 0)
-        {
-            args.Player.SendErrorMessage("Invalid player.");
-            return;
-        }
-
-        if (!byte.TryParse(args.Parameters[0], out var index))
-        {
-            args.Player.SendErrorMessage("Invalid player.");
-            return;
-        }
-
-        Terraria.Netplay.Clients[index]?.Socket?.Close();
     }
 
     private class DummyGroup : Group
@@ -354,23 +273,10 @@ public partial class Plugin
         }
     }
 
-    private (int Tick, DateTime Time) _tickCheck = (-1, DateTime.MinValue);
-    [Command("Admin.UpsCheck", "_ups", Permission = "chireiden.omni.admin.upscheck")]
-    private void Command_TicksPerSec(CommandArgs args)
+    [Command("Echo", "echo", Permission = "chireiden.omni.echo")]
+    private void Command_Echo(CommandArgs args)
     {
-        if (this._tickCheck.Tick == -1)
-        {
-            this._tickCheck = (this._updateCounter, DateTime.Now);
-            args.Player.SendInfoMessage("Started tracking ticks per second.");
-        }
-        else
-        {
-            var (Tick, Time) = this._tickCheck;
-            this._tickCheck = (-1, DateTime.MinValue);
-            var diff = this._updateCounter - Tick;
-            var time = DateTime.Now - Time;
-            args.Player.SendInfoMessage($"{diff} ticks / {time} seconds: {diff / time.TotalSeconds:F2}");
-        }
+        args.Player.SendInfoMessage(string.Join(" ", args.Parameters));
     }
 
     [Command("Admin.ApplyDefaultPermission", "_setperm", Permission = "chireiden.omni.admin.setupperm")]
