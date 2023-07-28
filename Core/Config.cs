@@ -361,7 +361,7 @@ public class Config
 
     public record class MitigationSettings
     {
-        public Optional<bool> Enabled = Optional.Default(true);
+        public Optional<bool> DisableAllMitigation = Optional.Default(false, true);
 
         /// <summary>
         /// <para>

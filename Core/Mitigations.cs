@@ -55,7 +55,7 @@ public partial class Plugin
         }
 
         var mitigation = this.config.Mitigation.Value;
-        if (!mitigation.Enabled)
+        if (mitigation.DisableAllMitigation)
         {
             return;
         }
@@ -219,7 +219,7 @@ public partial class Plugin
         }
 
         var mitigation = this.config.Mitigation.Value;
-        if (!mitigation.Enabled)
+        if (mitigation.DisableAllMitigation)
         {
             return;
         }
@@ -237,7 +237,7 @@ public partial class Plugin
     private void TAHook_Mitigation_GameUpdate(EventArgs _)
     {
         var mitigation = this.config.Mitigation.Value;
-        if (!mitigation.Enabled)
+        if (mitigation.DisableAllMitigation)
         {
             return;
         }
@@ -300,7 +300,7 @@ public partial class Plugin
     private void Detour_Mitigation_SetTitle(Action<TShockAPI.Utils, bool> orig, TShockAPI.Utils self, bool empty)
     {
         var mitigation = this.config.Mitigation.Value;
-        if (mitigation.Enabled && mitigation.SuppressTitle)
+        if (!mitigation.DisableAllMitigation && mitigation.SuppressTitle)
         {
             if (ShouldSuppressTitle)
             {
@@ -352,7 +352,7 @@ public partial class Plugin
         var cl = mitigation.ConnectionLimit.Value;
         var nl = mitigation.LimitedNetwork.Value;
 
-        if (!mitigation.Enabled
+        if (mitigation.DisableAllMitigation
             || cl.Count == 0 || client.GetRemoteAddress() is not Terraria.Net.TcpAddress tcpa
             || nl is Config.MitigationSettings.NetworkLimit.None
             || (nl is Config.MitigationSettings.NetworkLimit.Public && Utils.PrivateIPv4Address(tcpa.Address)))
@@ -428,27 +428,29 @@ public partial class Plugin
     private void ILHook_Mitigation_DisabledInvincible(ILContext context)
     {
         var mitigation = this.config.Mitigation.Value;
-        if (mitigation.Enabled)
+        if (mitigation.DisableAllMitigation)
         {
-            var cursor = new ILCursor(context);
-            try
+            return;
+        }
+
+        var cursor = new ILCursor(context);
+        try
+        {
+            cursor.GotoNext(MoveType.After, (i) => i.MatchCallvirt<TShockAPI.TSPlayer>(nameof(TShockAPI.TSPlayer.IsBeingDisabled)));
+            switch (mitigation.DisabledDamageHandler.Value)
             {
-                cursor.GotoNext(MoveType.After, (i) => i.MatchCallvirt<TShockAPI.TSPlayer>(nameof(TShockAPI.TSPlayer.IsBeingDisabled)));
-                switch (mitigation.DisabledDamageHandler.Value)
-                {
-                    case Config.MitigationSettings.DisabledDamageAction.AsIs:
-                    case Config.MitigationSettings.DisabledDamageAction.Ghost:
-                        break;
-                    case Config.MitigationSettings.DisabledDamageAction.Hurt:
-                        cursor.Emit(OpCodes.Pop);
-                        cursor.Emit(OpCodes.Ldc_I4_0);
-                        break;
-                }
+                case Config.MitigationSettings.DisabledDamageAction.AsIs:
+                case Config.MitigationSettings.DisabledDamageAction.Ghost:
+                    break;
+                case Config.MitigationSettings.DisabledDamageAction.Hurt:
+                    cursor.Emit(OpCodes.Pop);
+                    cursor.Emit(OpCodes.Ldc_I4_0);
+                    break;
             }
-            catch
-            {
-                Utils.ShowError($"Attempt hook {nameof(Config.Mitigation)}.{nameof(Config.MitigationSettings.DisabledDamageHandler)} failed, might be already fixed.");
-            }
+        }
+        catch
+        {
+            Utils.ShowError($"Attempt hook {nameof(Config.Mitigation)}.{nameof(Config.MitigationSettings.DisabledDamageHandler)} failed, might be already fixed.");
         }
     }
 
@@ -458,7 +460,7 @@ public partial class Plugin
         try
         {
             var mitigation = this.config.Mitigation.Value;
-            if (mitigation.Enabled && mitigation.KeepRestAlive)
+            if (!mitigation.DisableAllMitigation && mitigation.KeepRestAlive)
             {
                 var cursor = new ILCursor(context);
                 cursor.GotoNext(MoveType.Before, (i) => i.MatchCallvirt("HttpServer.Headers.ConnectionHeader", "set_Type"));
@@ -478,7 +480,7 @@ public partial class Plugin
         Terraria.UI.Chat.ChatManager.Commands._localizedCommands.Clear();
         orig();
         var mitigation = this.config.Mitigation.Value;
-        if (mitigation.Enabled && mitigation.UseEnglishCommand)
+        if (!mitigation.DisableAllMitigation && mitigation.UseEnglishCommand)
         {
             var currentLanguage = Terraria.Localization.LanguageManager.Instance.ActiveCulture;
             Terraria.Localization.LanguageManager.Instance.LoadLanguage(Terraria.Localization.GameCulture.FromCultureName(Terraria.Localization.GameCulture.CultureName.English));
@@ -497,7 +499,7 @@ public partial class Plugin
     {
         var result = orig(cfg, out requiredUpgrade);
         var mitigation = this.config.Mitigation.Value;
-        if (mitigation.Enabled && result.Children().Count() > 1)
+        if (!mitigation.DisableAllMitigation && result.Children().Count() > 1)
         {
             switch (mitigation.AcceptPartialUpdatedConfig.Value)
             {
