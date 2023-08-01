@@ -9,42 +9,6 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin
 {
-    internal static class Mitigations
-    {
-        internal static bool HandleInventorySlotPE(byte player, Span<byte> data)
-        {
-            if (data.Length != 8)
-            {
-                return true;
-            }
-
-            if (data[0] != player)
-            {
-                return true;
-            }
-
-            var slot = BitConverter.ToInt16(data.Slice(1, 2));
-            var stack = BitConverter.ToInt16(data.Slice(3, 2));
-            var prefix = data[5];
-            var type = BitConverter.ToInt16(data.Slice(6, 2));
-
-            var existingItem = Terraria.Main.player[player].GetInventory(slot);
-
-            if (existingItem != null)
-            {
-                if ((existingItem.netID == 0 || existingItem.stack == 0) && (type == 0 || stack == 0))
-                {
-                    return true;
-                }
-                if (existingItem.netID == type && existingItem.stack == stack && existingItem.prefix == prefix)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
     private readonly bool[] _BuffUpdateNPC = new bool[Terraria.Main.npc.Length];
 
     private void OTHook_Mitigation_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
@@ -65,28 +29,49 @@ public partial class Plugin
             case (int) PacketTypes.PlayerSlot when mitigation.InventorySlotPE:
             {
                 var index = args.Instance.whoAmI;
-                if (Mitigations.HandleInventorySlotPE((byte) index, args.Instance.readBuffer.AsSpan(args.ReadOffset, args.Length - 1)))
+                var data = args.Instance.readBuffer.AsSpan(args.ReadOffset, args.Length - 1);
+
+                if (data.Length == 8 && data[0] == index)
                 {
-                    args.CancelPacket();
-                    this.Statistics.MitigationSlotPE++;
-                    var player = TShockAPI.TShock.Players[index];
-                    if (player == null)
+                    var slot = BitConverter.ToInt16(data.Slice(1, 2));
+                    var stack = BitConverter.ToInt16(data.Slice(3, 2));
+                    var prefix = data[5];
+                    var type = BitConverter.ToInt16(data.Slice(6, 2));
+
+                    var existingItem = Terraria.Main.player[index].GetInventory(slot);
+
+                    if (existingItem == null)
                     {
-                        return;
+                        this.Statistics.MitigationSlotPEAllowed++;
+                        break;
                     }
-                    var value = this[player].DetectPE;
-                    this[player].DetectPE = value + 1;
-                    if (value % 500 == 0)
+
+                    if (!existingItem.IsAir || type != 0 && stack != 0)
                     {
-                        var currentLoadoutIndex = Terraria.Main.player[index].CurrentLoadoutIndex;
-                        Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, (currentLoadoutIndex + 1) % 3);
-                        Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, currentLoadoutIndex);
-                        this[player].IsPE = true;
+                        if (existingItem.netID != type || existingItem.stack != stack || existingItem.prefix != prefix)
+                        {
+                            this.Statistics.MitigationSlotPEAllowed++;
+                            break;
+                        }
                     }
                 }
-                else
+
+                args.CancelPacket();
+                this.Statistics.MitigationSlotPE++;
+                var player = TShockAPI.TShock.Players[index];
+                if (player == null)
                 {
-                    this.Statistics.MitigationSlotPEAllowed++;
+                    break;
+                }
+
+                var value = this[player].DetectPE;
+                this[player].DetectPE = value + 1;
+                if (value % 500 == 0)
+                {
+                    var currentLoadoutIndex = Terraria.Main.player[index].CurrentLoadoutIndex;
+                    Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, (currentLoadoutIndex + 1) % 3);
+                    Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, currentLoadoutIndex);
+                    this[player].IsPE = true;
                 }
                 break;
             }

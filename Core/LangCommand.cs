@@ -83,6 +83,13 @@ public partial class Plugin
     {
         typeof(CultureInfo).GetField("s_currentThreadUICulture", _bfany)?.SetValue(null, null);
         Console.WriteLine($"Existing culture: \"{CultureInfo.CurrentUICulture}\" ({CultureInfo.CurrentUICulture.EnglishName}).");
+        if (LanguageManager.Instance.ActiveCulture != GameCulture.DefaultCulture)
+        {
+            // Language is already set explicitly
+            // Try to respect -lang/-language etc., but not work if -lang 1
+            return;
+        }
+
         if (Utils.TryParseGameCulture(CultureInfo.CurrentUICulture.ToString(), out var result, true))
         {
             LanguageManager.Instance.SetLanguage(result);

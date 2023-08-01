@@ -51,6 +51,7 @@ public partial class Plugin
             if (newName != currentName)
             {
                 TShockAPI.TShock.Log.ConsoleInfo($"Unusual name change detected: {Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()} claimed the name \"{newName}\" but previously known as {currentName}");
+                return true;
             }
             return false;
         }
@@ -74,6 +75,8 @@ public partial class Plugin
 
         if (args.PacketId == (byte) PacketTypes.PlayerInfo)
         {
+            // This is actually not working since the client do not sync
+            // Only sent when related info changed
             if (ModdedFakeName(whoAmI, args.Instance.readBuffer.AsSpan(args.ReadOffset + 3, args.Length - 3)))
             {
                 Terraria.NetMessage.TrySendData((int) PacketTypes.Disconnect, whoAmI, -1, Terraria.Lang.mp[1].ToNetworkText());
@@ -82,6 +85,17 @@ public partial class Plugin
                 Terraria.Netplay.Clients[whoAmI].PendingTerminationApproved = true;
                 args.CancelPacket();
             }
+
+            // It might be possible to detect via active probing:
+            // if (player.position.Y < Main.worldSurface * 16.0)
+            // {
+            //     player.happyFunTorchTime = true;
+            //     SendData(PacketTypes.PlayerInfo);
+            //     if (player.name != GetData(PacketTypes.PlayerInfo).name)
+            //     {
+            //         Kick(player);
+            //     }
+            // }
         }
     }
 }
