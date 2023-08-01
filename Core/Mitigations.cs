@@ -523,4 +523,47 @@ public partial class Plugin
         }
         return result;
     }
+
+    private void MMHook_Mitigation_DoorDropItem(On.Terraria.WorldGen.orig_DropDoorItem orig, int x, int y, int doorStyle)
+    {
+        var mitigation = this.config.Mitigation.Value;
+        if (mitigation.DisableAllMitigation)
+        {
+            return;
+        }
+
+        if (doorStyle > TShockAPI.GetDataHandlers.MaxPlaceStyles[Terraria.ID.TileID.ClosedDoor])
+        {
+            // Can be used to spawn arbitrary items
+            return;
+        }
+
+        orig(x, y, doorStyle);
+    }
+
+    private void MMHook_Mitigation_TileDropItem(On.Terraria.WorldGen.orig_KillTile_GetItemDrops orig, int x, int y, Terraria.ITile tileCache, out int dropItem, out int dropItemStack, out int secondaryItem, out int secondaryItemStack, bool includeLargeObjectDrops)
+    {
+        var mitigation = this.config.Mitigation.Value;
+        if (mitigation.DisableAllMitigation || !mitigation.OverflowWorldGenItemID)
+        {
+            orig(x, y, tileCache, out dropItem, out dropItemStack, out secondaryItem, out secondaryItemStack, includeLargeObjectDrops);
+            return;
+        }
+
+        dropItem = 0;
+        dropItemStack = 0;
+        secondaryItem = 0;
+        secondaryItemStack = 0;
+
+        if (tileCache.type == Terraria.ID.TileID.Torches)
+        {
+            var style = tileCache.frameY / 22;
+            if (style > TShockAPI.GetDataHandlers.MaxPlaceStyles[Terraria.ID.TileID.Torches])
+            {
+                return;
+            }
+        }
+
+        orig(x, y, tileCache, out dropItem, out dropItemStack, out secondaryItem, out secondaryItemStack, includeLargeObjectDrops);
+    }
 }

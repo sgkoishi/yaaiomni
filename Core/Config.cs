@@ -13,7 +13,7 @@ public class Config
     /// <summary>
     /// Weather to log all exceptions.
     /// </summary>
-    public Optional<bool> LogFirstChance = Optional.Default(false);
+    public Optional<bool> LogFirstChance = Optional.Default(false, true);
 
     /// <summary>
     /// DateTime format for logging.
@@ -570,6 +570,16 @@ public class Config
         /// </para>
         /// </summary>
         public Optional<PartialConfigAction> AcceptPartialUpdatedConfig = Optional.Default(PartialConfigAction.Replace, true);
+
+        /// <summary>
+        /// <para>
+        /// There are many exploits that can be used to spawn arbitrary items.
+        /// </para>
+        /// <para>
+        /// This will try to stop them.
+        /// </para>
+        /// </summary>
+        public Optional<bool> OverflowWorldGenItemID = Optional.Default(false);
 
         public enum DisabledDamageAction
         {
