@@ -81,21 +81,25 @@ public partial class Plugin
 
     private List<Rect> _tileBlocks = new List<Rect>();
 
-#if USE_ASYNCLOCAL_STACK_COUNT
     private AsyncLocal<int> _frameCount = new AsyncLocal<int>();
-#endif
+    private bool _worldgenHalting = false;
 
     private void Detour_InspectTileFrame(Action<int, int, bool, bool> orig, int i, int j, bool resetFrame, bool noBreak)
     {
-#if USE_ASYNCLOCAL_STACK_COUNT
         var frames = this._frameCount.Value;
+        if (this._worldgenHalting)
+        {
+            if (frames > 3)
+            {
+                return;
+            }
+            else
+            {
+                this._worldgenHalting = false;
+            }
+        }
+
         const int LIMIT = 100;
-#else
-        var st = new System.Diagnostics.StackTrace(false);
-        var frames = st.FrameCount;
-        const int LIMIT = 400;
-#endif
-        // Would be better to count the frames of TileFrame, but this is already too slow
         if (frames >= LIMIT)
         {
             TShockAPI.TShock.Log.ConsoleInfo($"Detour_InspectTileFrame: {frames} frames at {i}, {j}");
@@ -125,16 +129,13 @@ public partial class Plugin
                 {
                     TShockAPI.TShock.Log.ConsoleError($"Detour_InspectTileFrame: {block.x1}, {block.x2}, {block.y1}, {block.y2}");
                 }
+                this._worldgenHalting = true;
                 return;
             }
         }
 
-#if USE_ASYNCLOCAL_STACK_COUNT
         this._frameCount.Value += 1;
         orig(i, j, resetFrame, noBreak);
         this._frameCount.Value -= 1;
-#else
-        orig(i, j, resetFrame, noBreak);
-#endif
     }
 }
