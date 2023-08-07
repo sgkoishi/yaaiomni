@@ -32,14 +32,14 @@ public partial class Plugin
         }
         args.Player.SendInfoMessage($"Testing tile frame {startX},{startY}, granularity {granularityX},{granularityY}");
         args.Player.SendInfoMessage("You may experience lag.");
-        for (int i = startX; i < Terraria.Main.maxTilesX; i++)
+        for (var i = startX; i < Terraria.Main.maxTilesX; i++)
         {
             if (i % granularityX == 0)
             {
                 args.Player.SendInfoMessage($"Testing tile frame {i}...");
             }
             var start = i == startX ? startY : 0;
-            for (int j = start; j < Terraria.Main.maxTilesY; j++)
+            for (var j = start; j < Terraria.Main.maxTilesY; j++)
             {
                 if (j % granularityY == 0)
                 {
@@ -71,18 +71,9 @@ public partial class Plugin
         args.Player.SendInfoMessage("Inspecting tile frame, you may experience lag.");
     }
 
-    private class Rect
-    {
-        public int x1;
-        public int x2;
-        public int y1;
-        public int y2;
-    }
-
-    private List<Rect> _tileBlocks = new List<Rect>();
-
     private AsyncLocal<int> _frameCount = new AsyncLocal<int>();
     private bool _worldgenHalting = false;
+    private HashSet<ulong> _haltSource = new HashSet<ulong>();
 
     private void Detour_InspectTileFrame(Action<int, int, bool, bool> orig, int i, int j, bool resetFrame, bool noBreak)
     {
@@ -96,40 +87,36 @@ public partial class Plugin
             else
             {
                 this._worldgenHalting = false;
+                var mtg = this.config.Mitigation.Value;
+                if (!mtg.DisableAllMitigation && mtg.ClearOverflowWorldGenStackTrace)
+                {
+                    foreach (var item in this._haltSource)
+                    {
+                        var ti = (int) (item >> 32);
+                        var tj = (int) item;
+                        Terraria.Main.tile[ti, tj].Clear(Terraria.DataStructures.TileDataType.All);
+                    }
+                    this._haltSource.Clear();
+                }
             }
         }
 
-        const int LIMIT = 100;
-        if (frames >= LIMIT)
+        const int WARN_LIMIT = 130;
+        if (frames >= WARN_LIMIT)
         {
-            TShockAPI.TShock.Log.ConsoleInfo($"Detour_InspectTileFrame: {frames} frames at {i}, {j}");
+            TShockAPI.TShock.Log.ConsoleDebug($"Detour_InspectTileFrame: {frames} frames at {i}, {j}");
 
-            var included = false;
-            foreach (var block in this._tileBlocks)
+            const int HALT_LIMIT = 150;
+            if (frames == HALT_LIMIT)
             {
-                if (block.x1 <= i && block.x2 >= i && block.y1 <= j && block.y2 >= j)
-                {
-                    included = true;
-                    block.x1 = Math.Min(block.x1, i - 10);
-                    block.x2 = Math.Max(block.x2, i + 10);
-                    block.y1 = Math.Min(block.y1, j - 10);
-                    block.y2 = Math.Max(block.y2, j + 10);
-                }
+                this._haltSource.Add((((ulong) i) << 32) | ((uint) j));
             }
-
-            if (!included)
+            else if (frames > HALT_LIMIT)
             {
-                this._tileBlocks.Add(new Rect { x1 = i - 10, x2 = i + 10, y1 = j - 10, y2 = j + 10 });
-            }
-
-            if (frames > LIMIT * 2)
-            {
-                TShockAPI.TShock.Log.ConsoleError($"Detour_InspectTileFrame: {frames} frames, recorded {this._tileBlocks.Count} blocks.");
-                foreach (var block in this._tileBlocks)
-                {
-                    TShockAPI.TShock.Log.ConsoleError($"Detour_InspectTileFrame: {block.x1}, {block.x2}, {block.y1}, {block.y2}");
-                }
+                TShockAPI.TShock.Log.ConsoleError($"Detour_InspectTileFrame: {frames} frames with source of {string.Join(", ", this._haltSource)}.");
                 this._worldgenHalting = true;
+                var st = new System.Diagnostics.StackTrace(false);
+                TShockAPI.TShock.Log.ConsoleDebug($"Detour_InspectTileFrame Trace: {st}");
                 return;
             }
         }

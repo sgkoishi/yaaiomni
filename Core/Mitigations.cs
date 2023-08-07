@@ -479,7 +479,7 @@ public partial class Plugin
         }
     }
 
-    delegate JObject ConfigUpdateAction(JObject cfg, out bool requiredUpgrade);
+    private delegate JObject ConfigUpdateAction(JObject cfg, out bool requiredUpgrade);
     private JObject Detour_Mitigation_ConfigUpdate(ConfigUpdateAction orig, JObject cfg, out bool requiredUpgrade)
     {
         var result = orig(cfg, out requiredUpgrade);

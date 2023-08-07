@@ -42,7 +42,8 @@ public class Config
         DefinedConsts.Commands.ResetCharacter,
         DefinedConsts.Commands.Ping,
         DefinedConsts.Commands.Echo,
-        DefinedConsts.Commands.Admin.ApplyDefaultPermission
+        DefinedConsts.Commands.Admin.ApplyDefaultPermission,
+        DefinedConsts.Commands.Admin.InspectTileFrame
     });
 
     public Optional<List<string>> StartupCommands = Optional.Default(new List<string>());
@@ -580,6 +581,16 @@ public class Config
         /// </para>
         /// </summary>
         public Optional<bool> OverflowWorldGenItemID = Optional.Default(false);
+
+        /// <summary>
+        /// <para>
+        /// There are many exploits that can be used to crash the server via stack overflow.
+        /// </para>
+        /// <para>
+        /// This will try to clear them when detected. Requires `/inspecttileframe`
+        /// </para>
+        /// </summary>
+        public Optional<bool> ClearOverflowWorldGenStackTrace = Optional.Default(true);
 
         public enum DisabledDamageAction
         {
