@@ -590,7 +590,17 @@ public class Config
         /// This will try to clear them when detected. Requires `/inspecttileframe`
         /// </para>
         /// </summary>
-        public Optional<bool> ClearOverflowWorldGenStackTrace = Optional.Default(true);
+        public Optional<bool> ClearOverflowWorldGenStackTrace = Optional.Default(false);
+
+        /// <summary>
+        /// <para>
+        /// There are many exploits that can be used to crash the server via stack overflow.
+        /// </para>
+        /// <para>
+        /// This will try to save the map when detected. Requires `/inspecttileframe`
+        /// </para>
+        /// </summary>
+        public Optional<bool> DumpMapOnStackOverflowWorldGen = Optional.Default(true);
 
         public enum DisabledDamageAction
         {

@@ -125,7 +125,6 @@ public partial class Plugin : TerrariaPlugin
         catch (Exception ex)
         {
             initiator?.SendErrorMessage($"Failed to save config: {ex.Message}");
-            return;
         }
     }
 

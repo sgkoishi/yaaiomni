@@ -88,15 +88,32 @@ public partial class Plugin
             {
                 this._worldgenHalting = false;
                 var mtg = this.config.Mitigation.Value;
-                if (!mtg.DisableAllMitigation && mtg.ClearOverflowWorldGenStackTrace)
+                if (!mtg.DisableAllMitigation)
                 {
-                    foreach (var item in this._haltSource)
+                    if (mtg.DumpMapOnStackOverflowWorldGen)
                     {
-                        var ti = (int) (item >> 32);
-                        var tj = (int) item;
-                        Terraria.Main.tile[ti, tj].Clear(Terraria.DataStructures.TileDataType.All);
+                        using var ms = new MemoryStream();
+                        using var bw = new BinaryWriter(ms);
+                        {
+                            Terraria.IO.WorldFile.SaveWorld_Version2(bw);
+                        }
+                        File.WriteAllBytes(Path.Combine(TShockAPI.TShock.SavePath, "dumpmap.wld.bak"), ms.ToArray());
+                        TShockAPI.TShock.Log.ConsoleError($"Detour_InspectTileFrame: Dump crashing map to dumpmap.wld.bak ({TShockAPI.TShock.SavePath})");
                     }
-                    this._haltSource.Clear();
+                    if (mtg.ClearOverflowWorldGenStackTrace)
+                    {
+                        foreach (var item in this._haltSource)
+                        {
+                            var ti = (int) (item >> 32);
+                            var tj = (int) item;
+                            var array = new byte[TerrariaApi.Server.HeapTile.kHeapTileSize];
+                            var ht = new TerrariaApi.Server.HeapTile(array, 0, 0);
+                            ht.CopyFrom(Terraria.Main.tile[ti, tj]);
+                            TShockAPI.TShock.Log.ConsoleError($"Detour_InspectTileFrame: Clearing tile {ti},{tj} (content: {Convert.ToHexString(array)})");
+                            Terraria.Main.tile[ti, tj].Clear(Terraria.DataStructures.TileDataType.All);
+                        }
+                        this._haltSource.Clear();
+                    }
                 }
             }
         }
