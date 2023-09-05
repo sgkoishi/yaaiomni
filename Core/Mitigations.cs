@@ -26,10 +26,26 @@ public partial class Plugin
 
         switch (args.PacketId)
         {
-            case (int) PacketTypes.PlayerSlot when mitigation.InventorySlotPE:
+            case (int) PacketTypes.PlayerSlot:
             {
                 var index = args.Instance.whoAmI;
                 var data = args.Instance.readBuffer.AsSpan(args.ReadOffset, args.Length - 1);
+
+                if (mitigation.SwapWhileUsePE)
+                {
+                    var slot = BitConverter.ToInt16(data.Slice(1, 2));
+                    if (Terraria.Main.player[index].controlUseItem && slot == Terraria.Main.player[index].selectedItem)
+                    {
+                        this.Statistics.MitigationRejectedSwapWhileUse++;
+                        Terraria.Main.player[index].controlUseItem = false;
+                        Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, -1, null, index);
+                    }
+                }
+
+                if (!mitigation.InventorySlotPE)
+                {
+                    break;
+                }
 
                 if (data.Length == 8 && data[0] == index)
                 {
@@ -46,7 +62,7 @@ public partial class Plugin
                         break;
                     }
 
-                    if (!existingItem.IsAir || type != 0 && stack != 0)
+                    if (!existingItem.IsAir || (type != 0 && stack != 0))
                     {
                         if (existingItem.netID != type || existingItem.stack != stack || existingItem.prefix != prefix)
                         {
