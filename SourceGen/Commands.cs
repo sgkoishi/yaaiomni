@@ -143,8 +143,7 @@ public class CommandsGenerator : IIncrementalGenerator
         {
             if (arg.NameEquals != null)
             {
-                var flag = arg.NameEquals.Name.Identifier.ValueText;
-                switch (flag)
+                switch (arg.NameEquals.Name.Identifier.ValueText)
                 {
                     case "AllowServer" when !bool.TryParse(arg.Expression.ToString(), out var r) || !r:
                     {
@@ -158,7 +157,7 @@ public class CommandsGenerator : IIncrementalGenerator
                     }
                     case "HelpText":
                     {
-                        extras.Add("HelpText = " + arg.Expression.ToString());
+                        extras.Add("HelpText = " + arg.Expression);
                         break;
                     }
                     case "Permission":

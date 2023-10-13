@@ -562,7 +562,7 @@ public class Config
         /// <para>
         /// TShock update legacy config { "key1": "value1", "key2": "value2" } to
         /// the new format { "Settings": { "key1": "value1", "key2": "value2" } }.
-        /// If the config is partially updated, { "key1": "value1", "Settings": { 
+        /// If the config is partially updated, { "key1": "value1", "Settings": {
         /// "key2": "value2" } }, the key1 is discarded.
         /// </para>
         /// <para>Cause some config options not being applied.</para>

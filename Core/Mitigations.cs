@@ -9,6 +9,18 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin
 {
+    public class Detection
+    {
+        public delegate void SwapWhileUseEvent(int player, int slot);
+        public event SwapWhileUseEvent? SwapWhileUse;
+        internal void SwapWhileUseDetected(int player, int slot)
+        {
+            this.SwapWhileUse?.Invoke(player, slot);
+        }
+    }
+
+    public Detection Detections = new Detection();
+
     private readonly bool[] _BuffUpdateNPC = new bool[Terraria.Main.npc.Length];
 
     private void OTHook_Mitigation_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
@@ -37,6 +49,7 @@ public partial class Plugin
                     if (Terraria.Main.player[index].controlUseItem && slot == Terraria.Main.player[index].selectedItem)
                     {
                         this.Statistics.MitigationRejectedSwapWhileUse++;
+                        this.Detections.SwapWhileUseDetected(index, slot);
                         Terraria.Main.player[index].controlUseItem = false;
                         Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, -1, null, index);
                     }
