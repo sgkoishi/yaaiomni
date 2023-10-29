@@ -50,8 +50,11 @@ public partial class Plugin
                     {
                         this.Statistics.MitigationRejectedSwapWhileUse++;
                         this.Detections.SwapWhileUseDetected(index, slot);
-                        Terraria.Main.player[index].controlUseItem = false;
-                        Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, -1, null, index);
+                        if (mitigation.SwapWhileUsePEHandleAttempt)
+                        {
+                            Terraria.Main.player[index].controlUseItem = false;
+                            Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, -1, null, index);
+                        }
                     }
                 }
 
@@ -170,9 +173,12 @@ public partial class Plugin
                 if (Terraria.Main.player[index].controlUseItem && control[5] && selectedItem != Terraria.Main.player[index].selectedItem)
                 {
                     this.Statistics.MitigationRejectedSwapWhileUse++;
-                    args.CancelPacket();
-                    Terraria.Main.player[index].controlUseItem = false;
-                    Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, -1, null, index);
+                    if (mitigation.SwapWhileUsePEHandleAttempt)
+                    {
+                        args.CancelPacket();
+                        Terraria.Main.player[index].controlUseItem = false;
+                        Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerUpdate, -1, -1, null, index);
+                    }
                     break;
                 }
                 break;

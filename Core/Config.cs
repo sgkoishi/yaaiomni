@@ -408,6 +408,14 @@ public class Config
 
         /// <summary>
         /// <para>
+        /// Whether to revert the player action or not. Likely causes
+        /// obvious latency desync (laggy/backwards teleport).
+        /// </para>
+        /// </summary>
+        public Optional<bool> SwapWhileUsePEHandleAttempt = Optional.Default(false, true);
+
+        /// <summary>
+        /// <para>
         /// Chat spam rate limit. This restriction also applies to commands.
         /// Each item is a pair of rate and maximum.
         /// </para>
