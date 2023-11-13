@@ -610,6 +610,17 @@ public class Config
         /// </summary>
         public Optional<bool> DumpMapOnStackOverflowWorldGen = Optional.Default(true);
 
+        /// <summary>
+        /// <para>
+        /// The `WorldGen.countTiles` is recursive and might cause stack overflow. 
+        /// Reported by a Mac (rosetta) user @ Discord during spider cave gen every time.
+        /// </para>
+        /// <para>
+        /// This will try to rewrite to non-recursive.
+        /// </para>
+        /// </summary>
+        public Optional<bool> NonRecursiveWorldGenTileCount = Optional.Default(true);
+
         public enum DisabledDamageAction
         {
             AsIs,

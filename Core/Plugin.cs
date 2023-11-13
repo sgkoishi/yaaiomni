@@ -61,11 +61,6 @@ public partial class Plugin : TerrariaPlugin
                 .GetMethod(nameof(TShockAPI.Commands.HandleCommand), _bfany),
             this.Detour_Command_Alternative);
         this.Detour(
-            nameof(this.Detour_Mitigation_I18nCommand),
-            typeof(Terraria.Initializers.ChatInitializer)
-                .GetMethod(nameof(Terraria.Initializers.ChatInitializer.Load), _bfany),
-            this.Detour_Mitigation_I18nCommand);
-        this.Detour(
             nameof(this.Detour_CheckBan_IP),
             typeof(BanManager)
                 .GetNestedTypes(_bfany)
@@ -222,6 +217,8 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.Localization.Language.GetTextValue_string += this.MMHook_CliConfig_LanguageText;
         On.Terraria.WorldGen.DropDoorItem += this.MMHook_Mitigation_DoorDropItem;
         On.Terraria.WorldGen.KillTile_GetItemDrops += this.MMHook_Mitigation_TileDropItem;
+        On.Terraria.Initializers.ChatInitializer.Load += this.MMHook_Mitigation_I18nCommand;
+        On.Terraria.WorldGen.nextCount += this.MMHook_Mitigation_WorldGenNextCount;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_Ghost_SendBytes;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Ping_GetData;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.TAHook_NameCollision);
@@ -255,6 +252,8 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.Localization.Language.GetTextValue_string -= this.MMHook_CliConfig_LanguageText;
             On.Terraria.WorldGen.DropDoorItem -= this.MMHook_Mitigation_DoorDropItem;
             On.Terraria.WorldGen.KillTile_GetItemDrops -= this.MMHook_Mitigation_TileDropItem;
+            On.Terraria.Initializers.ChatInitializer.Load -= this.MMHook_Mitigation_I18nCommand;
+            On.Terraria.WorldGen.nextCount -= this.MMHook_Mitigation_WorldGenNextCount;
             OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_Ghost_SendBytes;
             OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_DebugPacket_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Mitigation_GetData;

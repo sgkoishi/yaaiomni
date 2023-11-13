@@ -494,7 +494,7 @@ public partial class Plugin
         }
     }
 
-    private void Detour_Mitigation_I18nCommand(On.Terraria.Initializers.ChatInitializer.orig_Load orig)
+    private void MMHook_Mitigation_I18nCommand(On.Terraria.Initializers.ChatInitializer.orig_Load orig)
     {
         // Pryaxis/TShock#2914
         Terraria.UI.Chat.ChatManager.Commands._localizedCommands.Clear();
@@ -600,5 +600,77 @@ public partial class Plugin
         }
 
         orig(x, y, tileCache, out dropItem, out dropItemStack, out secondaryItem, out secondaryItemStack, includeLargeObjectDrops);
+    }
+
+    private void MMHook_Mitigation_WorldGenNextCount(On.Terraria.WorldGen.orig_nextCount orig, int x, int y, bool jungle, bool lavaOk)
+    {
+        var mitigation = this.config.Mitigation.Value;
+        if (mitigation.DisableAllMitigation || !mitigation.NonRecursiveWorldGenTileCount)
+        {
+            orig(x, y, jungle, lavaOk);
+            return;
+        }
+
+        var pendingTiles = new Stack<(int, int)>();
+        pendingTiles.Push((x, y));
+        while (pendingTiles.Count > 0 && Terraria.WorldGen.numTileCount < Terraria.WorldGen.maxTileCount)
+        {
+            (x, y) = pendingTiles.Pop();
+            if (x <= 1 || x >= Terraria.Main.maxTilesX - 1 || y <= 1 || y >= Terraria.Main.maxTilesY - 1
+                || (Terraria.Main.tile[x, y].wall == Terraria.ID.WallID.LivingWoodUnsafe)
+                || (Terraria.Main.tile[x, y].shimmer() && Terraria.Main.tile[x, y].liquid > 0))
+            {
+                break;
+            }
+            if (Terraria.WorldGen.CountedTiles.ContainsKey(new Microsoft.Xna.Framework.Point(x, y)))
+            {
+                continue;
+            }
+            if (!jungle)
+            {
+                if (Terraria.Main.tile[x, y].wall != 0)
+                {
+                    break;
+                }
+                if (Terraria.Main.tile[x, y].lava() && Terraria.Main.tile[x, y].liquid > 0)
+                {
+                    Terraria.WorldGen.lavaCount++;
+                    if (!lavaOk)
+                    {
+                        break;
+                    }
+                }
+            }
+            if (Terraria.Main.tile[x, y].active())
+            {
+                if (Terraria.Main.tile[x, y].type == Terraria.ID.TileID.MushroomGrass)
+                {
+                    Terraria.WorldGen.shroomCount++;
+                }
+                if (Terraria.Main.tile[x, y].type == Terraria.ID.TileID.Stone)
+                {
+                    Terraria.WorldGen.rockCount++;
+                }
+                if (Terraria.Main.tile[x, y].type is Terraria.ID.TileID.SnowBlock or Terraria.ID.TileID.IceBlock)
+                {
+                    Terraria.WorldGen.iceCount++;
+                }
+                if (Terraria.Main.tile[x, y].type is Terraria.ID.TileID.Sand or Terraria.ID.TileID.Sandstone or Terraria.ID.TileID.HardenedSand)
+                {
+                    Terraria.WorldGen.sandCount++;
+                }
+            }
+            if (!Terraria.WorldGen.SolidTile(x, y))
+            {
+                Terraria.WorldGen.CountedTiles.Add(new Microsoft.Xna.Framework.Point(x, y), true);
+                Terraria.WorldGen.numTileCount++;
+                // Reversed order for the stack
+                pendingTiles.Push((x, y + 1));
+                pendingTiles.Push((x, y - 1));
+                pendingTiles.Push((x + 1, y));
+                pendingTiles.Push((x - 1, y));
+            }
+        }
+        Terraria.WorldGen.numTileCount = Terraria.WorldGen.maxTileCount;
     }
 }
