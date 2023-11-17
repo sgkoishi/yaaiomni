@@ -101,6 +101,8 @@ public partial class Plugin
             this.Group = new DummyGroup();
             this.IsLoggedIn = true;
             this.Account = new TShockAPI.DB.UserAccount();
+            // Do not sync it to actual players
+            this.Index = int.MaxValue;
         }
         public Terraria.Player Player
         {
@@ -233,6 +235,12 @@ public partial class Plugin
             ? new List<TShockAPI.DB.UserAccount> { args.Player.Account }
             : Utils.SearchUserAccounts(args.Parameters[0]).ToList();
 
+        if (accounts.Count == 0)
+        {
+            args.Player.SendErrorMessage("No accounts found.");
+            return;
+        }
+
         var dir = Path.Combine(TShockAPI.TShock.SavePath, "exported");
         if (!Directory.Exists(dir))
         {
@@ -255,7 +263,14 @@ public partial class Plugin
                     name = account.Name
                 };
                 var data = TShockAPI.TShock.CharacterDB.GetPlayerData(p, account.ID);
-                data.RestoreCharacter(p);
+                try
+                {
+                    data.RestoreCharacter(p);
+                }
+                catch
+                {
+                    // This will throw, failed to sync with dummy player.
+                }
                 var file = new Terraria.IO.PlayerFileData
                 {
                     Metadata = Terraria.IO.FileMetadata.FromCurrentSettings(Terraria.IO.FileType.Player),

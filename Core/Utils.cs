@@ -298,24 +298,6 @@ public static partial class Utils
                 yield return acc;
             }
         }
-        else if (pat.StartsWith("tsp:"))
-        {
-            pat = pat[4..];
-            var exact = TShockAPI.TShock.Players.SingleOrDefault(p => p?.Name == pat)?.Account;
-            if (exact != null)
-            {
-                yield return exact;
-                yield break;
-            }
-
-            foreach (var acc in TShockAPI.TShock.Players
-                .Where(p => p.Active && p?.Account.Name.Contains(pat) == true)
-                .OrderBy(p => p.Account.Name.StartsWith(pat) ? 0 : 1)
-                .Select(p => p.Account))
-            {
-                yield return acc;
-            }
-        }
         else if (pat.StartsWith("tsi:"))
         {
             if (int.TryParse(pat[4..], out var id))
@@ -354,6 +336,27 @@ public static partial class Utils
                 {
                     yield return exact;
                 }
+            }
+        }
+        else
+        {
+            if (pat.StartsWith("tsp:"))
+            {
+                pat = pat[4..];
+            }
+            var exact = TShockAPI.TShock.Players.SingleOrDefault(p => p?.Name == pat)?.Account;
+            if (exact != null)
+            {
+                yield return exact;
+                yield break;
+            }
+
+            foreach (var acc in TShockAPI.TShock.Players
+                .Where(p => p.Active && p?.Account.Name.Contains(pat) == true)
+                .OrderBy(p => p.Account.Name.StartsWith(pat) ? 0 : 1)
+                .Select(p => p.Account))
+            {
+                yield return acc;
             }
         }
     }
