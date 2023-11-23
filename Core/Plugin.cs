@@ -29,6 +29,13 @@ public partial class Plugin : TerrariaPlugin
         this.Order = int.MinValue;
         this.config = new Config();
         this.LoadConfig(Utils.ConsolePlayer.Instance);
+        {
+            var mitigation = this.config.Mitigation.Value;
+            if (!mitigation.DisableAllMitigation && mitigation.UseDefaultEncoding)
+            {
+                Console.OutputEncoding = System.Text.Encoding.Default;
+            }
+        }
         this.Detour(
             nameof(this.Detour_UpdateCheckAsync),
             typeof(UpdateManager)

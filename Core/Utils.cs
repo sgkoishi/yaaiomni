@@ -352,7 +352,7 @@ public static partial class Utils
             }
 
             foreach (var acc in TShockAPI.TShock.Players
-                .Where(p => p.Active && p?.Account.Name.Contains(pat) == true)
+                .Where(p => p?.Active == true && p?.Account?.Name?.Contains(pat) == true)
                 .OrderBy(p => p.Account.Name.StartsWith(pat) ? 0 : 1)
                 .Select(p => p.Account))
             {

@@ -621,6 +621,16 @@ public class Config
         /// </summary>
         public Optional<bool> NonRecursiveWorldGenTileCount = Optional.Default(true);
 
+        /// <summary>
+        /// <para>
+        /// Might experience encoding issues when using legacy Windows.
+        /// </para>
+        /// <para>
+        /// This will try to reset the encoding.
+        /// </para>
+        /// </summary>
+        public Optional<bool> UseDefaultEncoding = Optional.Default(Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major < 10);
+
         public enum DisabledDamageAction
         {
             AsIs,
