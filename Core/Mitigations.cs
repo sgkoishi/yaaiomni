@@ -38,6 +38,15 @@ public partial class Plugin
 
         switch (args.PacketId)
         {
+            case (int) PacketTypes.PlayerInfo when mitigation.AllowCrossJourney:
+            {
+                // FIXME: Version specific, might be changed in the future
+                if (Terraria.Main.GameModeInfo.IsJourneyMode == ((args.Instance.readBuffer[args.Length - 1] & 0b1000) == 0))
+                {
+                    args.Instance.readBuffer[args.Length - 1] ^= 0b1000;
+                }
+                break;
+            }
             case (int) PacketTypes.PlayerSlot:
             {
                 var index = args.Instance.whoAmI;

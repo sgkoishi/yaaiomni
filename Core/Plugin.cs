@@ -28,6 +28,12 @@ public partial class Plugin : TerrariaPlugin
         AppDomain.CurrentDomain.FirstChanceException += this.FirstChanceExceptionHandler;
         this.Order = int.MinValue;
         this.LoadConfig(Utils.ConsolePlayer.Instance);
+
+        if (this.config.Enhancements.Value.DefaultLanguageDetect)
+        {
+            this.ResetGameLocale();
+        }
+
         {
             var mitigation = this.config.Mitigation.Value;
             if (!mitigation.DisableAllMitigation)
@@ -38,17 +44,18 @@ public partial class Plugin : TerrariaPlugin
                     System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
                     if (encoding == -1)
                     {
-                        Console.OutputEncoding = System.Text.Encoding.Default;
-                        Console.WriteLine($"Console encoding set to default ({Console.OutputEncoding})");
+                        Console.OutputEncoding = System.Text.Encoding.GetEncoding(System.Globalization.CultureInfo.CurrentUICulture.TextInfo.ANSICodePage);
+                        Console.WriteLine($"Console encoding set to default ({Console.OutputEncoding.EncodingName})");
                     }
                     else
                     {
                         Console.OutputEncoding = System.Text.Encoding.GetEncoding(encoding);
-                        Console.WriteLine($"Console encoding set to {Console.OutputEncoding}");
+                        Console.WriteLine($"Console encoding set to {Console.OutputEncoding.EncodingName}");
                     }
                 }
             }
         }
+
         this.Detour(
             nameof(this.Detour_UpdateCheckAsync),
             typeof(UpdateManager)
@@ -103,11 +110,6 @@ public partial class Plugin : TerrariaPlugin
                 .GetMethod("AttemptConfigUpgrade", _bfany),
             this.Detour_Mitigation_ConfigUpdate
         );
-
-        if (this.config.Enhancements.Value.DefaultLanguageDetect)
-        {
-            this.ResetGameLocale();
-        }
     }
 
     public event Action<Plugin>? OnConfigLoad;

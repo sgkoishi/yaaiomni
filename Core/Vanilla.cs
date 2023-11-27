@@ -18,7 +18,7 @@ public partial class Plugin
         }
 
         var addperm = TShockAPI.TShock.Groups.AddPermissions(Misc.VanillaGroup, vanillaMode.Permissions);
-        if (vanillaMode.AllowJourney)
+        if (vanillaMode.AllowJourneyPowers)
         {
             addperm += TShockAPI.TShock.Groups.AddPermissions(Misc.VanillaGroup, new List<string> { "tshock.journey.*" });
         }

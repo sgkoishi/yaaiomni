@@ -349,7 +349,7 @@ public class Config
                 TShockAPI.Permissions.sendemoji,
                 DefinedConsts.Permission.Ping
             });
-            public Optional<bool> AllowJourney = Optional.Default(false);
+            public Optional<bool> AllowJourneyPowers = Optional.Default(false);
             public Optional<bool> IgnoreAntiCheat = Optional.Default(false);
             public Optional<VanillaAntiCheat> AntiCheat = Optional.Default(new VanillaAntiCheat(), true);
 
@@ -630,7 +630,12 @@ public class Config
         /// Default: -1, use Encoding.Default when Win32NT && Version <= 10
         /// </para>
         /// </summary>
-        public Optional<int> UseDefaultEncoding = Optional.Default(Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major < 10 ? -1 : 65001);
+        public Optional<int> UseDefaultEncoding = Optional.Default(Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major < 10 ? -1 : 0);
+
+        /// <summary>
+        /// Allow journey and non-journey players to join the server.
+        /// </summary>
+        public Optional<bool> AllowCrossJourney = Optional.Default(false);
 
         public enum DisabledDamageAction
         {
