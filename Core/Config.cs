@@ -627,9 +627,10 @@ public class Config
         /// </para>
         /// <para>
         /// This will try to reset the encoding.
+        /// Default: -1, use Encoding.Default when Win32NT && Version <= 10
         /// </para>
         /// </summary>
-        public Optional<bool> UseDefaultEncoding = Optional.Default(Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major < 10);
+        public Optional<int> UseDefaultEncoding = Optional.Default(Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major < 10 ? -1 : 65001);
 
         public enum DisabledDamageAction
         {

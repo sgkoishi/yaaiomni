@@ -21,19 +21,28 @@ public partial class Plugin : TerrariaPlugin
     public string ConfigPath = Path.Combine(TShockAPI.TShock.SavePath, DefinedConsts.Misc.ConfigFile);
     private const BindingFlags _bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
-    public Config config;
+    public Config config = new Config();
 
     public Plugin(Main game) : base(game)
     {
         AppDomain.CurrentDomain.FirstChanceException += this.FirstChanceExceptionHandler;
         this.Order = int.MinValue;
-        this.config = new Config();
         this.LoadConfig(Utils.ConsolePlayer.Instance);
         {
             var mitigation = this.config.Mitigation.Value;
-            if (!mitigation.DisableAllMitigation && mitigation.UseDefaultEncoding)
+            if (!mitigation.DisableAllMitigation)
             {
-                Console.OutputEncoding = System.Text.Encoding.Default;
+                var encoding = mitigation.UseDefaultEncoding.Value;
+                if (encoding == -1)
+                {
+                    Console.OutputEncoding = System.Text.Encoding.Default;
+                    Console.WriteLine($"Console encoding set to default ({Console.OutputEncoding})");
+                }
+                else if (encoding != 0)
+                {
+                    Console.OutputEncoding = System.Text.Encoding.GetEncoding(encoding);
+                    Console.WriteLine($"Console encoding set to {Console.OutputEncoding}");
+                }
             }
         }
         this.Detour(
