@@ -33,15 +33,19 @@ public partial class Plugin : TerrariaPlugin
             if (!mitigation.DisableAllMitigation)
             {
                 var encoding = mitigation.UseDefaultEncoding.Value;
-                if (encoding == -1)
+                if (encoding != 0)
                 {
-                    Console.OutputEncoding = System.Text.Encoding.Default;
-                    Console.WriteLine($"Console encoding set to default ({Console.OutputEncoding})");
-                }
-                else if (encoding != 0)
-                {
-                    Console.OutputEncoding = System.Text.Encoding.GetEncoding(encoding);
-                    Console.WriteLine($"Console encoding set to {Console.OutputEncoding}");
+                    System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+                    if (encoding == -1)
+                    {
+                        Console.OutputEncoding = System.Text.Encoding.Default;
+                        Console.WriteLine($"Console encoding set to default ({Console.OutputEncoding})");
+                    }
+                    else
+                    {
+                        Console.OutputEncoding = System.Text.Encoding.GetEncoding(encoding);
+                        Console.WriteLine($"Console encoding set to {Console.OutputEncoding}");
+                    }
                 }
             }
         }
