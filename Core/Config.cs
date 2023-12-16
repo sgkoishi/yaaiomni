@@ -460,7 +460,7 @@ public class Config
         /// This will prevent the title from being set if TERM has no xterm.
         /// </para>
         /// </summary>
-        public Optional<bool> SuppressTitle = Optional.Default(true, true);
+        public Optional<TitleSuppression> SuppressTitle = Optional.Default(TitleSuppression.Smart, true);
 
         /// <summary>
         /// <para>
@@ -672,6 +672,15 @@ public class Config
             All,
             Public,
             None
+        }
+
+        public enum TitleSuppression
+        {
+            Disabled,
+            Smart,
+            Enabled,
+            False = Disabled,
+            True = Smart
         }
     }
 

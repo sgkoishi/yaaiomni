@@ -329,11 +329,15 @@ public partial class Plugin
     private void Detour_Mitigation_SetTitle(Action<TShockAPI.Utils, bool> orig, TShockAPI.Utils self, bool empty)
     {
         var mitigation = this.config.Mitigation.Value;
-        if (!mitigation.DisableAllMitigation && mitigation.SuppressTitle)
+        if (!mitigation.DisableAllMitigation)
         {
-            if (ShouldSuppressTitle)
+            switch (mitigation.SuppressTitle.Value)
             {
-                return;
+                case Config.MitigationSettings.TitleSuppression.Enabled:
+                case Config.MitigationSettings.TitleSuppression.Smart when ShouldSuppressTitle:
+                {
+                    return;
+                }
             }
         }
 
