@@ -274,6 +274,48 @@ public class Config
         /// Restrict sign edit to have build permission.
         /// </summary>
         public Optional<bool> SignEditRestriction = Optional.Default(true);
+
+        /// <summary>
+        /// <para>
+        /// Might experience encoding issues when using legacy Windows.
+        /// </para>
+        /// <para>
+        /// This will try to reset the encoding.
+        /// Default: -1, use Encoding.Default when Win32NT && Version <= 10
+        /// </para>
+        /// </summary>
+        public Optional<int> UseDefaultEncoding = Optional.Default(Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major < 10 ? -1 : 0);
+
+        /// <summary>
+        /// <para>
+        /// Terraria will translate chat commands into command id. TShock
+        /// translate them back to keep the command working.
+        /// However, when the server and the client have different locale,
+        /// a enUS player send `/help` will be sent as `CommandId: Help`
+        /// and a deDE server will translate it back to `/hilfe`, thus the
+        /// command is broken.
+        /// </para>
+        /// <para>Cause some commands broken.</para>
+        /// <para>
+        /// This will try to change the translate target to enUS, so that
+        /// the command will be translated back to `/help`. A deDE player
+        /// may run `/help` (CommandId: Say, Content: /help) or
+        /// `/hilfe` (CommandId: Help), and both works.
+        /// </para>
+        /// <see href="https://github.com/Pryaxis/TShock/issues/2914"/>
+        /// </summary>
+        public Optional<bool> UseEnglishCommand = Optional.Default(true, true);
+
+        /// <summary>
+        /// <para>
+        /// Accept vanilla localized command, which is already done via <see cref="UseEnglishCommand"/> if the
+        /// command comes from the client. However, the localized commands from the server side is still broken.
+        /// </para>
+        /// <para>
+        /// This will add alias for related commands. Requires <see cref="UseEnglishCommand"/>.
+        /// </para>
+        /// </summary>
+        public Optional<bool> AllowVanillaLocalizedCommand = Optional.Default(true, true);
     }
 
     public record class PermissionSettings
@@ -548,26 +590,6 @@ public class Config
 
         /// <summary>
         /// <para>
-        /// Terraria will translate chat commands into command id. TShock
-        /// translate them back to keep the command working.
-        /// However, when the server and the client have different locale,
-        /// a enUS player send `/help` will be sent as `CommandId: Help`
-        /// and a deDE server will translate it back to `/hilfe`, thus the
-        /// command is broken.
-        /// </para>
-        /// <para>Cause some commands broken.</para>
-        /// <para>
-        /// This will try to change the translate target to enUS, so that
-        /// the command will be translated back to `/help`. A deDE player
-        /// may run `/help` (CommandId: Say, Content: /help) or
-        /// `/hilfe` (CommandId: Help), and both works.
-        /// </para>
-        /// <see href="https://github.com/Pryaxis/TShock/issues/2914"/>
-        /// </summary>
-        public Optional<bool> UseEnglishCommand = Optional.Default(true, true);
-
-        /// <summary>
-        /// <para>
         /// TShock update legacy config { "key1": "value1", "key2": "value2" } to
         /// the new format { "Settings": { "key1": "value1", "key2": "value2" } }.
         /// If the config is partially updated, { "key1": "value1", "Settings": {
@@ -623,17 +645,12 @@ public class Config
 
         /// <summary>
         /// <para>
-        /// Might experience encoding issues when using legacy Windows.
+        /// Allow journey and non-journey players to join the server.
         /// </para>
         /// <para>
-        /// This will try to reset the encoding.
-        /// Default: -1, use Encoding.Default when Win32NT && Version <= 10
+        /// There is nothing wrong with this option. It is inside the Mitigations because it 
+        /// requires GetData detour like many other mitigations and I put them together.
         /// </para>
-        /// </summary>
-        public Optional<int> UseDefaultEncoding = Optional.Default(Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major < 10 ? -1 : 0);
-
-        /// <summary>
-        /// Allow journey and non-journey players to join the server.
         /// </summary>
         public Optional<bool> AllowCrossJourney = Optional.Default(false);
 

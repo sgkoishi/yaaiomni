@@ -35,23 +35,19 @@ public partial class Plugin : TerrariaPlugin
         }
 
         {
-            var mitigation = this.config.Mitigation.Value;
-            if (!mitigation.DisableAllMitigation)
+            var encoding = this.config.Soundness.Value.UseDefaultEncoding.Value;
+            if (encoding != 0)
             {
-                var encoding = mitigation.UseDefaultEncoding.Value;
-                if (encoding != 0)
+                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+                if (encoding == -1)
                 {
-                    System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-                    if (encoding == -1)
-                    {
-                        Console.OutputEncoding = System.Text.Encoding.GetEncoding(System.Globalization.CultureInfo.CurrentUICulture.TextInfo.ANSICodePage);
-                        Console.WriteLine($"Console encoding set to default ({Console.OutputEncoding.EncodingName})");
-                    }
-                    else
-                    {
-                        Console.OutputEncoding = System.Text.Encoding.GetEncoding(encoding);
-                        Console.WriteLine($"Console encoding set to {Console.OutputEncoding.EncodingName}");
-                    }
+                    Console.OutputEncoding = System.Text.Encoding.GetEncoding(System.Globalization.CultureInfo.CurrentUICulture.TextInfo.ANSICodePage);
+                    Console.WriteLine($"Console encoding set to default ({Console.OutputEncoding.EncodingName})");
+                }
+                else
+                {
+                    Console.OutputEncoding = System.Text.Encoding.GetEncoding(encoding);
+                    Console.WriteLine($"Console encoding set to {Console.OutputEncoding.EncodingName}");
                 }
             }
         }
@@ -320,6 +316,19 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_GetData;
         On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_CatchSend;
         On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_CatchGet;
+        if (this.config.Soundness.Value.AllowVanillaLocalizedCommand)
+        {
+            foreach (var command in TShockAPI.Commands.ChatCommands)
+            {
+                foreach (var bc in this._localizedCommandsMap)
+                {
+                    if (command.HasAlias(bc.Value))
+                    {
+                        command.Names.Add(bc.Key);
+                    }
+                }
+            }
+        }
     }
 
     private void PostTShockInitialize()
