@@ -679,8 +679,6 @@ public class Config
             Disabled,
             Smart,
             Enabled,
-            False = Disabled,
-            True = Smart
         }
     }
 

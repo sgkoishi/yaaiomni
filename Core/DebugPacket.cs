@@ -70,6 +70,19 @@ partial class Plugin
             }
             throw;
         }
+        catch (IndexOutOfRangeException ir)
+        {
+            if (remoteClient == int.MaxValue)
+            {
+                return;
+            }
+
+            if (this.config.DebugPacket.Value.ShowCatchedException > Config.DebugPacketSettings.CatchedException.None)
+            {
+                TShockAPI.TShock.Log.ConsoleError($"{ir}");
+            }
+            throw;
+        }
         catch (Exception ex)
         {
             if (this.config.DebugPacket.Value.ShowCatchedException > Config.DebugPacketSettings.CatchedException.None)

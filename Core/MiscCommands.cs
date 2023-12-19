@@ -232,7 +232,9 @@ public partial class Plugin
     private void Command_ExportCharacter(CommandArgs args)
     {
         var accounts = args.Parameters.Count == 0
-            ? new List<TShockAPI.DB.UserAccount> { args.Player.Account }
+            ? args.Player == TSPlayer.Server
+                ? TShockAPI.TShock.UserAccounts.GetUserAccounts()
+                : [args.Player.Account]
             : Utils.SearchUserAccounts(args.Parameters[0]).ToList();
 
         if (accounts.Count == 0)
