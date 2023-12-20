@@ -251,6 +251,7 @@ public partial class Plugin : TerrariaPlugin
         TShockAPI.TShock.Initialized += this.PostTShockInitialize;
         TShockAPI.GetDataHandlers.Sign.Register(this.GDHook_Permission_Sign);
         TShockAPI.GetDataHandlers.NPCAddBuff.Register(this.GDHook_Mitigation_NpcAddBuff);
+        TShockAPI.GetDataHandlers.PlayerBuffUpdate.Register(this.GDHook_Mitigation_PlayerBuffUpdate);
     }
 
     protected override void Dispose(bool disposing)
@@ -287,8 +288,9 @@ public partial class Plugin : TerrariaPlugin
             TShockAPI.Hooks.PlayerHooks.PlayerPermission -= this.TSHook_Sudo_OnPlayerPermission;
             TShockAPI.Hooks.GeneralHooks.ReloadEvent -= this.OnReload;
             TShockAPI.TShock.Initialized -= this.PostTShockInitialize;
-            TShockAPI.GetDataHandlers.NPCAddBuff.UnRegister(this.GDHook_Mitigation_NpcAddBuff);
             TShockAPI.GetDataHandlers.Sign.UnRegister(this.GDHook_Permission_Sign);
+            TShockAPI.GetDataHandlers.NPCAddBuff.UnRegister(this.GDHook_Mitigation_NpcAddBuff);
+            TShockAPI.GetDataHandlers.PlayerBuffUpdate.UnRegister(this.GDHook_Mitigation_PlayerBuffUpdate);
             var asm = Assembly.GetExecutingAssembly();
             Commands.ChatCommands.RemoveAll(c => c.CommandDelegate.Method?.DeclaringType?.Assembly == asm);
             foreach (var detour in this._detours.Values)

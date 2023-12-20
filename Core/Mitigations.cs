@@ -133,26 +133,7 @@ public partial class Plugin
                 if (Terraria.Main.player[index].inventory[Terraria.Main.player[index].selectedItem].potion)
                 {
                     var amount = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1, 2));
-                    this[index].PendingRevertHeal = amount;
-                }
-                break;
-            }
-            case (int) PacketTypes.PlayerBuff when mitigation.PotionSicknessPE:
-            {
-                var index = args.Instance.whoAmI;
-                if (args.Instance.readBuffer[args.ReadOffset] != index)
-                {
-                    args.CancelPacket();
-                    break;
-                }
-                var buffcount = (args.Length - 1) / 2;
-                for (var i = 0; i < buffcount; i++)
-                {
-                    var buff = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1 + (i * 2), 2));
-                    if (buff == Terraria.ID.BuffID.PotionSickness)
-                    {
-                        this[index].PendingRevertHeal = 0;
-                    }
+                    this[index].PendingRevertHeal = Math.Min(amount, Terraria.Main.player[index].statLifeMax2 - Terraria.Main.player[index].statLife);
                 }
                 break;
             }
@@ -698,5 +679,19 @@ public partial class Plugin
             }
         }
         Terraria.WorldGen.numTileCount = Terraria.WorldGen.maxTileCount;
+    }
+
+    private void GDHook_Mitigation_PlayerBuffUpdate(object? sender, TShockAPI.GetDataHandlers.PlayerBuffUpdateEventArgs args)
+    {
+        var currentPosition = args.Data.Position;
+        for (var i = 0; i < Terraria.Player.maxBuffs; i++)
+        {
+            var buff = System.IO.Streams.StreamExt.ReadUInt16(args.Data);
+            if (buff == Terraria.ID.BuffID.PotionSickness)
+            {
+                this[args.Player.Index].PendingRevertHeal = 0;
+            }
+        }
+        args.Data.Position = currentPosition;
     }
 }
