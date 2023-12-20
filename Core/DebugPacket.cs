@@ -72,7 +72,7 @@ partial class Plugin
         }
         catch (IndexOutOfRangeException ir)
         {
-            if (remoteClient == int.MaxValue)
+            if (remoteClient == int.MaxValue || ignoreClient == int.MaxValue)
             {
                 return;
             }
