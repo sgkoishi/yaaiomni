@@ -540,13 +540,7 @@ public class Ring<T> : IEnumerable<T>
         this._length = 0;
     }
 
-    public T this[int index]
-    {
-        get
-        {
-            return this._data[(index + this._start) % this._data.Length];
-        }
-    }
+    public T this[int index] => this._data[(index + this._start) % this._data.Length];
 
     public void Add(T item)
     {
@@ -576,9 +570,9 @@ public class Ring<T> : IEnumerable<T>
         private readonly Ring<T> _ring;
         private int _index;
 
-        public T Current => _ring[_index];
+        public T Current => this._ring[this._index];
 
-        object? System.Collections.IEnumerator.Current => _ring[_index];
+        object? System.Collections.IEnumerator.Current => this._ring[this._index];
 
         public RingEnumerator(Ring<T> ring)
         {

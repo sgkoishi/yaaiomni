@@ -17,6 +17,13 @@ public partial class Plugin
         {
             this.SwapWhileUse?.Invoke(player, slot);
         }
+
+        public delegate void PotionBypassEvent(int player, int slot);
+        public event PotionBypassEvent? PotionBypass;
+        internal void PotionBypassDetected(int player, int amount)
+        {
+            this.PotionBypass?.Invoke(player, amount);
+        }
     }
 
     public Detection Detections = new Detection();
@@ -130,7 +137,7 @@ public partial class Plugin
                     args.CancelPacket();
                     break;
                 }
-                if (Terraria.Main.player[index].inventory[Terraria.Main.player[index].selectedItem].potion)
+                if (Terraria.Main.player[index].inventory[Terraria.Main.player[index].selectedItem].potion && Terraria.Main.player[index].talkNPC != -1)
                 {
                     var amount = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1, 2));
                     this[index].PendingRevertHeal = Math.Min(amount, Terraria.Main.player[index].statLifeMax2 - Terraria.Main.player[index].statLife);
@@ -147,6 +154,7 @@ public partial class Plugin
                     this[index].PendingRevertHeal = 0;
                     Terraria.Main.player[index].statLife -= pending;
                     Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerHp, -1, -1, null, index);
+                    this.Detections.PotionBypassDetected(index, pending);
                 }
                 break;
             }

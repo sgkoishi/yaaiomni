@@ -36,6 +36,9 @@ public class Config
         "*console*",
     });
 
+    /// <summary>
+    /// Hidden commands that won't show up in the help.
+    /// </summary>
     public Optional<List<string>> HideCommands = Optional.Default(new List<string> {
         DefinedConsts.Commands.Whynot,
         DefinedConsts.Commands.Admin.DebugStat,
@@ -46,20 +49,38 @@ public class Config
         DefinedConsts.Commands.Admin.InspectTileFrame
     });
 
+    /// <summary>
+    /// Startup commands.
+    /// </summary>
     public Optional<List<string>> StartupCommands = Optional.Default(new List<string>());
 
+    /// <summary>
+    /// Rename commands. The key of the dictionary is the method name with the full name of the declaring type, e.g. "Chireiden.TShock.Omni.Plugin.Command_PermissionCheck".
+    /// </summary>
     public Optional<Dictionary<string, List<string>>> CommandRenames = Optional.Default(new Dictionary<string, List<string>>());
 
+    /// <summary>
+    /// Random features of improvement.
+    /// </summary>
     public Optional<EnhancementsSettings> Enhancements = Optional.Default(new EnhancementsSettings());
 
+    /// <summary>
+    /// Troubleshooting networking issues.
+    /// </summary>
     public Optional<DebugPacketSettings> DebugPacket = Optional.Default(new DebugPacketSettings());
 
+    /// <summary>
+    /// Problems that should be fixed.
+    /// </summary>
     public Optional<SoundnessSettings> Soundness = Optional.Default(new SoundnessSettings(), true);
 
     public Optional<PermissionSettings> Permission = Optional.Default(new PermissionSettings());
 
     public Optional<Modes> Mode = Optional.Default(new Modes());
 
+    /// <summary>
+    /// Other settings that can't be perfectly resolved and might have side effects.
+    /// </summary>
     public Optional<MitigationSettings> Mitigation = Optional.Default(new MitigationSettings());
 
     public record class EnhancementsSettings
@@ -95,13 +116,20 @@ public class Config
         public Optional<UpdateOptions> SuppressUpdate = Optional.Default(UpdateOptions.Silent);
 
         /// <summary>
+        /// <para>
         /// Socket Provider
+        /// </para>
+        /// <para>
+        /// Different types of wrapper implementation around socket. May affect the memory usage.
+        /// </para>
         /// </summary>
         public Optional<SocketType> Socket = Optional.Default(SocketType.AnotherAsyncSocketAsFallback, true);
 
         public Optional<NameCollisionAction> NameCollision = Optional.Default(NameCollisionAction.Unhandled, true);
 
         public Optional<TileProviderOptions> TileProvider = Optional.Default(TileProviderOptions.AsIs, true);
+
+        public Optional<int> ShowCommandAlias = Optional.Default(0);
 
         /// <summary>
         /// Support regex (`namea:player.*`) and IP mask (`ipa:1.1.0.0/16`).

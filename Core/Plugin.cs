@@ -90,6 +90,13 @@ public partial class Plugin : TerrariaPlugin
                 .SelectMany(i => i.GetMethods(_bfany).Where(m => m.Name.Contains("CheckBan")))
                 .FirstOrDefault(),
             this.Detour_CheckBan_IP);
+        this.Detour(
+            nameof(this.Detour_HelpAliases),
+            typeof(Commands)
+                .GetNestedTypes(_bfany)
+                .SelectMany(i => i.GetMethods(_bfany).Where(m => m.DeclaringType!.Name == "<>c" && m.Name.StartsWith("<Help>")))
+                .FirstOrDefault(),
+            this.Detour_HelpAliases);
         this.ILHook(
             nameof(this.ILHook_Mitigation_DisabledInvincible),
             Utils.TShockType("Bouncer")

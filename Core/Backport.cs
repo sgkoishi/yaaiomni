@@ -5,39 +5,6 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin
 {
-    #region MyRegion
-    [Obsolete]
-    private void ILHook_Backport_2892(ILContext context)
-    {
-        if (context.Body?.Instructions[0]?.Operand?.ToString()?.Contains(@"(?:\/s(?<Stack>\d{1,3}))") == true)
-        {
-            context.Body!.Instructions[0].Operand = @"\[i(tem)?(?:\/s(?<Stack>\d{1,4}))?(?:\/p(?<Prefix>\d{1,3}))?:(?<NetID>-?\d{1,4})\]";
-        }
-    }
-
-    [Obsolete]
-    private bool Detour_Backport_2894(Func<TShockAPI.DB.CharacterManager, TShockAPI.TSPlayer, bool, bool> orig,
-        TShockAPI.DB.CharacterManager self, TShockAPI.TSPlayer player, bool fromCommand)
-    {
-        return player.State >= 10 && orig(self, player, fromCommand);
-    }
-
-    [Obsolete("Pre 5.2.0")]
-    public void Run()
-    {
-        this.Detour(
-            nameof(this.Detour_Backport_2894),
-            typeof(TShockAPI.DB.CharacterManager)
-                .GetMethod(nameof(TShockAPI.DB.CharacterManager.InsertPlayerData), _bfany),
-            this.Detour_Backport_2894);
-
-        this.ILHook(
-            nameof(this.ILHook_Backport_2892),
-            typeof(TShockAPI.Utils).GetMethod(nameof(TShockAPI.Utils.GetItemFromTag), _bfany),
-            this.ILHook_Backport_2892);
-    }
-    #endregion
-
     private void Detour_Backport_2934(Action orig)
     {
         orig();
@@ -49,6 +16,7 @@ public partial class Plugin
 
     private void Backport_Inferno()
     {
+        // Reported via Discord https://discord.com/channels/479657350043664384/482065271297671168/1061908947151372408
         var bouncer = Utils.TShockType("Bouncer");
         if (bouncer?.GetField("NPCAddBuffTimeMax", _bfany)?.GetValue(null) is Dictionary<int, int> npcAddBuffTimeMax)
         {
@@ -59,9 +27,24 @@ public partial class Plugin
         }
     }
 
+    private void Backport_3005()
+    {
+        var bouncer = Utils.TShockType("Bouncer");
+        if (bouncer?.GetField("PlayerAddBuffWhitelist", _bfany)?.GetValue(null) is Array array)
+        {
+            var bl = bouncer.GetNestedType("BuffLimit", _bfany)!;
+            var bli = Activator.CreateInstance(bl);
+            bl.GetProperty("MaxTicks", _bfany)!.SetValue(bli, 300);
+            bl.GetProperty("CanBeAddedWithoutHostile", _bfany)!.SetValue(bli, true);
+            bl.GetProperty("CanOnlyBeAppliedToSender", _bfany)!.SetValue(bli, true);
+            array.SetValue(bli, Terraria.ID.BuffID.ParryDamageBuff);
+        }
+    }
+
     private void Backports()
     {
         this.Backport_Inferno();
+        this.Backport_3005();
 
         this.Detour(
             nameof(this.Detour_Backport_2934),
