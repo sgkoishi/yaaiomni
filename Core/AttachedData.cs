@@ -7,10 +7,15 @@ namespace Chireiden.TShock.Omni;
 public partial class Plugin
 {
     private readonly ConditionalWeakTable<TShockAPI.TSPlayer, AttachedData> _playerData = new ConditionalWeakTable<TShockAPI.TSPlayer, AttachedData>();
-    public AttachedData this[TShockAPI.TSPlayer player]
+
+    public AttachedData? this[TShockAPI.TSPlayer player]
     {
         get
         {
+            if (player == null)
+            {
+                return null;
+            }
             if (this._playerData.TryGetValue(player, out var data))
             {
                 return data;
@@ -20,8 +25,8 @@ public partial class Plugin
             return data;
         }
     }
-    public AttachedData this[int player] => this[TShockAPI.TShock.Players[player]];
-    public AttachedData this[Terraria.Player player] => this[player.whoAmI];
+    public AttachedData? this[int player] => this[TShockAPI.TShock.Players[player]];
+    public AttachedData? this[Terraria.Player player] => this[player.whoAmI];
 }
 
 public class AttachedData

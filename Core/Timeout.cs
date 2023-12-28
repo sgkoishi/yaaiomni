@@ -11,10 +11,10 @@ public partial class Plugin
         this.UpdateCounter++;
         foreach (var player in Utils.ActivePlayers)
         {
-            this.ProcessDelayCommand(this[player]);
+            this.ProcessDelayCommand(this[player]!);
         }
 
-        this.ProcessDelayCommand(this[TSPlayer.Server]);
+        this.ProcessDelayCommand(this[TSPlayer.Server]!);
     }
 
     private void ProcessDelayCommand(AttachedData data)
@@ -53,7 +53,7 @@ public partial class Plugin
             return;
         }
 
-        var commands = this[args.Player].DelayCommands;
+        var commands = this[args.Player]!.DelayCommands;
         var cmd = new AttachedData.DelayCommand(args.Parameters[0], start: this.UpdateCounter, timeout: timeout);
         commands.Add(cmd);
         args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed once in the future (id: {(uint) cmd.GetHashCode()}).");
@@ -77,7 +77,7 @@ public partial class Plugin
             args.Player.SendErrorMessage("Interval must be greater than 0!");
             return;
         }
-        var commands = this[args.Player].DelayCommands;
+        var commands = this[args.Player]!.DelayCommands;
         var cmd = new AttachedData.DelayCommand(args.Parameters[0], start: this.UpdateCounter, timeout: interval, repeat: 0);
         commands.Add(cmd);
         args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed in the future (id: {(uint) cmd.GetHashCode()}).");
@@ -96,7 +96,7 @@ public partial class Plugin
             args.Player.SendErrorMessage("Invalid id!");
             return;
         }
-        var commands = this[args.Player].DelayCommands;
+        var commands = this[args.Player]!.DelayCommands;
         if (commands.Count == 0)
         {
             args.Player.SendErrorMessage("No commands found!");
@@ -117,7 +117,7 @@ public partial class Plugin
     [Command("ShowTimeout", "showdelay", Permission = "chireiden.omni.showtimeout")]
     private void Command_ListDelay(CommandArgs args)
     {
-        var commands = this[args.Player].DelayCommands;
+        var commands = this[args.Player]!.DelayCommands;
         if (commands.Count == 0)
         {
             args.Player.SendErrorMessage("No commands found!");

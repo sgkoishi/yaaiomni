@@ -112,14 +112,14 @@ public partial class Plugin
                     break;
                 }
 
-                var value = this[player].DetectPE;
-                this[player].DetectPE = value + 1;
+                var value = this[player]!.DetectPE;
+                this[player]!.DetectPE = value + 1;
                 if (value % 500 == 0)
                 {
                     var currentLoadoutIndex = Terraria.Main.player[index].CurrentLoadoutIndex;
                     Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, (currentLoadoutIndex + 1) % 3);
                     Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, currentLoadoutIndex);
-                    this[player].IsPE = true;
+                    this[player]!.IsPE = true;
                 }
                 break;
             }
@@ -140,18 +140,18 @@ public partial class Plugin
                 if (Terraria.Main.player[index].inventory[Terraria.Main.player[index].selectedItem].potion && Terraria.Main.player[index].talkNPC != -1)
                 {
                     var amount = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1, 2));
-                    this[index].PendingRevertHeal = Math.Min(amount, Terraria.Main.player[index].statLifeMax2 - Terraria.Main.player[index].statLife);
+                    this[index]!.PendingRevertHeal = Math.Min(amount, Terraria.Main.player[index].statLifeMax2 - Terraria.Main.player[index].statLife);
                 }
                 break;
             }
             case (int) PacketTypes.ClientSyncedInventory when mitigation.PotionSicknessPE:
             {
                 var index = args.Instance.whoAmI;
-                var pending = this[index].PendingRevertHeal;
+                var pending = this[index]!.PendingRevertHeal;
                 if (pending > 0)
                 {
                     this.Statistics.MitigationRejectedSicknessHeal++;
-                    this[index].PendingRevertHeal = 0;
+                    this[index]!.PendingRevertHeal = 0;
                     Terraria.Main.player[index].statLife -= pending;
                     Terraria.NetMessage.TrySendData((int) PacketTypes.PlayerHp, -1, -1, null, index);
                     this.Detections.PotionBypassDetected(index, pending);
@@ -192,7 +192,7 @@ public partial class Plugin
                     {
                         break;
                     }
-                    foreach (var limiter in this[player].ChatSpamRestrict)
+                    foreach (var limiter in this[player]!.ChatSpamRestrict)
                     {
                         if (!limiter.Allowed)
                         {
@@ -697,7 +697,7 @@ public partial class Plugin
             var buff = System.IO.Streams.StreamExt.ReadUInt16(args.Data);
             if (buff == Terraria.ID.BuffID.PotionSickness)
             {
-                this[args.Player.Index].PendingRevertHeal = 0;
+                this[args.Player]!.PendingRevertHeal = 0;
             }
         }
         args.Data.Position = currentPosition;

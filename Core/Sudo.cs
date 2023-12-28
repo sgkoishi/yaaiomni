@@ -12,11 +12,11 @@ public partial class Plugin
     {
         if (player != null && player.RealPlayer)
         {
-            Interlocked.Increment(ref this[player].PermissionBypass);
+            Interlocked.Increment(ref this[player]!.PermissionBypass);
         }
         else
         {
-            Interlocked.Increment(ref this[TSPlayer.Server].PermissionBypass);
+            Interlocked.Increment(ref this[TSPlayer.Server]!.PermissionBypass);
         }
         try
         {
@@ -26,18 +26,18 @@ public partial class Plugin
         {
             if (player != null && player.RealPlayer)
             {
-                Interlocked.Decrement(ref this[player].PermissionBypass);
+                Interlocked.Decrement(ref this[player]!.PermissionBypass);
             }
             else
             {
-                Interlocked.Decrement(ref this[TSPlayer.Server].PermissionBypass);
+                Interlocked.Decrement(ref this[TSPlayer.Server]!.PermissionBypass);
             }
         }
     }
 
     private void TSHook_Sudo_OnPlayerPermission(PlayerPermissionEventArgs args)
     {
-        if (this[args.Player].PermissionBypass <= 0 && this[TSPlayer.Server].PermissionBypass <= 0)
+        if (this[args.Player]!.PermissionBypass <= 0 && this[TSPlayer.Server]!.PermissionBypass <= 0)
         {
             return;
         }

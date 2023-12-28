@@ -11,7 +11,7 @@ public partial class Plugin
         var strgy = this.config.Permission.Value.Log.Value;
         if (strgy.Enabled)
         {
-            var history = this[player].PermissionHistory;
+            var history = this[player]!.PermissionHistory;
             var now = DateTime.Now;
             if (!strgy.LogDuplicate)
             {
@@ -40,7 +40,7 @@ public partial class Plugin
 
     private void Command_PermissionCheck(CommandArgs args)
     {
-        var list = this[args.Player].PermissionHistory.ToList();
+        var list = this[args.Player]!.PermissionHistory.ToList();
 
         if (args.Parameters.Contains("-t"))
         {

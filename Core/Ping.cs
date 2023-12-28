@@ -6,7 +6,7 @@ public partial class Plugin
 {
     public void Ping(TSPlayer player, Action<TSPlayer, TimeSpan> callback)
     {
-        var pingdata = this[player].RecentPings;
+        var pingdata = this[player]!.RecentPings;
         var items = Terraria.Main.item
             .Select((item, index) => (item, index))
             .Where(value => !value.item.active || value.item.playerIndexTheItemIsReservedFor == 255)
@@ -39,7 +39,7 @@ public partial class Plugin
 
         var whoami = args.RemoteClient;
         var index = BitConverter.ToInt16(args.Data.AsSpan(3, 2));
-        var ping = this[whoami].RecentPings[index];
+        var ping = this[whoami]!.RecentPings[index];
         ping.Start = DateTime.Now;
     }
 
@@ -57,14 +57,14 @@ public partial class Plugin
         }
 
         var whoami = TShockAPI.TShock.Players[args.Instance.whoAmI];
-        var ping = this[whoami].RecentPings[BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2))];
+        var ping = this[whoami]?.RecentPings[BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2))];
 
-        if (ping.Start.HasValue)
+        if (ping?.Start.HasValue == true)
         {
             ping.End = DateTime.Now;
             try
             {
-                this[whoami].OnPingUpdated?.Invoke(DateTime.Now - ping.Start.Value);
+                this[whoami]!.OnPingUpdated?.Invoke(DateTime.Now - ping.Start.Value);
             }
             catch
             {
