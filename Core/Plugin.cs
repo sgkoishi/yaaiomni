@@ -113,6 +113,12 @@ public partial class Plugin : TerrariaPlugin
                 .GetMethod("AttemptConfigUpgrade", _bfany),
             this.Detour_Mitigation_ConfigUpdate
         );
+        this.Detour(
+          nameof(this.Detour_Mitigation_HandleSyncLoadout),
+           typeof(TShockAPI.GetDataHandlers)
+                .GetMethod("HandleSyncLoadout", _bfany),
+          this.Detour_Mitigation_HandleSyncLoadout
+        );
     }
 
     public event Action<Plugin>? OnConfigLoad;

@@ -682,6 +682,11 @@ public class Config
         /// </summary>
         public Optional<bool> AllowCrossJourney = Optional.Default(false);
 
+        /// <summary>
+        /// Loadout switch is kind of broken since it interacts with the SSC even when it's disabled.
+        /// </summary>
+        public Optional<bool> LoadoutSwitchWithoutSSC = Optional.Default(true, true);
+
         public enum DisabledDamageAction
         {
             AsIs,

@@ -702,4 +702,10 @@ public partial class Plugin
         }
         args.Data.Position = currentPosition;
     }
+
+    private bool Detour_Mitigation_HandleSyncLoadout(Func<TShockAPI.GetDataHandlerArgs, bool> orig, TShockAPI.GetDataHandlerArgs args)
+    {
+        var mitigation = this.config.Mitigation.Value;
+        return (mitigation.DisableAllMitigation || !mitigation.LoadoutSwitchWithoutSSC) && orig(args);
+    }
 }
