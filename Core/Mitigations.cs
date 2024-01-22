@@ -62,7 +62,7 @@ public partial class Plugin
                 if (mitigation.SwapWhileUsePE)
                 {
                     var slot = BitConverter.ToInt16(data.Slice(1, 2));
-                    var type = BitConverter.ToInt16(data.Slice(6, 2))
+                    var type = BitConverter.ToInt16(data.Slice(6, 2));
                    var existingItem = Terraria.Main.player[index].GetInventory(slot);
                     if (Terraria.Main.player[index].controlUseItem && slot == Terraria.Main.player[index].selectedItem && type != existingItem.netID)
                     {
