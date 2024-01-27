@@ -17,6 +17,7 @@ public partial class Plugin
         public int MitigationRejectedSicknessHeal;
         public int MitigationTerminatedConnection;
         public int MitigationCoinReduced;
+        public int IndexMismatch;
         public int ModdedEarlyChatSpam;
         public int ModdedFakeName;
     }

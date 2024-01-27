@@ -18,6 +18,13 @@ public partial class Plugin
             this.SwapWhileUse?.Invoke(player, slot);
         }
 
+        public delegate void IndexMismatchEvent(int expectedIndex, int receivedIndex, PacketTypes type);
+        public event IndexMismatchEvent? IndexMismatch;
+        internal void IndexMismatchDetected(int expectedIndex, int receivedIndex, PacketTypes type)
+        {
+            this.IndexMismatch?.Invoke(expectedIndex, receivedIndex, type);
+        }
+
         public delegate void PotionBypassEvent(int player, int slot);
         public event PotionBypassEvent? PotionBypass;
         internal void PotionBypassDetected(int player, int amount)
@@ -59,12 +66,22 @@ public partial class Plugin
                 var index = args.Instance.whoAmI;
                 var data = args.Instance.readBuffer.AsSpan(args.ReadOffset, args.Length - 1);
 
+                if (data[0] != index)
+                {
+                    this.Statistics.IndexMismatch++;
+                    this.Detections.IndexMismatchDetected(index, data[0], PacketTypes.PlayerSlot);
+                }
+
+                var slot = BitConverter.ToInt16(data.Slice(1, 2));
+                var stack = BitConverter.ToInt16(data.Slice(3, 2));
+                var prefix = data[5];
+                var type = BitConverter.ToInt16(data.Slice(6, 2));
+
                 if (mitigation.SwapWhileUsePE)
                 {
-                    var slot = BitConverter.ToInt16(data.Slice(1, 2));
-                    var type = BitConverter.ToInt16(data.Slice(6, 2));
-                   var existingItem = Terraria.Main.player[index].GetInventory(slot);
-                    if (Terraria.Main.player[index].controlUseItem && slot == Terraria.Main.player[index].selectedItem && type != existingItem.netID)
+                    var existingItem = Terraria.Main.player[index].GetInventory(slot);
+                    if (Terraria.Main.player[index].controlUseItem && slot == Terraria.Main.player[index].selectedItem 
+                        && type != existingItem.netID && (type != 0 || stack != 0))
                     {
                         this.Statistics.MitigationRejectedSwapWhileUse++;
                         this.Detections.SwapWhileUseDetected(index, slot);
@@ -81,13 +98,8 @@ public partial class Plugin
                     break;
                 }
 
-                if (data.Length == 8 && data[0] == index)
+                if (data.Length == 8)
                 {
-                    var slot = BitConverter.ToInt16(data.Slice(1, 2));
-                    var stack = BitConverter.ToInt16(data.Slice(3, 2));
-                    var prefix = data[5];
-                    var type = BitConverter.ToInt16(data.Slice(6, 2));
-
                     var existingItem = Terraria.Main.player[index].GetInventory(slot);
 
                     if (existingItem == null)
