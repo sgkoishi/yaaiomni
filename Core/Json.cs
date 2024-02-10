@@ -127,9 +127,11 @@ public class LimiterConverter : JsonConverter<LimiterConfig>
         }
         else
         {
-            var str = Math.Round(value.RateLimit) == value.RateLimit ? $"{(int) value.RateLimit}" : $"{value.RateLimit}";
-            str += "/";
-            str += Math.Round(value.Maximum) == value.Maximum ? $"{(int) value.Maximum}" : $"{value.Maximum}";
+            var str = $"{(decimal) value.RateLimit}/{(decimal) value.Maximum}";
+            if (!string.IsNullOrWhiteSpace(value.Action))
+            {
+                str += $"/{value.Action}";
+            }
             writer.WriteValue(str);
         }
     }
@@ -141,7 +143,8 @@ public class LimiterConverter : JsonConverter<LimiterConfig>
         return new LimiterConfig
         {
             RateLimit = double.Parse(split[0]),
-            Maximum = double.Parse(split[1])
+            Maximum = double.Parse(split[1]),
+            Action = split.Length == 3 ? split[2] : null
         };
     }
 }
@@ -152,7 +155,7 @@ public class PacketFilterConverter : JsonConverter<PacketFilter>
     {
         var trueflag = true;
         var falseflag = false;
-        foreach (var index in Enumerable.Range(0, Config.DebugPacketSettings.PacketFilter.MaxPacket + 1))
+        foreach (var index in Enumerable.Range(0, Config.PacketFilter.MaxPacket + 1))
         {
             var item = value.Handle(index);
             trueflag &= item;
@@ -168,7 +171,7 @@ public class PacketFilterConverter : JsonConverter<PacketFilter>
             writer.WriteValue(false);
             return;
         }
-        var str = string.Join(",", Enumerable.Range(0, PacketFilter.MaxPacket + 1).Where(index => value.Handle(index)));
+        var str = string.Join(",", Enumerable.Range(0, PacketFilter.MaxPacket + 1).Where(value.Handle));
         writer.WriteValue(str);
     }
 

@@ -74,6 +74,7 @@ public partial class Plugin
     private AsyncLocal<int> _frameCount = new AsyncLocal<int>();
     private bool _worldgenHalting = false;
     private HashSet<ulong> _haltSource = new HashSet<ulong>();
+    private int _dumpCounter;
 
     private void Detour_InspectTileFrame(Action<int, int, bool, bool> orig, int i, int j, bool resetFrame, bool noBreak)
     {
@@ -97,7 +98,7 @@ public partial class Plugin
                         {
                             Terraria.IO.WorldFile.SaveWorld_Version2(bw);
                         }
-                        File.WriteAllBytes(Path.Combine(TShockAPI.TShock.SavePath, "dumpmap.wld.bak"), ms.ToArray());
+                        File.WriteAllBytes(Path.Combine(TShockAPI.TShock.SavePath, $"dumpmap_{DateTime.UtcNow:yyyyMMddHHmmss}_{this._dumpCounter++}.wld"), ms.ToArray());
                         TShockAPI.TShock.Log.ConsoleError($"Detour_InspectTileFrame: Dump crashing map to dumpmap.wld.bak ({TShockAPI.TShock.SavePath})");
                     }
                     if (mtg.ClearOverflowWorldGenStackTrace)

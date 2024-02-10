@@ -218,72 +218,72 @@ public class Config
             Uncommon,
             All,
         }
+    }
 
-        public unsafe struct PacketFilter : IEquatable<PacketFilter>
+    public unsafe struct PacketFilter : IEquatable<PacketFilter>
+    {
+        public static readonly byte MaxPacket = (byte) Enum.GetValues(typeof(PacketTypes)).Cast<int>().Max();
+        private fixed bool _matches[byte.MaxValue];
+
+        public PacketFilter(bool accept)
         {
-            public static readonly byte MaxPacket = (byte) Enum.GetValues(typeof(PacketTypes)).Cast<int>().Max();
-            private fixed bool _matches[byte.MaxValue];
-
-            public PacketFilter(bool accept)
+            for (var i = 0; i < byte.MaxValue; i++)
             {
-                for (var i = 0; i < byte.MaxValue; i++)
-                {
-                    this._matches[i] = accept;
-                }
+                this._matches[i] = accept;
             }
-
-            public PacketFilter(params byte[] accept)
-            {
-                foreach (var value in accept)
-                {
-                    this._matches[value] = true;
-                }
-            }
-
-            public readonly bool Handle(byte type)
-            {
-                return this._matches[type];
-            }
-
-            public readonly bool Handle(int type)
-            {
-                return this.Handle((byte) type);
-            }
-
-            public readonly bool Handle(PacketTypes type)
-            {
-                return this.Handle((byte) type);
-            }
-
-            public readonly bool Equals(PacketFilter other)
-            {
-                var eq = true;
-                for (var i = 0; i < byte.MaxValue; i++)
-                {
-                    eq &= this._matches[i] == other._matches[i];
-                }
-                return eq;
-            }
-
-            public override readonly bool Equals(object? obj)
-            {
-                return obj is PacketFilter pf && this.Equals(pf);
-            }
-
-            public override readonly int GetHashCode()
-            {
-                var h = 0;
-                for (var i = 0; i < byte.MaxValue; i++)
-                {
-                    h ^= Convert.ToInt32(this._matches[i]) << (i % 32);
-                }
-                return h;
-            }
-
-            public static bool operator ==(PacketFilter left, PacketFilter right) => left.Equals(right);
-
-            public static bool operator !=(PacketFilter left, PacketFilter right) => !(left == right);
         }
+
+        public PacketFilter(params byte[] accept)
+        {
+            foreach (var value in accept)
+            {
+                this._matches[value] = true;
+            }
+        }
+
+        public readonly bool Handle(byte type)
+        {
+            return this._matches[type];
+        }
+
+        public readonly bool Handle(int type)
+        {
+            return this.Handle((byte) type);
+        }
+
+        public readonly bool Handle(PacketTypes type)
+        {
+            return this.Handle((byte) type);
+        }
+
+        public readonly bool Equals(PacketFilter other)
+        {
+            var eq = true;
+            for (var i = 0; i < byte.MaxValue; i++)
+            {
+                eq &= this._matches[i] == other._matches[i];
+            }
+            return eq;
+        }
+
+        public override readonly bool Equals(object? obj)
+        {
+            return obj is PacketFilter pf && this.Equals(pf);
+        }
+
+        public override readonly int GetHashCode()
+        {
+            var h = 0;
+            for (var i = 0; i < byte.MaxValue; i++)
+            {
+                h ^= Convert.ToInt32(this._matches[i]) << (i % 32);
+            }
+            return h;
+        }
+
+        public static bool operator ==(PacketFilter left, PacketFilter right) => left.Equals(right);
+
+        public static bool operator !=(PacketFilter left, PacketFilter right) => !(left == right);
     }
 
     public record class SoundnessSettings
@@ -687,6 +687,24 @@ public class Config
         /// </summary>
         public Optional<bool> LoadoutSwitchWithoutSSC = Optional.Default(true, true);
 
+        /// <summary>
+        /// <para>
+        /// Packet spam rate limit. This restriction also applies to commands.
+        /// Each item is a pair of rate and maximum.
+        /// </para>
+        /// <para>Higher rate and lower maximum means more strict.</para>
+        /// <para>
+        /// The default limit: disabled
+        /// </para>
+        /// <para>
+        /// Sample:
+        /// {
+        /// 
+        /// }
+        /// </para>
+        /// </summary>
+        public Optional<Dictionary<PacketFilter, LimiterConfig>?> PacketSpamLimit = Optional.Default<Dictionary<PacketFilter, LimiterConfig>?>(null);
+
         public enum DisabledDamageAction
         {
             AsIs,
@@ -736,6 +754,7 @@ public class Config
     {
         public double RateLimit { get; set; }
         public double Maximum { get; set; }
+        public string? Action { get; set; }
 
         public static explicit operator Limiter(LimiterConfig config)
         {
@@ -751,6 +770,7 @@ public class Limiter
 {
     public required Config.LimiterConfig Config { get; set; }
     public double Counter { get; set; }
+    public string? Action => this.Config.Action;
     public bool Allowed
     {
         get
