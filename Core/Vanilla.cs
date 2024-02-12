@@ -98,7 +98,8 @@ public partial class Plugin
             Permission.SetInterval,
             Permission.ClearInterval,
             Permission.ShowTimeout,
-            Permission.ResetCharacter);
+            Permission.ResetCharacter,
+            Permission.Admin.RunBackground);
 
         Utils.AliasPermission(TShockAPI.Permissions.maintenance,
             Permission.Admin.MaxPlayers,

@@ -46,7 +46,8 @@ public class Config
         DefinedConsts.Commands.Ping,
         DefinedConsts.Commands.Echo,
         DefinedConsts.Commands.Admin.ApplyDefaultPermission,
-        DefinedConsts.Commands.Admin.InspectTileFrame
+        DefinedConsts.Commands.Admin.InspectTileFrame,
+        DefinedConsts.Commands.Admin.RunBackground
     });
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using Terraria.Localization;
+﻿using System.Reflection;
+using Terraria.Localization;
 using TerrariaApi.Server;
 using TShockAPI;
 
@@ -19,6 +20,21 @@ public partial class Plugin
             GC.Collect(3, GCCollectionMode.Optimized, false);
         }
         args.Player.SendSuccessMessage("GC Triggered.");
+    }
+
+    [Command("Admin.SqliteVacuum", "_sv", Permission = "chireiden.omni.admin.sv")]
+    private void Command_SqliteVacuum(CommandArgs args)
+    {
+        var db = TShockAPI.TShock.DB;
+        if (TShockAPI.DB.DbExt.GetSqlType(db) == TShockAPI.DB.SqlType.Sqlite)
+        {
+            TShockAPI.DB.DbExt.Query(db, "VACUUM");
+            args.Player.SendSuccessMessage("SQLite Vacuum on TShock.DB triggered.");
+        }
+        else
+        {
+            args.Player.SendErrorMessage("TShock.DB is not SQLite.");
+        }
     }
 
     [Command("Admin.RawBroadcast", "rbc", "rawbroadcast", Permission = "chireiden.omni.admin.rawbroadcast")]
@@ -67,6 +83,57 @@ public partial class Plugin
         path = Path.Combine(TShockAPI.TShock.SavePath, path);
 
         File.WriteAllBytes(path, Terraria.NetMessage.buffer[index].readBuffer[..Terraria.NetMessage.buffer[index].totalData]);
+    }
+
+    [Command("Admin.FindCommand", "whereis", Permission = "chireiden.omni.admin.whereis")]
+    private void Command_WhereIs(CommandArgs args)
+    {
+        if (args.Parameters.Count == 0)
+        {
+            args.Player.SendErrorMessage("Invalid command.");
+            return;
+        }
+
+        var c = TShockAPI.Commands.ChatCommands.Where(command => command.HasAlias(args.Parameters[0])).ToList();
+
+        args.Player.SendInfoMessage($"ChatCommands Found: {c.Count}");
+
+        var dict = ((Dictionary<string, Assembly>?) typeof(ServerApi).GetField("loadedAssemblies", _bfany)?.GetValue(null))?
+            .ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+
+        foreach (var command in c)
+        {
+            var aliases = string.Join(", ", command.Names.Skip(1).Select(x => TShockAPI.Commands.Specifier + x));
+            args.Player.SendSuccessMessage($"{TShockAPI.Commands.Specifier}{command.Name} ({aliases}) :");
+            var method = command.CommandDelegate.Method;
+            var sig = $"{method.DeclaringType?.FullName}.{method.Name}";
+            args.Player.SendInfoMessage($"    Signature: {sig}");
+            var asm = method.DeclaringType?.Assembly;
+            if (asm is null)
+            {
+                args.Player.SendInfoMessage($"    No Assembly found");
+                continue;
+            }
+            if (!string.IsNullOrWhiteSpace(asm.Location))
+            {
+                args.Player.SendInfoMessage($"    Location: ({asm.Location})");
+            }
+            if (dict?.TryGetValue(asm, out var fileNameWithoutExtension) == true)
+            {
+                args.Player.SendInfoMessage($"    File: {fileNameWithoutExtension}");
+            }
+            var plugins = ServerApi.Plugins.Where(p => p.Plugin.GetType().Assembly == asm).ToList();
+            if (plugins.Count == 0)
+            {
+                args.Player.SendInfoMessage($"    No Plugin found");
+                continue;
+            }
+            foreach (var plugin in plugins)
+            {
+                var p = plugin.Plugin;
+                args.Player.SendInfoMessage($"    Plugin: {p.Name} v{p.Version} by {p.Author}");
+            }
+        }
     }
 
     [Command("Admin.TerminateSocket", "kc", Permission = "chireiden.omni.admin.terminatesocket")]

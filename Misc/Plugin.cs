@@ -55,6 +55,7 @@ public partial class Plugin : TerrariaPlugin
                 DefinedConsts.Commands.Chat,
                 DefinedConsts.Commands.Admin.GarbageCollect,
                 DefinedConsts.Commands.Admin.UpsCheck,
+                DefinedConsts.Commands.Admin.SqliteVacuum,
             }));
             plugin.config.Mode.Value.Vanilla.Value.Permissions.Mutate(list => list.AddRange(new List<string>
             {
@@ -91,7 +92,9 @@ public partial class Plugin : TerrariaPlugin
                     DefinedConsts.Permission.Admin.GarbageCollect,
                     DefinedConsts.Permission.Admin.RawBroadcast,
                     DefinedConsts.Permission.Admin.TerminateSocket,
-                    DefinedConsts.Permission.Admin.GenerateFullConfig);
+                    DefinedConsts.Permission.Admin.GenerateFullConfig,
+                    DefinedConsts.Permission.Admin.SqliteVacuum,
+                    DefinedConsts.Permission.Admin.FindCommand);
 
                 Utils.AliasPermission(TShockAPI.Permissions.su,
                     DefinedConsts.Permission.Admin.ListClients,

@@ -314,4 +314,23 @@ public partial class Plugin
             args.Player.SendErrorMessage($"Failed to save config: {ex.Message}");
         }
     }
+
+    [Command("Admin.RunBackground", "_qbg", Permission = "chireiden.omni.admin.runbackground")]
+    private void Command_RunBackground(CommandArgs args)
+    {
+        if (args.Parameters.Count == 0)
+        {
+            args.Player.SendErrorMessage("No command given.");
+            return;
+        }
+        if (args.Parameters[0] == "-t" && args.Parameters.Count > 1)
+        {
+            Task.Run(() => TShockAPI.Commands.HandleCommand(args.Player, args.Parameters[1]));
+            args.Player.SendSuccessMessage($"Background task ({args.Player.Name} @ {args.Parameters[1]}) started.");
+            return;
+        }
+
+        System.Threading.ThreadPool.QueueUserWorkItem(_ => TShockAPI.Commands.HandleCommand(args.Player, args.Parameters[0]));
+        args.Player.SendSuccessMessage($"Background task ({args.Player.Name} @ {args.Parameters[0]}) queued.");
+    }
 }
