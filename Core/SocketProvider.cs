@@ -31,12 +31,18 @@ public partial class Plugin
                 args.Result = new Socket.HackyAsyncSocket();
                 return;
             case Config.EnhancementsSettings.SocketType.AnotherAsyncSocket:
-                args.Result = new Socket.AnotherAsyncSocket();
+                args.Result = new Socket.AnotherAsyncSocket
+                {
+                    EnforceMessageSize = !this.config.Mitigation.Value.DisableAllMitigation && this.config.Mitigation.Value.RestrictiveSocketSend
+                };
                 return;
             case Config.EnhancementsSettings.SocketType.AnotherAsyncSocketAsFallback:
                 if (args.Result is TShockAPI.Sockets.LinuxTcpSocket)
                 {
-                    args.Result = new Socket.AnotherAsyncSocket();
+                    args.Result = new Socket.AnotherAsyncSocket
+                    {
+                        EnforceMessageSize = !this.config.Mitigation.Value.DisableAllMitigation && this.config.Mitigation.Value.RestrictiveSocketSend
+                    };
                 }
                 return;
         }
@@ -229,6 +235,7 @@ internal static class Socket
 
     public class AnotherAsyncSocket : SelfSocket
     {
+        internal bool EnforceMessageSize;
         public AnotherAsyncSocket() : base()
         {
         }
@@ -239,7 +246,10 @@ internal static class Socket
 
         internal override ISocket New(TcpClient client)
         {
-            return new AnotherAsyncSocket(client);
+            return new AnotherAsyncSocket(client)
+            {
+                EnforceMessageSize = this.EnforceMessageSize
+            };
         }
 
         public override async void AsyncSend(byte[] data, int offset, int size, SocketSendCallback callback, object? state = null)
@@ -250,7 +260,25 @@ internal static class Socket
                 // ArrayPool sounds smarter than vanilla's Net.LegacyNetBufferPool
                 var buffer = ArrayPool<byte>.Shared.Rent(size);
                 Buffer.BlockCopy(data, offset, buffer, 0, size);
-                await this._connection.GetStream().WriteAsync(buffer.AsMemory(0, size));
+                if (this.EnforceMessageSize)
+                {
+                    if (size >= 3)
+                    {
+                        var claimedSize = BitConverter.ToInt16(buffer, 0);
+                        if (claimedSize != size)
+                        {
+                            TShockAPI.TShock.Log.ConsoleWarn($"[DbgPkt] Outbound message size mismatch: {size} != {claimedSize} (to {this._remoteAddress})");
+                        }
+                        else
+                        {
+                            await this._connection.GetStream().WriteAsync(buffer.AsMemory(0, size));
+                        }
+                    }
+                }
+                else
+                {
+                    await this._connection.GetStream().WriteAsync(buffer.AsMemory(0, size));
+                }
                 callback(state);
                 ArrayPool<byte>.Shared.Return(buffer);
             }

@@ -80,7 +80,7 @@ public partial class Plugin
                 if (mitigation.SwapWhileUsePE)
                 {
                     var existingItem = Terraria.Main.player[index].GetInventory(slot);
-                    if (Terraria.Main.player[index].controlUseItem && slot == Terraria.Main.player[index].selectedItem 
+                    if (Terraria.Main.player[index].controlUseItem && slot == Terraria.Main.player[index].selectedItem
                         && type != existingItem.netID && (type != 0 || stack != 0))
                     {
                         this.Statistics.MitigationRejectedSwapWhileUse++;

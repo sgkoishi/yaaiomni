@@ -706,6 +706,17 @@ public class Config
         /// </summary>
         public Optional<Dictionary<PacketFilter, LimiterConfig>?> PacketSpamLimit = Optional.Default<Dictionary<PacketFilter, LimiterConfig>?>(null);
 
+        /// <summary>
+        /// <para>
+        /// Restrict all socket send operations to have exactly one message/packet per 
+        /// Send call. Requires AnotherAsyncSocket.
+        /// </para>
+        /// <para>
+        /// If you SendRawData and it contains more than one message/packet, turn this off.
+        /// </para>
+        /// </summary>
+        public Optional<bool> RestrictiveSocketSend = Optional.Default(false);
+
         public enum DisabledDamageAction
         {
             AsIs,
