@@ -42,27 +42,26 @@ public partial class Plugin : TerrariaPlugin
 
     public override void Initialize()
     {
-        var core = ServerApi.Plugins.Get<Omni.Plugin>();
-        if (core is null)
+        var core = ServerApi.Plugins.Get<Omni.Plugin>() ?? throw new Exception("Core Omni is null.");
+        core.OnConfigLoad += (plugin, prev) =>
         {
-            throw new Exception("Core Omni is null.");
-        }
-        core.OnConfigLoad += (plugin) =>
-        {
-            plugin.config.HideCommands.Mutate(list => list.AddRange(new List<string> {
-                DefinedConsts.Commands.PvPStatus,
-                DefinedConsts.Commands.TeamStatus,
-                DefinedConsts.Commands.Chat,
-                DefinedConsts.Commands.Admin.GarbageCollect,
-                DefinedConsts.Commands.Admin.UpsCheck,
-                DefinedConsts.Commands.Admin.SqliteVacuum,
-            }));
-            plugin.config.Mode.Value.Vanilla.Value.Permissions.Mutate(list => list.AddRange(new List<string>
+            if (prev == null)
             {
-                DefinedConsts.Permission.TogglePvP,
-                DefinedConsts.Permission.ToggleTeam,
-                DefinedConsts.Permission.SyncLoadout,
-            }));
+                plugin.config.HideCommands.Mutate(list => list.AddRange(new List<string> {
+                    DefinedConsts.Commands.PvPStatus,
+                    DefinedConsts.Commands.TeamStatus,
+                    DefinedConsts.Commands.Chat,
+                    DefinedConsts.Commands.Admin.GarbageCollect,
+                    DefinedConsts.Commands.Admin.UpsCheck,
+                    DefinedConsts.Commands.Admin.SqliteVacuum,
+                }));
+                plugin.config.Mode.Value.Vanilla.Value.Permissions.Mutate(list => list.AddRange(new List<string>
+                {
+                    DefinedConsts.Permission.TogglePvP,
+                    DefinedConsts.Permission.ToggleTeam,
+                    DefinedConsts.Permission.SyncLoadout,
+                }));
+            }
         };
         core.OnPermissionSetup += (plugin) =>
         {
@@ -128,7 +127,7 @@ public partial class Plugin : TerrariaPlugin
         catch (Exception ex)
         {
             initiator?.SendErrorMessage($"Failed to load config: {ex.Message}");
-            return;
+            this.config ??= new Config();
         }
 
         try

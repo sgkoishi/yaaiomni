@@ -396,39 +396,6 @@ public partial class Plugin
         }
     }
 
-    internal Dictionary<string, string> _localizedCommandsMap = [];
-    private void MMHook_Mitigation_I18nCommand(On.Terraria.Initializers.ChatInitializer.orig_Load orig)
-    {
-        // Pryaxis/TShock#2914
-        Terraria.UI.Chat.ChatManager.Commands._localizedCommands.Clear();
-        orig();
-        if (this.config.Soundness.Value.UseEnglishCommand)
-        {
-            var currentLanguage = Terraria.Localization.LanguageManager.Instance.ActiveCulture;
-            Terraria.Localization.LanguageManager.Instance.LoadLanguage(Terraria.Localization.GameCulture.FromCultureName(Terraria.Localization.GameCulture.CultureName.English));
-            var items = Terraria.UI.Chat.ChatManager.Commands._localizedCommands.ToList();
-            Terraria.UI.Chat.ChatManager.Commands._localizedCommands.Clear();
-            foreach (var (key, value) in items)
-            {
-                Terraria.UI.Chat.ChatManager.Commands._localizedCommands[new Terraria.Localization.LocalizedText(key.Key, key.Value)] = value;
-            }
-            var chatCommands = items.ToDictionary(kvp => kvp.Key.Key, kvp => kvp.Key.Value);
-            var cliCommands = Terraria.Localization.LanguageManager.Instance._localizedTexts
-                .Where(kvp => kvp.Key.StartsWith("CLI.") && kvp.Key.EndsWith("_Command"))
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Value);
-            Terraria.Localization.LanguageManager.Instance.LoadLanguage(currentLanguage);
-            foreach (var c in chatCommands)
-            {
-                // Chat commands start with / and we don't want that
-                this._localizedCommandsMap[Terraria.Localization.Language.GetText(c.Key).Value[1..]] = c.Value[1..];
-            }
-            foreach (var c in cliCommands)
-            {
-                this._localizedCommandsMap[Terraria.Localization.Language.GetText(c.Key).Value] = c.Value;
-            }
-        }
-    }
-
     private delegate JObject ConfigUpdateAction(JObject cfg, out bool requiredUpgrade);
     private JObject Detour_Mitigation_ConfigUpdate(ConfigUpdateAction orig, JObject cfg, out bool requiredUpgrade)
     {

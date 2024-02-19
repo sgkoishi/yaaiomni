@@ -98,6 +98,8 @@ public partial class Plugin
         }
     }
 
+    internal Dictionary<string, string> _localizedCommandsMap = [];
+    private System.Runtime.CompilerServices.ConditionalWeakTable<TShockAPI.Command, List<string>> _addedAlias = new();
     private string Detour_HelpAliases(Func<object, TShockAPI.Command, string> orig, object _instance, TShockAPI.Command command)
     {
         var ac = this.config.Enhancements.Value.ShowCommandAlias.Value;
@@ -107,5 +109,70 @@ public partial class Plugin
         }
         var aliases = string.Join(", ", command.Names.Skip(1).Take(ac).Select(x => TShockAPI.Commands.Specifier + x));
         return $"{TShockAPI.Commands.Specifier}{command.Name} ({aliases})";
+    }
+
+    private void MMHook_Mitigation_I18nCommand(On.Terraria.Initializers.ChatInitializer.orig_Load orig)
+    {
+        // Pryaxis/TShock#2914
+        Terraria.UI.Chat.ChatManager.Commands._localizedCommands.Clear();
+        orig();
+        this.RefreshLocalizedCommandAliases();
+    }
+
+    private void RefreshLocalizedCommandAliases()
+    {
+        if (this.config.Soundness.Value.UseEnglishCommand)
+        {
+            var currentLanguage = Terraria.Localization.LanguageManager.Instance.ActiveCulture;
+            Terraria.Localization.LanguageManager.Instance.LoadLanguage(Terraria.Localization.GameCulture.FromCultureName(Terraria.Localization.GameCulture.CultureName.English));
+            var items = Terraria.UI.Chat.ChatManager.Commands._localizedCommands.ToList();
+            Terraria.UI.Chat.ChatManager.Commands._localizedCommands.Clear();
+            foreach (var (key, value) in items)
+            {
+                Terraria.UI.Chat.ChatManager.Commands._localizedCommands[new Terraria.Localization.LocalizedText(key.Key, key.Value)] = value;
+            }
+            var chatCommands = items.ToDictionary(kvp => kvp.Key.Key, kvp => kvp.Key.Value);
+            var cliCommands = Terraria.Localization.LanguageManager.Instance._localizedTexts
+                .Where(kvp => kvp.Key.StartsWith("CLI.") && kvp.Key.EndsWith("_Command"))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Value);
+            Terraria.Localization.LanguageManager.Instance.LoadLanguage(currentLanguage);
+            this._localizedCommandsMap.Clear();
+            foreach (var c in chatCommands)
+            {
+                // Chat commands start with / and we don't want that
+                this._localizedCommandsMap[Terraria.Localization.Language.GetText(c.Key).Value[1..]] = c.Value[1..];
+            }
+            foreach (var c in cliCommands)
+            {
+                this._localizedCommandsMap[Terraria.Localization.Language.GetText(c.Key).Value] = c.Value;
+            }
+        }
+        if (this.config.Soundness.Value.AllowVanillaLocalizedCommand)
+        {
+            foreach (var kvp in this._addedAlias)
+            {
+                if (kvp.Key.Names.Count > 1)
+                {
+                    foreach (var name in kvp.Value)
+                    {
+                        kvp.Key.Names.Remove(name);
+                    }
+                    kvp.Value.Clear();
+                }
+            }
+            this._addedAlias.Clear();
+            foreach (var command in TShockAPI.Commands.ChatCommands)
+            {
+                foreach (var bc in this._localizedCommandsMap)
+                {
+                    if (command.HasAlias(bc.Value) && !command.HasAlias(bc.Key))
+                    {
+                        command.Names.Insert(1, bc.Key);
+                        var l = this._addedAlias.GetOrCreateValue(command);
+                        l.Add(bc.Key);
+                    }
+                }
+            }
+        }
     }
 }

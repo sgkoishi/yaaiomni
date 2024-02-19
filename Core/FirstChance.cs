@@ -10,7 +10,7 @@ public partial class Plugin
 
     private void FirstChanceExceptionHandler(object? sender, FirstChanceExceptionEventArgs args)
     {
-        if (!this.config.LogFirstChance)
+        if (this.config?.LogFirstChance?.Value != true)
         {
             return;
         }

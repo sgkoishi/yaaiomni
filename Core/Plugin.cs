@@ -21,7 +21,7 @@ public partial class Plugin : TerrariaPlugin
     public string ConfigPath = Path.Combine(TShockAPI.TShock.SavePath, DefinedConsts.Misc.ConfigFile);
     private const BindingFlags _bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
-    public Config config = new Config();
+    public Config config = null!;
 
     public Plugin(Main game) : base(game)
     {
@@ -121,10 +121,11 @@ public partial class Plugin : TerrariaPlugin
         );
     }
 
-    public event Action<Plugin>? OnConfigLoad;
+    public event Action<Plugin, Config>? OnConfigLoad;
 
     private void LoadConfig(TSPlayer? initiator)
     {
+        var prev = this.config;
         try
         {
             if (File.Exists(this.ConfigPath))
@@ -135,10 +136,10 @@ public partial class Plugin : TerrariaPlugin
         catch (Exception ex)
         {
             initiator?.SendErrorMessage($"Failed to load config: {ex.Message}");
-            return;
+            this.config ??= new Config();
         }
 
-        OnConfigLoad?.Invoke(this);
+        OnConfigLoad?.Invoke(this, prev);
 
         try
         {
@@ -331,19 +332,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_GetData;
         On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_CatchSend;
         On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_CatchGet;
-        if (this.config.Soundness.Value.AllowVanillaLocalizedCommand)
-        {
-            foreach (var command in TShockAPI.Commands.ChatCommands)
-            {
-                foreach (var bc in this._localizedCommandsMap)
-                {
-                    if (command.HasAlias(bc.Value))
-                    {
-                        command.Names.Add(bc.Key);
-                    }
-                }
-            }
-        }
+        this.RefreshLocalizedCommandAliases();
     }
 
     private void PostTShockInitialize()

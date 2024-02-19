@@ -47,6 +47,8 @@ public partial class Plugin
                 this._targetCulture = null;
                 this.SetTShockLocale(null);
             }
+
+            this.RefreshLocalizedCommandAliases();
             return;
         }
 
@@ -68,6 +70,7 @@ public partial class Plugin
         {
             this.SetTShockLocale(this._targetCulture);
         }
+        this.RefreshLocalizedCommandAliases();
     }
 
     private void SetTShockLocale(CultureInfo? culture)
