@@ -18,30 +18,17 @@ public partial class Plugin : TerrariaPlugin
 
     public string ConfigPath = Path.Combine(TShockAPI.TShock.SavePath, "chireiden.omni.misc.json");
     private const BindingFlags _bfany = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-    public Config config;
+    public Config config = null!;
 
     public Plugin(Main game) : base(game)
     {
-        this.config = new Config();
-        this.LoadConfig(Utils.ConsolePlayer.Instance);
-        this.Detour(
-            nameof(this.Detour_Lava_HitEffect),
-            typeof(NPC)
-                .GetMethod(nameof(NPC.HitEffect), _bfany),
-            this.Detour_Lava_HitEffect);
-        this.Detour(
-            nameof(this.Detour_Lava_KillTile),
-            typeof(WorldGen)
-                .GetMethod(nameof(WorldGen.KillTile), _bfany),
-            this.Detour_Lava_KillTile);
-        this.Detour(
-            nameof(this.Detour_UpdateConnectedClients),
-            typeof(Terraria.Netplay).GetMethod(nameof(Terraria.Netplay.UpdateConnectedClients), _bfany),
-            this.Detour_UpdateConnectedClients);
     }
 
     public override void Initialize()
     {
+        Utils.AssemblyMutex(this);
+        this.config = new Config();
+        this.LoadConfig(Utils.ConsolePlayer.Instance);
         var core = ServerApi.Plugins.Get<Omni.Plugin>() ?? throw new Exception("Core Omni is null.");
         Utils.OnceFlag("chireiden.omni.misc.preset.lock", () =>
         {
@@ -100,7 +87,10 @@ public partial class Plugin : TerrariaPlugin
 
         this.InitCommands();
 
+        On.Terraria.NPC.HitEffect += this.Detour_Lava_HitEffect;
         On.Terraria.MessageBuffer.GetData += this.MMHook_PatchVersion_GetData;
+        On.Terraria.WorldGen.KillTile += this.Detour_Lava_KillTile;
+        On.Terraria.Netplay.UpdateConnectedClients += this.Detour_UpdateConnectedClients;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SyncLoadout;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SummonBoss;
         TShockAPI.GetDataHandlers.TogglePvp.Register(this.GDHook_Permission_TogglePvp);
@@ -144,7 +134,10 @@ public partial class Plugin : TerrariaPlugin
     {
         if (disposing)
         {
+            On.Terraria.NPC.HitEffect -= this.Detour_Lava_HitEffect;
             On.Terraria.MessageBuffer.GetData -= this.MMHook_PatchVersion_GetData;
+            On.Terraria.WorldGen.KillTile -= this.Detour_Lava_KillTile;
+            On.Terraria.Netplay.UpdateConnectedClients -= this.Detour_UpdateConnectedClients;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Permission_SyncLoadout;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Permission_SummonBoss;
             TShockAPI.GetDataHandlers.TogglePvp.UnRegister(this.GDHook_Permission_TogglePvp);

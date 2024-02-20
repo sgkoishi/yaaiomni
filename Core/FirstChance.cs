@@ -23,7 +23,7 @@ public partial class Plugin
         try
         {
             this.inFirstChance.Value++;
-            var v = args.Exception.ToString();
+            var v = $"{args.Exception.Message} @ {args.Exception.StackTrace}";
             if (this.exceptions.Add(v))
             {
                 Utils.ShowError($"New First Chance: {v}");

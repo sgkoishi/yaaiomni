@@ -103,8 +103,15 @@ public partial class Plugin
 
         foreach (var command in c)
         {
-            var aliases = string.Join(", ", command.Names.Skip(1).Select(x => TShockAPI.Commands.Specifier + x));
-            args.Player.SendSuccessMessage($"{TShockAPI.Commands.Specifier}{command.Name} ({aliases}) :");
+            if (command.Names.Count == 1)
+            {
+                args.Player.SendSuccessMessage($"{TShockAPI.Commands.Specifier}{command.Name} :");
+            }
+            else
+            {
+                var aliases = string.Join(", ", command.Names.Skip(1).Select(x => TShockAPI.Commands.Specifier + x));
+                args.Player.SendSuccessMessage($"{TShockAPI.Commands.Specifier}{command.Name} ({aliases}) :");
+            }
             var method = command.CommandDelegate.Method;
             var sig = $"{method.DeclaringType?.FullName}.{method.Name}";
             args.Player.SendInfoMessage($"    Signature: {sig}");
@@ -179,7 +186,7 @@ public partial class Plugin
         }
     }
 
-    private void Detour_UpdateConnectedClients(Action orig)
+    private void Detour_UpdateConnectedClients(On.Terraria.Netplay.orig_UpdateConnectedClients orig)
     {
         orig();
         if (!Terraria.Netplay.HasClients)

@@ -137,6 +137,16 @@ public class Config
         /// </summary>
         public Optional<bool> BanPattern = Optional.Default(true, true);
 
+        /// <summary>
+        /// Try to resolve references from loaded assemblies.
+        /// </summary>
+        public Optional<bool> ResolveAssembly = Optional.Default(true);
+
+        /// <summary>
+        /// IPv6 Dual Stack Support
+        /// </summary>
+        public Optional<bool> IPv6DualStack = Optional.Default(true);
+
         public enum UpdateOptions
         {
             Silent,

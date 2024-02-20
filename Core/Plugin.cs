@@ -25,6 +25,8 @@ public partial class Plugin : TerrariaPlugin
 
     public Plugin(Main game) : base(game)
     {
+        Utils.AssemblyMutex(this);
+        AppDomain.CurrentDomain.AssemblyResolve += this.AssemblyResolveHandler;
         AppDomain.CurrentDomain.FirstChanceException += this.FirstChanceExceptionHandler;
         this.Order = int.MinValue;
         this.LoadConfig(Utils.ConsolePlayer.Instance);
@@ -119,6 +121,32 @@ public partial class Plugin : TerrariaPlugin
                 .GetMethod("HandleSyncLoadout", _bfany),
           this.Detour_Mitigation_HandleSyncLoadout
         );
+        this.Detour(
+            nameof(this.Detour_Socket_StartDualMode),
+            typeof(System.Net.Sockets.TcpListener)
+                .GetMethod(nameof(System.Net.Sockets.TcpListener.Start), [typeof(int)]),
+            this.Detour_Socket_StartDualMode
+        );
+    }
+
+    private Assembly? AssemblyResolveHandler(object? sender, ResolveEventArgs args)
+    {
+        var an = new AssemblyName(args.Name);
+        if (an.Name == Assembly.GetExecutingAssembly().GetName().Name)
+        {
+            return Assembly.GetExecutingAssembly();
+        }
+        if (this.config.Enhancements.Value.ResolveAssembly)
+        {
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (a.GetName().Name == an.Name && a.GetName().Version >= an.Version)
+                {
+                    return a;
+                }
+            }
+        }
+        return null;
     }
 
     public event Action<Plugin, Config>? OnConfigLoad;
@@ -341,5 +369,9 @@ public partial class Plugin : TerrariaPlugin
         OTAPI.Hooks.Netplay.CreateTcpListener += this.OTHook_Socket_OnCreate;
         this.InitCommands();
         this.OnReload(new ReloadEventArgs(TSPlayer.Server));
+        if (this.config.Enhancements.Value.IPv6DualStack)
+        {
+            Terraria.Program.LaunchParameters.Add("-ip", System.Net.IPAddress.IPv6Any.ToString());
+        }
     }
 }

@@ -175,4 +175,21 @@ public partial class Plugin
             }
         }
     }
+
+    private void Detour_Socket_StartDualMode(Action<System.Net.Sockets.TcpListener, int> orig, System.Net.Sockets.TcpListener listener, int backlog)
+    {
+        if (this.config.Enhancements.Value.IPv6DualStack)
+        {
+            try
+            {
+                listener.Server.DualMode = true;
+                TShockAPI.TShock.Log.ConsoleInfo("Dual stack enabled.");
+            }
+            catch (Exception e)
+            {
+                Utils.ShowError($"Failed to enable dual stack on {listener.LocalEndpoint}: {e}");
+            }
+        }
+        orig(listener, backlog);
+    }
 }

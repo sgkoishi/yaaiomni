@@ -8,6 +8,7 @@
     <AssemblyName>Chireiden.TShock.Omni</AssemblyName>
     <RootNamespace>Chireiden.TShock.Omni</RootNamespace>
     <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
@@ -15,6 +16,7 @@
     <Authors>Chireiden</Authors>
     <Description>Yet another misc plugin for TShock</Description>
     <PackageProjectUrl>https://github.com/sgkoishi/yaaiomni</PackageProjectUrl>
+    <AssemblyTitle>$(PackageProjectUrl)</AssemblyTitle>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageType>TShockPlugin</PackageType>

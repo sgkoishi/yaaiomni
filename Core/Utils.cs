@@ -495,6 +495,32 @@ public static partial class Utils
         }
     }
 
+    public static void AssemblyMutex(TerrariaApi.Server.TerrariaPlugin plugin)
+    {
+        var asm = plugin.GetType().Assembly;
+        foreach (var ld in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            if (ld.GetName().Name == asm.GetName().Name && ld != asm)
+            {
+                var dict = ((Dictionary<string, System.Reflection.Assembly>) typeof(TerrariaApi.Server.ServerApi)
+                    .GetField("loadedAssemblies", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
+                    .GetValue(null)!)
+                    .ToDictionary(kvp => kvp.Value, kvp => kvp.Key)!;
+                var em = $"Duplicate {plugin.Name} loaded:";
+                if (dict.TryGetValue(ld, out var fileNameWithoutExtension))
+                {
+                    em += Environment.NewLine + $"  --> Loaded:  {fileNameWithoutExtension} (v{ld.GetName().Version})";
+                }
+                if (dict.TryGetValue(asm, out fileNameWithoutExtension))
+                {
+                    em += Environment.NewLine + $"  --> Current: {fileNameWithoutExtension} (v{asm.GetName().Version})";
+                }
+                TerrariaApi.Server.ServerApi.LogWriter.PluginWriteLine(plugin, em, System.Diagnostics.TraceLevel.Error);
+                throw new OperationCanceledException($"{asm.GetName().Name} already loaded.");
+            }
+        }
+    }
+
     public class ConsolePlayer : TSPlayer
     {
         public static ConsolePlayer Instance = new ConsolePlayer("Console");
