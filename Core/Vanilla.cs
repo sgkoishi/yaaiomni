@@ -62,12 +62,14 @@ public partial class Plugin
             return;
         }
 
-        if (File.Exists(Path.Combine(TShockAPI.TShock.SavePath, Misc.PresetLock)) && !preset.AlwaysApply)
+        if (preset.AlwaysApply)
         {
-            return;
+            this.PermissionSetup();
         }
-
-        this.PermissionSetup();
+        else
+        {
+            Utils.OnceFlag(Misc.PresetLock, this.PermissionSetup);
+        }
     }
 
     public event Action<Plugin>? OnPermissionSetup;
@@ -112,7 +114,5 @@ public partial class Plugin
         Utils.AliasPermission(TShockAPI.Permissions.su,
             Permission.Admin.Sudo,
             Permission.Admin.ResetCharacterAll);
-
-        File.WriteAllText(Path.Combine(TShockAPI.TShock.SavePath, Misc.PresetLock), string.Empty);
     }
 }

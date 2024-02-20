@@ -25,7 +25,15 @@ namespace Chireiden.TShock.Omni.Ext
     {
         public static void Mutate<T>(this Optional<T> t, Action<T> mut)
         {
-            mut(t._defaultValue);
+            if (t._value is not null)
+            {
+                mut(t._value);
+            }
+            else
+            {
+                mut(t._defaultValue);
+                t.Value = t._defaultValue;
+            }
         }
     }
 }

@@ -820,7 +820,21 @@ public class Optional<T> : Optional, IEquatable<Optional<T>>
         get => this.IsDefault ? this._defaultValue : this._value!;
         set
         {
-            if (EqualityComparer<T>.Default.Equals(value, this._defaultValue))
+            if (typeof(T).IsGenericType && typeof(T).GetInterface(typeof(IEnumerable<>).Name) is Type st)
+            {
+                var se = typeof(Enumerable).GetMethods()
+                    .First(m => m.Name == nameof(Enumerable.SequenceEqual) && m.GetParameters().Length == 2)
+                    .MakeGenericMethod(st.GetGenericArguments());
+                if (se != null)
+                {
+                    this.IsDefault = (bool) se.Invoke(null, [value, this._defaultValue])!;
+                    if (!this.IsDefault)
+                    {
+                        this._value = value;
+                    }
+                }
+            }
+            else if (EqualityComparer<T>.Default.Equals(value, this._defaultValue))
             {
                 this.IsDefault = true;
             }

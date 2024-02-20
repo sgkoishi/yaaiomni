@@ -43,26 +43,23 @@ public partial class Plugin : TerrariaPlugin
     public override void Initialize()
     {
         var core = ServerApi.Plugins.Get<Omni.Plugin>() ?? throw new Exception("Core Omni is null.");
-        core.OnConfigLoad += (plugin, prev) =>
+        Utils.OnceFlag("chireiden.omni.misc.preset.lock", () =>
         {
-            if (prev == null)
+            core.config.HideCommands.Mutate(list => list.AddRange(new List<string> {
+                DefinedConsts.Commands.PvPStatus,
+                DefinedConsts.Commands.TeamStatus,
+                DefinedConsts.Commands.Chat,
+                DefinedConsts.Commands.Admin.GarbageCollect,
+                DefinedConsts.Commands.Admin.UpsCheck,
+                DefinedConsts.Commands.Admin.SqliteVacuum,
+            }));
+            core.config.Mode.Value.Vanilla.Value.Permissions.Mutate(list => list.AddRange(new List<string>
             {
-                plugin.config.HideCommands.Mutate(list => list.AddRange(new List<string> {
-                    DefinedConsts.Commands.PvPStatus,
-                    DefinedConsts.Commands.TeamStatus,
-                    DefinedConsts.Commands.Chat,
-                    DefinedConsts.Commands.Admin.GarbageCollect,
-                    DefinedConsts.Commands.Admin.UpsCheck,
-                    DefinedConsts.Commands.Admin.SqliteVacuum,
-                }));
-                plugin.config.Mode.Value.Vanilla.Value.Permissions.Mutate(list => list.AddRange(new List<string>
-                {
-                    DefinedConsts.Permission.TogglePvP,
-                    DefinedConsts.Permission.ToggleTeam,
-                    DefinedConsts.Permission.SyncLoadout,
-                }));
-            }
-        };
+                DefinedConsts.Permission.TogglePvP,
+                DefinedConsts.Permission.ToggleTeam,
+                DefinedConsts.Permission.SyncLoadout,
+            }));
+        });
         core.OnPermissionSetup += (plugin) =>
         {
             var guest = TShockAPI.TShock.Groups.GetGroupByName(TShockAPI.TShock.Config.Settings.DefaultGuestGroupName);
@@ -108,10 +105,7 @@ public partial class Plugin : TerrariaPlugin
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Permission_SummonBoss;
         TShockAPI.GetDataHandlers.TogglePvp.Register(this.GDHook_Permission_TogglePvp);
         TShockAPI.GetDataHandlers.PlayerTeam.Register(this.GDHook_Permission_PlayerTeam);
-        TShockAPI.Hooks.GeneralHooks.ReloadEvent += (args) =>
-        {
-            this.LoadConfig(TShockAPI.TSPlayer.Server);
-        };
+        TShockAPI.Hooks.GeneralHooks.ReloadEvent += (args) => this.LoadConfig(TShockAPI.TSPlayer.Server);
         Utils.ConsolePlayer.Instance.SendSuccessMessage($"{this.Name} initialized.");
     }
 
@@ -127,8 +121,9 @@ public partial class Plugin : TerrariaPlugin
         catch (Exception ex)
         {
             initiator?.SendErrorMessage($"Failed to load config: {ex.Message}");
-            this.config ??= new Config();
         }
+
+        this.config ??= new Config();
 
         try
         {

@@ -486,6 +486,15 @@ public static partial class Utils
         TShockAPI.TShock.Groups.AddPermissions(group!.Name, perm.ToList());
     }
 
+    public static void OnceFlag(string key, Action action)
+    {
+        if (!File.Exists(Path.Combine(TShockAPI.TShock.SavePath, key)))
+        {
+            action();
+            File.WriteAllText(Path.Combine(TShockAPI.TShock.SavePath, key), string.Empty);
+        }
+    }
+
     public class ConsolePlayer : TSPlayer
     {
         public static ConsolePlayer Instance = new ConsolePlayer("Console");

@@ -136,9 +136,9 @@ public partial class Plugin : TerrariaPlugin
         catch (Exception ex)
         {
             initiator?.SendErrorMessage($"Failed to load config: {ex.Message}");
-            this.config ??= new Config();
         }
 
+        this.config ??= new Config();
         OnConfigLoad?.Invoke(this, prev);
 
         try
