@@ -814,7 +814,7 @@ public class Optional<T> : Optional, IEquatable<Optional<T>>
     public bool IsDefault { private set; get; }
     public bool HideWhenDefault { private set; get; }
     internal T _defaultValue;
-    private T? _value;
+    internal T? _value;
     public T Value
     {
         get => this.IsDefault ? this._defaultValue : this._value!;

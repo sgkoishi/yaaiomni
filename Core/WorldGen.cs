@@ -71,9 +71,9 @@ public partial class Plugin
         args.Player.SendInfoMessage("Inspecting tile frame, you may experience lag.");
     }
 
-    private AsyncLocal<int> _frameCount = new AsyncLocal<int>();
+    private readonly AsyncLocal<int> _frameCount = new AsyncLocal<int>();
     private bool _worldgenHalting = false;
-    private HashSet<ulong> _haltSource = new HashSet<ulong>();
+    private readonly HashSet<ulong> _haltSource = new HashSet<ulong>();
     private int _dumpCounter;
 
     private void Detour_InspectTileFrame(Action<int, int, bool, bool> orig, int i, int j, bool resetFrame, bool noBreak)
