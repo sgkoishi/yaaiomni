@@ -202,9 +202,11 @@ public static partial class Utils
         }
     }
 
+#pragma warning disable CS1574 // XML comment has cref attribute that could not be resolved
+
     /// <summary>
     /// Converts a list of arguments back to a command.
-    /// This is a rough inverse of <seealso cref="TShockAPI.Commands.ParseParameters(string)"/>.
+    /// This is a rough inverse of <seealso cref="TShockAPI.Commands.ParseParameters(string)" />.
     /// Will not add specifier for you.
     /// </summary>
     public static string ToCommand(string command, List<string> args)
@@ -282,6 +284,8 @@ public static partial class Utils
         }
         return result;
     }
+
+#pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
 
     public static IEnumerable<TSPlayer> ActivePlayers => TShockAPI.TShock.Players.Where(p => p?.Active == true);
 

@@ -22,9 +22,10 @@ jobs:
         with:
           dotnet-version: '6.0.100'
 
-      - name: Build
+      - name: Build and NuGet
         run: |
           dotnet build
+          dotnet nuget push **/bin/Debug/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
           New-Item -ItemType Directory Artifact
           Copy-Item **/bin/Debug/net6.0/* Artifact
           Copy-Item LICENSE,README.md Artifact
@@ -36,12 +37,13 @@ jobs:
           path: |
             Artifact
 
-      - name: Set env output and package
+      - name: Prepare Release
         id: setenvo
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
-          dotnet nuget push **/bin/Debug/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
           echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
+          dotnet build /p:GenerateDocumentationFile=true
+          Copy-Item **/bin/Debug/net6.0/* Artifact
           tar cvf Artifact.tar Artifact
           Compress-Archive -Path Artifact Artifact.zip
 

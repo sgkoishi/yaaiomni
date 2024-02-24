@@ -8,6 +8,8 @@ using System.Text;
 
 namespace Chireiden.TShock.SourceGen;
 
+#pragma warning disable CS1591  // Missing XML comment for publicly visible type or member
+
 [Generator(LanguageNames.CSharp)]
 public class CommandsGenerator : IIncrementalGenerator
 {
@@ -353,11 +355,7 @@ namespace Chireiden.TShock
     }
 }
 
-public class DiagnosticException : Exception
+public class DiagnosticException(Diagnostic diagnostic) : Exception
 {
-    public Diagnostic Diagnostic;
-    public DiagnosticException(Diagnostic diagnostic)
-    {
-        this.Diagnostic = diagnostic;
-    }
+    public Diagnostic Diagnostic = diagnostic;
 }

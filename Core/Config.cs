@@ -145,7 +145,7 @@ public class Config
         /// <summary>
         /// IPv6 Dual Stack Support
         /// </summary>
-        public Optional<bool> IPv6DualStack = Optional.Default(true);
+        public Optional<bool> IPv6DualStack = Optional.Default(false);
 
         public enum UpdateOptions
         {
@@ -320,7 +320,7 @@ public class Config
         /// </para>
         /// <para>
         /// This will try to reset the encoding.
-        /// Default: -1, use Encoding.Default when Win32NT && Version <= 10
+        /// Default: -1, use Encoding.Default when Win32NT and Version &lt;= 10
         /// </para>
         /// </summary>
         public Optional<int> UseDefaultEncoding = Optional.Default(Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major < 10 ? -1 : 0);
@@ -580,7 +580,7 @@ public class Config
         /// <para>
         /// The default limit:
         ///   Socket created: 1 second
-        ///   <seealso cref="PacketTypes.ConnectRequest"> received: +3 seconds
+        ///   <seealso cref="PacketTypes.ConnectRequest" /> received: +3 seconds
         /// </para>
         /// </summary>
         public Optional<Dictionary<int, double>> ConnectionStateTimeout = Optional.Default(new Dictionary<int, double> {
@@ -738,15 +738,15 @@ public class Config
         {
             /// <summary>
             /// Disable the picked up coin value. Some coins may vanish.
-            /// <para>
+            /// </summary>
             DisableValue,
             /// <summary>
             /// Server side coin pickup.
-            /// <para>
+            /// </summary>
             ServerSide,
             /// <summary>
             /// Untouched like vanilla.
-            /// <para>
+            /// </summary>
             AsIs,
         }
 
