@@ -127,6 +127,12 @@ public partial class Plugin : TerrariaPlugin
                 .GetMethod(nameof(System.Net.Sockets.TcpListener.Start), [typeof(int)]),
             this.Detour_Socket_StartDualMode
         );
+        this.Detour(
+            nameof(this.Detour_RealIP_IPv6Support),
+            typeof(TShockAPI.Utils)
+                .GetMethod(nameof(TShockAPI.Utils.GetRealIP), _bfany),
+            this.Detour_RealIP_IPv6Support
+        );
     }
 
     private Assembly? AssemblyResolveHandler(object? sender, ResolveEventArgs args)

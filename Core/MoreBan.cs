@@ -45,9 +45,23 @@ public partial class Plugin
                     return false;
                 }
 
-                if ((Utils.ToInt(ip) ^ Utils.ToInt(subnetAddr)) < (1 << (32 - subnetMask)))
+                byte ReverseBits(byte v)
                 {
-                    return false;
+                    var b = ((v & 0b11110000) >> 4) | ((v & 0b00001111) << 4);
+                    b = ((b & 0b11001100) >> 2) | ((b & 0b00110011) << 2);
+                    b = ((b & 0b10101010) >> 1) | ((b & 0b01010101) << 1);
+                    return (byte) b;
+                }
+
+                System.Collections.BitArray GetBitArray(IPAddress ip) => new System.Collections.BitArray(ip.GetAddressBytes().Select(ReverseBits).ToArray());
+
+                // TODO: net8.0 HasAnySet
+                foreach (bool bit in GetBitArray(ip).Xor(GetBitArray(subnetAddr)).LeftShift(subnetMask))
+                {
+                    if (bit)
+                    {
+                        return false;
+                    }
                 }
             }
             else

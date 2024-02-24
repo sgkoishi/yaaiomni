@@ -192,4 +192,13 @@ public partial class Plugin
         }
         orig(listener, backlog);
     }
+
+    private string Detour_RealIP_IPv6Support(TShockAPI.Utils _, string mess)
+    {
+        return !System.Net.IPEndPoint.TryParse(mess, out var ip)
+            ? "127.0.0.0"
+            : ip.Address.IsIPv4MappedToIPv6
+                ? ip.Address.MapToIPv4().ToString()
+                : ip.Address.ToString();
+    }
 }

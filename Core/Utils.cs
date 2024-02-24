@@ -365,8 +365,24 @@ public static partial class Utils
         }
     }
 
-    internal static bool PrivateIPv4Address(System.Net.IPAddress address)
+    internal static bool PrivateIPAddress(System.Net.IPAddress address)
     {
+        if (address.IsIPv4MappedToIPv6)
+        {
+            return PrivateIPAddress(address.MapToIPv4());
+        }
+
+        if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+        {
+            // IPv6 local addr
+            return address.GetAddressBytes() switch
+            {
+                [0xfd, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _] => true,
+                [0xfe, >= 0x80 and <= 0xbf, _, _, _, _, _, _, _, _, _, _, _, _, _, _] => true,
+                _ => false
+            };
+        }
+
         if (address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
         {
             return false;
@@ -394,11 +410,6 @@ public static partial class Utils
             }
         }
         throw new TypeLoadException($"Could not find type {name} in TShock");
-    }
-
-    public static int ToInt(IPAddress addr)
-    {
-        return MemoryMarshal.Cast<byte, int>(addr.GetAddressBytes().AsSpan())[0];
     }
 
     public static Terraria.Item GetInventory(this Terraria.Player p, short slot)

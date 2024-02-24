@@ -50,7 +50,7 @@ public partial class Plugin
         if (mitigation.DisableAllMitigation
             || cl.Count == 0 || client.GetRemoteAddress() is not Terraria.Net.TcpAddress tcpa
             || nl is Config.MitigationSettings.NetworkLimit.None
-            || (nl is Config.MitigationSettings.NetworkLimit.Public && Utils.PrivateIPv4Address(tcpa.Address)))
+            || (nl is Config.MitigationSettings.NetworkLimit.Public && Utils.PrivateIPAddress(tcpa.Address)))
         {
             orig(client);
             return;
