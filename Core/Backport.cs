@@ -18,7 +18,7 @@ public partial class Plugin
     {
         // Reported via Discord https://discord.com/channels/479657350043664384/482065271297671168/1061908947151372408
         var bouncer = Utils.TShockType("Bouncer");
-        if (bouncer?.GetField("NPCAddBuffTimeMax", _bfany)?.GetValue(null) is Dictionary<int, int> npcAddBuffTimeMax)
+        if (bouncer?.GetField("NPCAddBuffTimeMax", _bfany)?.GetValue(null) is Dictionary<int, short> npcAddBuffTimeMax)
         {
             if (npcAddBuffTimeMax[Terraria.ID.BuffID.CursedInferno] == 420)
             {
