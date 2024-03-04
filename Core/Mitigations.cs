@@ -452,6 +452,7 @@ public partial class Plugin
         if (doorStyle > TShockAPI.GetDataHandlers.MaxPlaceStyles[Terraria.ID.TileID.ClosedDoor])
         {
             // Can be used to spawn arbitrary items
+            TShockAPI.TShock.Log.ConsoleInfo($"Attempt to spawn item using glitched door style: {doorStyle}");
             return;
         }
 
@@ -477,6 +478,7 @@ public partial class Plugin
             var style = tileCache.frameY / 22;
             if (style > TShockAPI.GetDataHandlers.MaxPlaceStyles[Terraria.ID.TileID.Torches])
             {
+                TShockAPI.TShock.Log.ConsoleInfo($"Attempt to spawn item using glitched torch style: {style}");
                 return;
             }
         }

@@ -25,11 +25,11 @@ public partial class Plugin
             {
                 TShockAPI.Commands.HandleCommand(data.Player, data.DelayCommands[i].Command);
                 data.DelayCommands[i].Repeat -= 1;
-            }
-            if (data.DelayCommands[i].Repeat == 0)
-            {
-                data.DelayCommands.RemoveAt(i);
-                i--;
+                if (data.DelayCommands[i].Repeat == 0)
+                {
+                    data.DelayCommands.RemoveAt(i);
+                    i--;
+                }
             }
         }
     }

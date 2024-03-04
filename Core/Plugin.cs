@@ -28,7 +28,7 @@ public partial class Plugin : TerrariaPlugin
         Utils.AssemblyMutex(this);
         AppDomain.CurrentDomain.AssemblyResolve += this.AssemblyResolveHandler;
         AppDomain.CurrentDomain.FirstChanceException += this.FirstChanceExceptionHandler;
-        this.Order = int.MinValue;
+        this.Order = -1_000_000;
         this.LoadConfig(Utils.ConsolePlayer.Instance);
 
         if (this.config.Enhancements.Value.DefaultLanguageDetect)
@@ -287,6 +287,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.WorldGen.nextCount += this.MMHook_Mitigation_WorldGenNextCount;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_Ghost_SendBytes;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Ping_GetData;
+        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.TAHook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.TAHook_Update);
@@ -360,7 +361,6 @@ public partial class Plugin : TerrariaPlugin
     private void OnGamePostInitialize(EventArgs args)
     {
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Mitigation_GetData;
-        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_DebugPacket_SendBytes;
         On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_SendData;
         On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_GetData;
