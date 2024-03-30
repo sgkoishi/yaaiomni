@@ -56,7 +56,7 @@ public partial class Plugin
         var commands = this[args.Player]!.DelayCommands;
         var cmd = new AttachedData.DelayCommand(args.Parameters[0], start: this.UpdateCounter, timeout: timeout);
         commands.Add(cmd);
-        args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed once in the future (id: {(uint) cmd.GetHashCode()}).");
+        args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed once in the future (t: {timeout}, id: {(uint) cmd.GetHashCode()}).");
     }
 
     [Command("SetInterval", "setinterval", Permission = "chireiden.omni.interval")]
@@ -80,7 +80,7 @@ public partial class Plugin
         var commands = this[args.Player]!.DelayCommands;
         var cmd = new AttachedData.DelayCommand(args.Parameters[0], start: this.UpdateCounter, timeout: interval, repeat: 0);
         commands.Add(cmd);
-        args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed in the future (id: {(uint) cmd.GetHashCode()}).");
+        args.Player.SendSuccessMessage($"Command {args.Parameters[0]} will be executed in the future (t: {interval}, id: {(uint) cmd.GetHashCode()}).");
     }
 
     [Command("ClearInterval", "clearinterval", Permission = "chireiden.omni.cleartimeout")]

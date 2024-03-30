@@ -10,7 +10,7 @@ namespace Chireiden.TShock.Omni;
 [ApiVersion(2, 1)]
 public partial class Plugin : TerrariaPlugin
 {
-    public override string Name => $"{Assembly.GetExecutingAssembly().GetName().Name} {CommitHashAttribute.GetCommitHash()[0..10]}";
+    public override string Name => $"{Assembly.GetExecutingAssembly().GetName().Name} {new string(CommitHashAttribute.GetCommitHash().Take(10).ToArray())}";
     public override string Author => "SGKoishi";
     public override Version Version => Assembly.GetExecutingAssembly().GetName().Version!;
     public override string Description => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description!;
