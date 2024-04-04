@@ -133,6 +133,12 @@ public partial class Plugin : TerrariaPlugin
                 .GetMethod(nameof(TShockAPI.Utils.GetRealIP), _bfany),
             this.Detour_RealIP_IPv6Support
         );
+
+        if (this.config.PrioritizedPacketHandle)
+        {
+            OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
+            OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Mitigation_GetData;
+        }
     }
 
     private Assembly? AssemblyResolveHandler(object? sender, ResolveEventArgs args)
@@ -286,8 +292,13 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.Initializers.ChatInitializer.Load += this.MMHook_Mitigation_I18nCommand;
         On.Terraria.WorldGen.nextCount += this.MMHook_Mitigation_WorldGenNextCount;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_Ghost_SendBytes;
+        OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_DebugPacket_SendBytes;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Ping_GetData;
-        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
+        if (!this.config.PrioritizedPacketHandle)
+        {
+            OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
+            OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Mitigation_GetData;
+        }
         TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Register(this, this.TAHook_NameCollision);
         TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Register(this, this.OnGamePostInitialize);
         TerrariaApi.Server.ServerApi.Hooks.GameUpdate.Register(this, this.TAHook_Update);
@@ -360,8 +371,6 @@ public partial class Plugin : TerrariaPlugin
 
     private void OnGamePostInitialize(EventArgs args)
     {
-        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Mitigation_GetData;
-        OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_DebugPacket_SendBytes;
         On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_SendData;
         On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_GetData;
         On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_CatchSend;

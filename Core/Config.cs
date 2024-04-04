@@ -21,6 +21,11 @@ public class Config
     public Optional<string> DateTimeFormat = Optional.Default("yyyy-MM-dd HH:mm:ss.fff");
 
     /// <summary>
+    /// Let Chireiden.TShock.Omni to handle packets earlier.
+    /// </summary>
+    public Optional<bool> PrioritizedPacketHandle = Optional.Default(true);
+
+    /// <summary>
     /// The wildcard of matching all players. Directly using "*" itself is not
     /// suggested as some commands might have special meaning for it.
     /// </summary>
@@ -673,7 +678,7 @@ public class Config
 
         /// <summary>
         /// <para>
-        /// The `WorldGen.countTiles` is recursive and might cause stack overflow. 
+        /// The `WorldGen.countTiles` is recursive and might cause stack overflow.
         /// Reported by a Mac (rosetta) user @ Discord during spider cave gen every time.
         /// </para>
         /// <para>
@@ -687,7 +692,7 @@ public class Config
         /// Allow journey and non-journey players to join the server.
         /// </para>
         /// <para>
-        /// There is nothing wrong with this option. It is inside the Mitigations because it 
+        /// There is nothing wrong with this option. It is inside the Mitigations because it
         /// requires GetData detour like many other mitigations and I put them together.
         /// </para>
         /// </summary>
@@ -710,7 +715,7 @@ public class Config
         /// <para>
         /// Sample:
         /// {
-        /// 
+        ///
         /// }
         /// </para>
         /// </summary>
@@ -718,7 +723,7 @@ public class Config
 
         /// <summary>
         /// <para>
-        /// Restrict all socket send operations to have exactly one message/packet per 
+        /// Restrict all socket send operations to have exactly one message/packet per
         /// Send call. Requires AnotherAsyncSocket.
         /// </para>
         /// <para>
