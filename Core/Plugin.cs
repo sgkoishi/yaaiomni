@@ -139,7 +139,7 @@ public partial class Plugin : TerrariaPlugin
             Utils.RegisterFirst<EventHandler<OTAPI.Hooks.MessageBuffer.GetDataEventArgs>>(typeof(OTAPI.Hooks.MessageBuffer),
                 nameof(OTAPI.Hooks.MessageBuffer.GetData),
                 null,
-                this.OTHook_Mitigation_GetData,
+                this.OTHook_Modded_GetData,
                 this.OTHook_Mitigation_GetData);
         }
     }
