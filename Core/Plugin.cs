@@ -136,8 +136,11 @@ public partial class Plugin : TerrariaPlugin
 
         if (this.config.PrioritizedPacketHandle)
         {
-            OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
-            OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Mitigation_GetData;
+            Utils.RegisterFirst(typeof(OTAPI.Hooks.MessageBuffer),
+                nameof(OTAPI.Hooks.MessageBuffer.GetData),
+                null,
+                this.OTHook_Mitigation_GetData,
+                this.OTHook_Mitigation_GetData);
         }
     }
 

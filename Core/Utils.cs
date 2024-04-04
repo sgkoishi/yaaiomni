@@ -536,6 +536,12 @@ public static partial class Utils
         }
     }
 
+    public static void RegisterFirst(Type def, string name, object? instnace, params Delegate?[] eventHandlers)
+    {
+        var t = def.GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance);
+        t?.SetValue(instnace, Delegate.Combine([.. eventHandlers, t.GetValue(instnace) as Delegate]));
+    }
+
     public class ConsolePlayer : TSPlayer
     {
         public static ConsolePlayer Instance = new ConsolePlayer("Console");

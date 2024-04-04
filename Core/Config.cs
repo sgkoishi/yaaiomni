@@ -732,6 +732,17 @@ public class Config
         /// </summary>
         public Optional<bool> RestrictiveSocketSend = Optional.Default(false, true);
 
+        /// <summary>
+        /// <para>
+        /// Echo unchanged inventory back to the owner. This is meaningless and might be
+        /// used to duplicate items.
+        /// </para>
+        /// <para>
+        /// If you believe that this causes performance issues, turn this off.
+        /// </para>
+        /// </summary>
+        public Optional<bool> EchoUnchangedItem = Optional.Default(true, true);
+
         public enum DisabledDamageAction
         {
             AsIs,
