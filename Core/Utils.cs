@@ -536,10 +536,10 @@ public static partial class Utils
         }
     }
 
-    public static void RegisterFirst(Type def, string name, object? instnace, params Delegate?[] eventHandlers)
+    public static void RegisterFirst<T>(Type def, string name, object? instnace, params T?[] eventHandlers) where T : Delegate
     {
         var t = def.GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance);
-        t?.SetValue(instnace, Delegate.Combine([.. eventHandlers, t.GetValue(instnace) as Delegate]));
+        t?.SetValue(instnace, Delegate.Combine([.. eventHandlers, (T?) t.GetValue(instnace)]));
     }
 
     public class ConsolePlayer : TSPlayer
