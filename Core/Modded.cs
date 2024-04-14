@@ -64,13 +64,11 @@ public partial class Plugin
         var whoAmI = args.Instance.whoAmI;
         if (ModdedEarlyChatSpam(whoAmI, args.PacketId))
         {
-            Terraria.NetMessage.TrySendData((int) PacketTypes.Disconnect, whoAmI, -1, Terraria.Lang.mp[1].ToNetworkText());
             this.Statistics.ModdedEarlyChatSpam++;
-            TShockAPI.TShock.Log.ConsoleInfo($"Unusual chat detected and disconnected. ({Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()})");
-            // Stop handling any data
+            TShockAPI.TShock.Log.ConsoleInfo($"Unusual packet {args.PacketId} detected at state {Terraria.Netplay.Clients[whoAmI].State} and disconnected. ({Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()})");
+            args.CancelPacket();
             Terraria.Netplay.Clients[whoAmI].PendingTermination = true;
             Terraria.Netplay.Clients[whoAmI].PendingTerminationApproved = true;
-            args.CancelPacket();
         }
 
         if (args.PacketId == (byte) PacketTypes.PlayerInfo)
