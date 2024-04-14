@@ -4,34 +4,30 @@ public partial class Plugin
 {
     private void OTHook_Modded_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
-        static bool ModdedEarlyChatSpam(int whoAmI, byte packetId)
+        static bool ModdedEarlyChatSpam(int whoAmI, PacketTypes packetId)
         {
             var state = Terraria.Netplay.Clients[whoAmI].State;
             if (state == -1)
             {
-                if (packetId != (byte) PacketTypes.PasswordSend)
-                {
-                    return true;
-                }
+                return packetId is not PacketTypes.PasswordSend;
             }
             else if (state == 0)
             {
-                if (packetId != (byte) PacketTypes.ConnectRequest)
-                {
-                    return true;
-                }
+                return packetId is not PacketTypes.ConnectRequest;
             }
             else if (state < 10)
             {
-                if (packetId > (byte) PacketTypes.PlayerSpawn
-                    && packetId != (byte) PacketTypes.SocialHandshake
-                    && packetId != (byte) PacketTypes.PlayerHp
-                    && packetId != (byte) PacketTypes.PlayerMana
-                    && packetId != (byte) PacketTypes.PlayerBuff
-                    && packetId != (byte) PacketTypes.PasswordSend
-                    && packetId != (byte) PacketTypes.ClientUUID
-                    && packetId != (byte) PacketTypes.SyncLoadout)
+                if (packetId > PacketTypes.PlayerSpawn
+                    && packetId is not (PacketTypes.SocialHandshake
+                        or PacketTypes.PlayerHp or PacketTypes.PlayerMana or PacketTypes.PlayerBuff
+                        or PacketTypes.PasswordSend or PacketTypes.ClientUUID or PacketTypes.SyncLoadout))
                 {
+                    if (TShockAPI.TShock.Players[whoAmI].IgnoreSSCPackets && packetId is PacketTypes.ItemOwner)
+                    {
+                        // https://github.com/Pryaxis/TShock/commit/fd5c696656ecdfc8346ed67146baaa04589e01e4
+                        // TShock use RemoveItemOwner(400) to ping the client after SSC
+                        return false;
+                    }
                     return true;
                 }
             }
@@ -62,7 +58,7 @@ public partial class Plugin
         }
 
         var whoAmI = args.Instance.whoAmI;
-        if (ModdedEarlyChatSpam(whoAmI, args.PacketId))
+        if (ModdedEarlyChatSpam(whoAmI, (PacketTypes) args.PacketId))
         {
             this.Statistics.ModdedEarlyChatSpam++;
             TShockAPI.TShock.Log.ConsoleInfo($"Unusual packet {args.PacketId} detected at state {Terraria.Netplay.Clients[whoAmI].State} and disconnected. ({Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()})");
