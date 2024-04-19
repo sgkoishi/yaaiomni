@@ -273,7 +273,7 @@ public partial class Plugin : TerrariaPlugin
             TShockAPI.Commands.HandleCommand(TShockAPI.TSPlayer.Server, command);
         }
         Terraria.Initializers.ChatInitializer.Load();
-       foreach (var p in TerrariaApi.Server.ServerApi.Plugins)
+        foreach (var p in TerrariaApi.Server.ServerApi.Plugins)
         {
             if (p.Plugin is TerrariaPlugin plugin)
             {

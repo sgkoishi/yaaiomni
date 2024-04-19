@@ -2,7 +2,7 @@
 
 public partial class Plugin
 {
-    private HashSet<PacketTypes> AllowedPackets = new HashSet<PacketTypes>();
+    private readonly HashSet<PacketTypes> AllowedPackets = new HashSet<PacketTypes>();
     private void OTHook_Modded_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
         static bool ModdedEarlyChatSpam(int whoAmI, PacketTypes packetId, HashSet<PacketTypes> allowedPackets)
@@ -22,6 +22,8 @@ public partial class Plugin
                     && packetId is not (PacketTypes.SocialHandshake
                         or PacketTypes.PlayerHp or PacketTypes.PlayerMana or PacketTypes.PlayerBuff
                         or PacketTypes.PasswordSend or PacketTypes.ClientUUID or PacketTypes.SyncLoadout)
+                    // Cross-platform client
+                    && packetId != (PacketTypes) 150
                     // Cancelled packets from earlier hooks
                     && packetId != (PacketTypes) 255)
                 {
@@ -66,7 +68,7 @@ public partial class Plugin
         }
 
         var whoAmI = args.Instance.whoAmI;
-        if (ModdedEarlyChatSpam(whoAmI, (PacketTypes) args.PacketId, AllowedPackets))
+        if (ModdedEarlyChatSpam(whoAmI, (PacketTypes) args.PacketId, this.AllowedPackets))
         {
             this.Statistics.ModdedEarlyChatSpam++;
             TShockAPI.TShock.Log.ConsoleInfo($"Unusual packet {args.PacketId} detected at state {Terraria.Netplay.Clients[whoAmI].State} and disconnected. ({Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()})");
