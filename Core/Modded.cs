@@ -2,9 +2,10 @@
 
 public partial class Plugin
 {
+    private HashSet<PacketTypes> AllowedPackets = new HashSet<PacketTypes>();
     private void OTHook_Modded_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
-        static bool ModdedEarlyChatSpam(int whoAmI, PacketTypes packetId)
+        static bool ModdedEarlyChatSpam(int whoAmI, PacketTypes packetId, HashSet<PacketTypes> allowedPackets)
         {
             var state = Terraria.Netplay.Clients[whoAmI].State;
             if (state == -1)
@@ -20,12 +21,19 @@ public partial class Plugin
                 if (packetId > PacketTypes.PlayerSpawn
                     && packetId is not (PacketTypes.SocialHandshake
                         or PacketTypes.PlayerHp or PacketTypes.PlayerMana or PacketTypes.PlayerBuff
-                        or PacketTypes.PasswordSend or PacketTypes.ClientUUID or PacketTypes.SyncLoadout))
+                        or PacketTypes.PasswordSend or PacketTypes.ClientUUID or PacketTypes.SyncLoadout)
+                    // Cancelled packets from earlier hooks
+                    && packetId != (PacketTypes) 255)
                 {
                     if (TShockAPI.TShock.Players[whoAmI].IgnoreSSCPackets && packetId is PacketTypes.ItemOwner)
                     {
                         // https://github.com/Pryaxis/TShock/commit/fd5c696656ecdfc8346ed67146baaa04589e01e4
                         // TShock use RemoveItemOwner(400) to ping the client after SSC
+                        return false;
+                    }
+                    if (allowedPackets.Contains(packetId))
+                    {
+                        // Dimensions use Placeholder 67 to show the IP address
                         return false;
                     }
                     return true;
@@ -58,7 +66,7 @@ public partial class Plugin
         }
 
         var whoAmI = args.Instance.whoAmI;
-        if (ModdedEarlyChatSpam(whoAmI, (PacketTypes) args.PacketId))
+        if (ModdedEarlyChatSpam(whoAmI, (PacketTypes) args.PacketId, AllowedPackets))
         {
             this.Statistics.ModdedEarlyChatSpam++;
             TShockAPI.TShock.Log.ConsoleInfo($"Unusual packet {args.PacketId} detected at state {Terraria.Netplay.Clients[whoAmI].State} and disconnected. ({Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()})");

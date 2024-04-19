@@ -273,6 +273,17 @@ public partial class Plugin : TerrariaPlugin
             TShockAPI.Commands.HandleCommand(TShockAPI.TSPlayer.Server, command);
         }
         Terraria.Initializers.ChatInitializer.Load();
+       foreach (var p in TerrariaApi.Server.ServerApi.Plugins)
+        {
+            if (p.Plugin is TerrariaPlugin plugin)
+            {
+                if (plugin.Name.Contains("Dimensions") || ((Action) plugin.Initialize).Method.DeclaringType?.FullName?.Contains("Dimensions") == true)
+                {
+                    // Dimensions use Placeholder 67 to show the IP address
+                    this.AllowedPackets.Add(PacketTypes.Placeholder);
+                }
+            }
+        }
         initiator?.SendSuccessMessage($"{this.Name} loaded.");
     }
 
