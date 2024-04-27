@@ -171,7 +171,23 @@ public partial class Plugin
             args.Player.SendErrorMessage("Core Omni is null while tracking ticks per second.");
             return;
         }
-        if (this._tickCheck.Tick == -1)
+        if (args.Parameters.Count > 0 && args.Parameters[0] == "bench")
+        {
+            var t = DateTime.Now;
+            var c = 0;
+            while (c < 60000 && (DateTime.Now - t).TotalSeconds < 5)
+            {
+                var x = Random.Shared.Next(10, Terraria.Main.maxTilesX - 10);
+                var y = Random.Shared.Next((int) Terraria.Main.worldSurface - 1, Terraria.Main.maxTilesY - 20);
+                Terraria.WorldGen.growGrassUnderground = true;
+                Terraria.WorldGen.UpdateWorld_UndergroundTile(x, y, false, 3);
+                Terraria.WorldGen.UpdateWorld_OvergroundTile(x, y, false, 3);
+                Terraria.WorldGen. growGrassUnderground = false;
+            }
+            var dt = DateTime.Now - t;
+            args.Player.SendInfoMessage($"UPS Bench: {c} in {dt} ({c / dt.TotalSeconds:F2} per second)");
+        }
+        else if (this._tickCheck.Tick == -1)
         {
             this._tickCheck = (core.UpdateCounter, DateTime.Now);
             args.Player.SendInfoMessage("Started tracking ticks per second.");

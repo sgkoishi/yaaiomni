@@ -14,7 +14,7 @@ public partial class Plugin
         }
     }
 
-    private void Backport_Inferno()
+    private void Backport_3029()
     {
         // Reported via Discord https://discord.com/channels/479657350043664384/482065271297671168/1061908947151372408
         var bouncer = Utils.TShockType("Bouncer");
@@ -43,7 +43,7 @@ public partial class Plugin
 
     private void Backports()
     {
-        this.Backport_Inferno();
+        this.Backport_3029();
         this.Backport_3005();
 
         this.Detour(

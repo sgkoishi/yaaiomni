@@ -730,7 +730,7 @@ public class Config
         /// If you SendRawData and it contains more than one message/packet, turn this off.
         /// </para>
         /// </summary>
-        public Optional<bool> RestrictiveSocketSend = Optional.Default(false, true);
+        public Optional<bool> RestrictiveSocketSend = Optional.Default(true, true);
 
         /// <summary>
         /// <para>
