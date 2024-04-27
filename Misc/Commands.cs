@@ -183,6 +183,7 @@ public partial class Plugin
                 Terraria.WorldGen.UpdateWorld_UndergroundTile(x, y, false, 3);
                 Terraria.WorldGen.UpdateWorld_OvergroundTile(x, y, false, 3);
                 Terraria.WorldGen. growGrassUnderground = false;
+                c += 1;
             }
             var dt = DateTime.Now - t;
             args.Player.SendInfoMessage($"UPS Bench: {c} in {dt} ({c / dt.TotalSeconds:F2} per second)");
