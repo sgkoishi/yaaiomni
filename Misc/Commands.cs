@@ -175,14 +175,14 @@ public partial class Plugin
         {
             var t = DateTime.Now;
             var c = 0;
-            while (c < 60000 && (DateTime.Now - t).TotalSeconds < 5)
+            while (c < 1000000 && (DateTime.Now - t).TotalSeconds < 15)
             {
                 var x = Random.Shared.Next(10, Terraria.Main.maxTilesX - 10);
                 var y = Random.Shared.Next((int) Terraria.Main.worldSurface - 1, Terraria.Main.maxTilesY - 20);
                 Terraria.WorldGen.growGrassUnderground = true;
                 Terraria.WorldGen.UpdateWorld_UndergroundTile(x, y, false, 3);
                 Terraria.WorldGen.UpdateWorld_OvergroundTile(x, y, false, 3);
-                Terraria.WorldGen. growGrassUnderground = false;
+                Terraria.WorldGen.growGrassUnderground = false;
                 c += 1;
             }
             var dt = DateTime.Now - t;
@@ -344,6 +344,17 @@ public partial class Plugin
         typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.Text))!.SetValue(scea, string.Join(" ", args.Parameters));
         typeof(ServerChatEventArgs).GetProperty(nameof(ServerChatEventArgs.CommandId))!.SetValue(scea, command);
         TerrariaApi.Server.ServerApi.Hooks.ServerChat.Invoke(scea);
+    }
+
+    [Command("Admin.Caller", "_csf", Permission = "chireiden.omni.admin.callstackframe")]
+    private void Command_Caller(CommandArgs args)
+    {
+        var st = new System.Diagnostics.StackTrace();
+        args.Player.SendInfoMessage("Stack Trace:");
+        foreach (var frame in st.GetFrames())
+        {
+            args.Player.SendInfoMessage(frame.ToString());
+        }
     }
 
     [Command("Admin.GenerateFullConfig", "genconfig", Permission = "chireiden.omni.admin.genconfig")]

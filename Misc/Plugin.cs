@@ -39,6 +39,7 @@ public partial class Plugin : TerrariaPlugin
                 DefinedConsts.Commands.Admin.GarbageCollect,
                 DefinedConsts.Commands.Admin.UpsCheck,
                 DefinedConsts.Commands.Admin.SqliteVacuum,
+                DefinedConsts.Commands.Admin.Caller,
             }));
             core.config.Mode.Value.Vanilla.Value.Permissions.Mutate(list => list.AddRange(new List<string>
             {
