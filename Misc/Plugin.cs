@@ -78,7 +78,8 @@ public partial class Plugin : TerrariaPlugin
                     DefinedConsts.Permission.Admin.TerminateSocket,
                     DefinedConsts.Permission.Admin.GenerateFullConfig,
                     DefinedConsts.Permission.Admin.SqliteVacuum,
-                    DefinedConsts.Permission.Admin.FindCommand);
+                    DefinedConsts.Permission.Admin.FindCommand,
+                    DefinedConsts.Permission.Admin.Caller);
 
                 Utils.AliasPermission(TShockAPI.Permissions.su,
                     DefinedConsts.Permission.Admin.ListClients,
