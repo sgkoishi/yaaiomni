@@ -743,6 +743,14 @@ public class Config
         /// </summary>
         public Optional<bool> EchoUnchangedItem = Optional.Default(true, true);
 
+        /// <summary>
+        /// <para>
+        /// Undo and re-Apply ILHooks might cause random fatal error. Not clear if it is
+        /// MMRD-relared but let's disable reloading this first.
+        /// </para>
+        /// </summary>
+        public Optional<bool> ReloadILHook = Optional.Default(false);
+
         public enum DisabledDamageAction
         {
             AsIs,

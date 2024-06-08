@@ -263,10 +263,13 @@ public partial class Plugin : TerrariaPlugin
             }
         }
         this._playerData.Clear();
-        foreach (var hook in this._manipulators.Values)
+        if (this.config.Mitigation.Value.ReloadILHook)
         {
-            hook.Undo();
-            hook.Apply();
+            foreach (var hook in this._manipulators.Values)
+            {
+                hook.Undo();
+                hook.Apply();
+            }
         }
         foreach (var command in this.config.StartupCommands.Value)
         {

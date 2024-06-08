@@ -128,7 +128,7 @@ public partial class Plugin
 
                 var value = this[player]!.DetectPE;
                 this[player]!.DetectPE = value + 1;
-                if (value % 500 == 0)
+                if (value % 1000 == 0)
                 {
                     var currentLoadoutIndex = Terraria.Main.player[index].CurrentLoadoutIndex;
                     Terraria.NetMessage.TrySendData((int) PacketTypes.SyncLoadout, -1, -1, null, index, (currentLoadoutIndex + 1) % 3);
@@ -355,9 +355,9 @@ public partial class Plugin
             return;
         }
 
-        var cursor = new ILCursor(context);
         try
         {
+            var cursor = new ILCursor(context);
             cursor.GotoNext(MoveType.After, (i) => i.MatchCallvirt<TShockAPI.TSPlayer>(nameof(TShockAPI.TSPlayer.IsBeingDisabled)));
             switch (mitigation.DisabledDamageHandler.Value)
             {
