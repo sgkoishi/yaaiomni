@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using TShockAPI;
+using TShockAPI.Hooks;
 
 namespace Chireiden.TShock.Omni;
 
@@ -42,6 +44,12 @@ public partial class Plugin
 
         var withoutcheck = args.Parameters.Count == 3 && args.Parameters.Contains("-f");
         var parm = args.Parameters.Except(new string[] { "-f" }).ToArray();
+
+        if (parm.Length != 1)
+        {
+            args.Player.SendErrorMessage("Invalid command. Perhaps you can quote it?");
+            return;
+        }
 
         var player = TSPlayer.FindByNameOrID(parm[0]);
         if (player.Count == 1)
@@ -323,6 +331,7 @@ public partial class Plugin
             args.Player.SendErrorMessage("No command given.");
             return;
         }
+
         if (args.Parameters[0] == "-t" && args.Parameters.Count > 1)
         {
             Task.Run(() => TShockAPI.Commands.HandleCommand(args.Player, args.Parameters[1]));
@@ -332,5 +341,32 @@ public partial class Plugin
 
         System.Threading.ThreadPool.QueueUserWorkItem(_ => TShockAPI.Commands.HandleCommand(args.Player, args.Parameters[0]));
         args.Player.SendSuccessMessage($"Background task ({args.Player.Name} @ {args.Parameters[0]}) queued.");
+    }
+
+    [Command("Admin.RunLocked", "_locked", Permission = "chireiden.omni.admin.locked")]
+    private void Command_RunLocked(CommandArgs args)
+    {
+        if (args.Parameters.Count != 1)
+        {
+            args.Player.SendErrorMessage("Invalid command. Perhaps you can quote it?");
+            return;
+        }
+
+        var trace = new StackTrace();
+        var bp = ((Delegate) this.Command_RunLocked).Method;
+        foreach (var frame in trace.GetFrames().Skip(1))
+        {
+            var method = frame.GetMethod();
+            if (method is null)
+            {
+                continue;
+            }
+            if (method.Equals(bp))
+            {
+                return;
+            }
+        }
+
+        TShockAPI.Commands.HandleCommand(args.Player, args.Parameters[0]);
     }
 }

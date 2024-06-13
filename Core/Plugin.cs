@@ -29,7 +29,7 @@ public partial class Plugin : TerrariaPlugin
         AppDomain.CurrentDomain.AssemblyResolve += this.AssemblyResolveHandler;
         AppDomain.CurrentDomain.FirstChanceException += this.FirstChanceExceptionHandler;
         this.Order = -1_000_000;
-        this.LoadConfig(Utils.ConsolePlayer.Instance);
+        this.ReadConfig(Utils.ConsolePlayer.Instance, true);
 
         if (this.config.Enhancements.Value.DefaultLanguageDetect)
         {
@@ -166,7 +166,7 @@ public partial class Plugin : TerrariaPlugin
 
     public event Action<Plugin, Config>? OnConfigLoad;
 
-    private void LoadConfig(TSPlayer? initiator)
+    private void ReadConfig(TSPlayer? initiator, bool silent = true)
     {
         var prev = this.config;
         try
@@ -196,40 +196,7 @@ public partial class Plugin : TerrariaPlugin
         {
             initiator?.SendErrorMessage($"Failed to save config: {ex.Message}");
         }
-    }
 
-    private void ApplyConfig(TSPlayer? initiator)
-    {
-        this.LoadConfig(initiator);
-        if (this.config.ShowConfig)
-        {
-            initiator?.SendInfoMessage(Json.JsonUtils.SerializeConfig(this.config));
-        }
-        switch (this.config.Enhancements.Value.TileProvider.Value)
-        {
-            case Config.EnhancementsSettings.TileProviderOptions.CheckedGenericCollection:
-                Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile, new CheckedGenericCollection());
-                break;
-            case Config.EnhancementsSettings.TileProviderOptions.CheckedTypedCollection:
-                Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile, new CheckedTypedCollection());
-                break;
-            case Config.EnhancementsSettings.TileProviderOptions.AsIs:
-                break;
-        }
-        this.DefaultPermissionSetup();
-        this.VanillaSetup();
-        foreach (var command in Commands.ChatCommands)
-        {
-            Utils.TryRenameCommand(command, this.config.CommandRenames);
-        }
-        foreach (var command in Commands.TShockCommands)
-        {
-            Utils.TryRenameCommand(command, this.config.CommandRenames);
-        }
-        foreach (var command in this._hiddenCommands)
-        {
-            Utils.TryRenameCommand(command, this.config.CommandRenames);
-        }
         var spamlim = this.config.Mitigation.Value.ChatSpamRestrict.Value;
         if (spamlim.Count > 0)
         {
@@ -248,6 +215,61 @@ public partial class Plugin : TerrariaPlugin
                 initiator?.SendInfoMessage($"  {Math.Round(limiter.Maximum / limiter.RateLimit, 1):G} connections per IP per {Math.Round(limiter.Maximum, 1):G} seconds");
             }
         }
+    }
+
+    private void ApplyConfig(TSPlayer? initiator)
+    {
+        if (this.config.ShowConfig)
+        {
+            initiator?.SendInfoMessage(Json.JsonUtils.SerializeConfig(this.config));
+        }
+        switch (this.config.Enhancements.Value.TileProvider.Value)
+        {
+            case Config.EnhancementsSettings.TileProviderOptions.CheckedGenericCollection:
+                Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile, new CheckedGenericCollection());
+                break;
+            case Config.EnhancementsSettings.TileProviderOptions.CheckedTypedCollection:
+                Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile, new CheckedTypedCollection());
+                break;
+            case Config.EnhancementsSettings.TileProviderOptions.AsIs:
+                break;
+        }
+        this.DefaultPermissionSetup();
+        this.VanillaSetup();
+        Terraria.Initializers.ChatInitializer.Load();
+        foreach (var command in Commands.ChatCommands)
+        {
+            Utils.TryRenameCommand(command, this.config.CommandRenames);
+        }
+        foreach (var command in Commands.TShockCommands)
+        {
+            Utils.TryRenameCommand(command, this.config.CommandRenames);
+        }
+        foreach (var command in this._hiddenCommands)
+        {
+            Utils.TryRenameCommand(command, this.config.CommandRenames);
+        }
+        foreach (var command in this.config.StartupCommands.Value)
+        {
+            TShockAPI.Commands.HandleCommand(TShockAPI.TSPlayer.Server, command);
+        }
+        foreach (var p in TerrariaApi.Server.ServerApi.Plugins)
+        {
+            if (p.Plugin is TerrariaPlugin plugin)
+            {
+                if (plugin.Name.Contains("Dimensions") || ((Action) plugin.Initialize).Method.DeclaringType?.FullName?.Contains("Dimensions") == true)
+                {
+                    // Dimensions use Placeholder 67 to show the IP address
+                    this.AllowedPackets.Add(PacketTypes.Placeholder);
+                }
+            }
+        }
+    }
+
+    private void OnReload(ReloadEventArgs? e)
+    {
+        this.ReadConfig(e?.Player, false);
+        this.ApplyConfig(e?.Player);
         foreach (var field in typeof(DefinedConsts.DataKey).GetFields())
         {
             if (field.GetValue(null) is string key)
@@ -271,28 +293,7 @@ public partial class Plugin : TerrariaPlugin
                 hook.Apply();
             }
         }
-        foreach (var command in this.config.StartupCommands.Value)
-        {
-            TShockAPI.Commands.HandleCommand(TShockAPI.TSPlayer.Server, command);
-        }
-        Terraria.Initializers.ChatInitializer.Load();
-        foreach (var p in TerrariaApi.Server.ServerApi.Plugins)
-        {
-            if (p.Plugin is TerrariaPlugin plugin)
-            {
-                if (plugin.Name.Contains("Dimensions") || ((Action) plugin.Initialize).Method.DeclaringType?.FullName?.Contains("Dimensions") == true)
-                {
-                    // Dimensions use Placeholder 67 to show the IP address
-                    this.AllowedPackets.Add(PacketTypes.Placeholder);
-                }
-            }
-        }
-        initiator?.SendSuccessMessage($"{this.Name} loaded.");
-    }
-
-    private void OnReload(ReloadEventArgs? e)
-    {
-        this.ApplyConfig(e?.Player);
+        e?.Player?.SendSuccessMessage($"{this.Name} loaded.");
     }
 
     public override void Initialize()
@@ -393,6 +394,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.NetMessage.SendData += this.MMHook_DebugPacket_CatchSend;
         On.Terraria.MessageBuffer.GetData += this.MMHook_DebugPacket_CatchGet;
         this.RefreshLocalizedCommandAliases();
+        this.ApplyConfig(TSPlayer.Server);
     }
 
     private void PostTShockInitialize()
@@ -400,7 +402,6 @@ public partial class Plugin : TerrariaPlugin
         this.Backports();
         OTAPI.Hooks.Netplay.CreateTcpListener += this.OTHook_Socket_OnCreate;
         this.InitCommands();
-        this.OnReload(new ReloadEventArgs(TSPlayer.Server));
         if (this.config.Enhancements.Value.IPv6DualStack)
         {
             Terraria.Program.LaunchParameters.Add("-ip", System.Net.IPAddress.IPv6Any.ToString());

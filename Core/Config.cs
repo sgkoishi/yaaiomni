@@ -52,7 +52,8 @@ public class Config
         DefinedConsts.Commands.Echo,
         DefinedConsts.Commands.Admin.ApplyDefaultPermission,
         DefinedConsts.Commands.Admin.InspectTileFrame,
-        DefinedConsts.Commands.Admin.RunBackground
+        DefinedConsts.Commands.Admin.RunBackground,
+        DefinedConsts.Commands.Admin.RunLocked,
     });
 
     /// <summary>
@@ -661,7 +662,7 @@ public class Config
         /// There are many exploits that can be used to crash the server via stack overflow.
         /// </para>
         /// <para>
-        /// This will try to clear them when detected. Requires `/inspecttileframe`
+        /// This will try to clear related tiles when detected (only when `/inspecttileframe`)
         /// </para>
         /// </summary>
         public Optional<bool> ClearOverflowWorldGenStackTrace = Optional.Default(false);
@@ -671,7 +672,7 @@ public class Config
         /// There are many exploits that can be used to crash the server via stack overflow.
         /// </para>
         /// <para>
-        /// This will try to save the map when detected. Requires `/inspecttileframe`
+        /// This will try to save the map when detected (only when `/inspecttileframe`)
         /// </para>
         /// </summary>
         public Optional<bool> DumpMapOnStackOverflowWorldGen = Optional.Default(true);
