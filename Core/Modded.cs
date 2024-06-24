@@ -33,6 +33,11 @@ public partial class Plugin
                         // TShock use RemoveItemOwner(400) to ping the client after SSC
                         return false;
                     }
+                    if (Terraria.Main.ServerSideCharacter && packetId is PacketTypes.LoadNetModule)
+                    {
+                        // TShock send SyncLoadout and the client returns a LoadNetModule(LoadoutChange)
+                        return false;
+                    }
                     if (allowedPackets.Contains(packetId))
                     {
                         // Dimensions use Placeholder 67 to show the IP address
