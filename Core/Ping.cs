@@ -57,7 +57,7 @@ public partial class Plugin
         }
 
         var whoami = TShockAPI.TShock.Players[args.Instance.whoAmI];
-        var ping = this[whoami]?.RecentPings[BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2))];
+        var ping = this[whoami]?.RecentPings[args.Read<short>(0)];
 
         if (ping?.Start.HasValue == true)
         {

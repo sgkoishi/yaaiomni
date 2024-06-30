@@ -321,6 +321,11 @@ public class Config
         public Optional<bool> SignEditRestriction = Optional.Default(true);
 
         /// <summary>
+        /// Restrict tile entity interaction to have build permission.
+        /// </summary>
+        public Optional<bool> ObjectInteractionRestriction = Optional.Default(true);
+
+        /// <summary>
         /// <para>
         /// Might experience encoding issues when using legacy Windows.
         /// </para>

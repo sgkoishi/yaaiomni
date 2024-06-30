@@ -64,18 +64,17 @@ public partial class Plugin
             case (int) PacketTypes.PlayerSlot:
             {
                 var index = args.Instance.whoAmI;
-                var data = args.Instance.readBuffer.AsSpan(args.ReadOffset, args.Length - 1);
 
-                if (data[0] != index)
+                if (args.Instance.readBuffer[args.ReadOffset] != index)
                 {
                     this.Statistics.IndexMismatch++;
-                    this.Detections.IndexMismatchDetected(index, data[0], PacketTypes.PlayerSlot);
+                    this.Detections.IndexMismatchDetected(index, args.Instance.readBuffer[args.ReadOffset], PacketTypes.PlayerSlot);
                 }
 
-                var slot = BitConverter.ToInt16(data.Slice(1, 2));
-                var stack = BitConverter.ToInt16(data.Slice(3, 2));
-                var prefix = data[5];
-                var type = BitConverter.ToInt16(data.Slice(6, 2));
+                var slot = args.Read<short>(1);
+                var stack = args.Read<short>(3);
+                var prefix = args.Instance.readBuffer[args.ReadOffset + 5];
+                var type = args.Read<short>(6);
 
                 if (mitigation.SwapWhileUsePE)
                 {
@@ -98,7 +97,7 @@ public partial class Plugin
                     break;
                 }
 
-                if (data.Length == 8)
+                if (args.Length == 9)
                 {
                     var existingItem = Terraria.Main.player[index].GetInventory(slot);
 
@@ -153,7 +152,7 @@ public partial class Plugin
                 }
                 if (Terraria.Main.player[index].inventory[Terraria.Main.player[index].selectedItem].potion && Terraria.Main.player[index].talkNPC != -1)
                 {
-                    var amount = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 1, 2));
+                    var amount = args.Read<short>(1);
                     this[index]!.PendingRevertHeal = Math.Min(amount, Terraria.Main.player[index].statLifeMax2 - Terraria.Main.player[index].statLife);
                 }
                 break;
@@ -197,7 +196,7 @@ public partial class Plugin
             }
             case (int) PacketTypes.LoadNetModule:
             {
-                var type = BitConverter.ToUInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2));
+                var type = args.Read<short>(0);
                 if (type == Terraria.Net.NetManager.Instance.GetId<Terraria.GameContent.NetModules.NetTextModule>())
                 {
                     var index = args.Instance.whoAmI;
@@ -229,7 +228,7 @@ public partial class Plugin
                     case Config.MitigationSettings.ExpertCoinHandler.DisableValue:
                     case Config.MitigationSettings.ExpertCoinHandler.ServerSide:
                     {
-                        this.Statistics.MitigationCoinReduced += BitConverter.ToInt32(args.Instance.readBuffer.AsSpan(args.ReadOffset + 2, 4));
+                        this.Statistics.MitigationCoinReduced += args.Read<int>(2);
                         args.CancelPacket();
                         break;
                     }

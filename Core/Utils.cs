@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Terraria.Localization;
 using TShockAPI;
@@ -540,6 +541,16 @@ public static partial class Utils
     {
         var t = def.GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance);
         t?.SetValue(instnace, Delegate.Combine([.. eventHandlers, (T?) t.GetValue(instnace)]));
+    }
+
+    public static T Read<T>(this Terraria.MessageBuffer buffer, int offset) where T : struct
+    {
+        return MemoryMarshal.Read<T>(buffer.readBuffer.AsSpan(offset));
+    }
+
+    public static T Read<T>(this OTAPI.Hooks.MessageBuffer.GetDataEventArgs args, int offset) where T : struct
+    {
+        return args.Instance.Read<T>(args.ReadOffset + offset);
     }
 
     public class ConsolePlayer : TSPlayer

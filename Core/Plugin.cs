@@ -312,6 +312,7 @@ public partial class Plugin : TerrariaPlugin
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_Ghost_SendBytes;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_DebugPacket_SendBytes;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Ping_GetData;
+        OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_TileEntity_Interaction;
         if (!this.config.PrioritizedPacketHandle)
         {
             OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Modded_GetData;
@@ -356,6 +357,7 @@ public partial class Plugin : TerrariaPlugin
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Mitigation_GetData;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Modded_GetData;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Ping_GetData;
+            OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_TileEntity_Interaction;
             OTAPI.Hooks.Netplay.CreateTcpListener -= this.OTHook_Socket_OnCreate;
             TerrariaApi.Server.ServerApi.Hooks.NetNameCollision.Deregister(this, this.TAHook_NameCollision);
             TerrariaApi.Server.ServerApi.Hooks.GamePostInitialize.Deregister(this, this.OnGamePostInitialize);

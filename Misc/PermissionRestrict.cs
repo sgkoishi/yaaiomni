@@ -113,7 +113,7 @@ public partial class Plugin : TerrariaPlugin
 
         if (args.PacketId == (int) PacketTypes.NpcStrike)
         {
-            var index = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset, 2));
+            var index = args.Read<short>(0);
             if (index == Terraria.ID.NPCID.EmpressButterfly || index == Terraria.ID.NPCID.CultistDevote || index == Terraria.ID.NPCID.CultistArcherBlue)
             {
                 if (!TShockAPI.TShock.Players[args.Instance.whoAmI].HasPermission($"{DefinedConsts.Permission.SummonBoss}.{index}"))
@@ -126,7 +126,7 @@ public partial class Plugin : TerrariaPlugin
         }
         else if (args.PacketId == (int) PacketTypes.SpawnBossorInvasion)
         {
-            var id = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 2, 2));
+            var id = args.Read<short>(2);
             if (!TShockAPI.TShock.Players[args.Instance.whoAmI].HasPermission($"{DefinedConsts.Permission.SummonBoss}.{id}"))
             {
                 TShockAPI.TShock.Log.ConsoleInfo($"Player {TShockAPI.TShock.Players[args.Instance.whoAmI].Name} tried to summon boss {id} without permission {DefinedConsts.Permission.SummonBoss}.{id}.");
@@ -135,7 +135,7 @@ public partial class Plugin : TerrariaPlugin
         }
         else if (args.PacketId == (int) PacketTypes.FishOutNPC)
         {
-            var id = BitConverter.ToInt16(args.Instance.readBuffer.AsSpan(args.ReadOffset + 4, 2));
+            var id = args.Read<short>(4);
             if (id == Terraria.ID.NPCID.DukeFishron && !TShockAPI.TShock.Players[args.Instance.whoAmI].HasPermission($"{DefinedConsts.Permission.SummonBoss}.{id}"))
             {
                 TShockAPI.TShock.Log.ConsoleInfo($"Player {TShockAPI.TShock.Players[args.Instance.whoAmI].Name} tried to summon boss {id} without permission {DefinedConsts.Permission.SummonBoss}.{id}.");
