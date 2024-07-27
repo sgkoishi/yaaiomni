@@ -30,24 +30,18 @@ public partial class Plugin
     [Command("Admin.Sudo", "runas", Permission = "chireiden.omni.admin.sudo")]
     private void Command_Sudo(CommandArgs args)
     {
-        if (args.Parameters.Count == 0)
+        if (args.Parameters.Count <= 1)
         {
-            args.Player.SendErrorMessage("Invalid player.");
+            args.Player.SendErrorMessage("Invalid syntax. Who and what to run?");
             return;
         }
 
-        if (args.Parameters.Count == 1)
-        {
-            args.Player.SendErrorMessage("Invalid command.");
-            return;
-        }
+        var parm = args.Parameters.Except(["-f"]).ToArray();
+        var withoutcheck = args.Parameters.Count != parm.Length;
 
-        var withoutcheck = args.Parameters.Count == 3 && args.Parameters.Contains("-f");
-        var parm = args.Parameters.Except(new string[] { "-f" }).ToArray();
-
-        if (parm.Length != 1)
+        if (parm.Length != 2)
         {
-            args.Player.SendErrorMessage("Invalid command. Perhaps you can quote it?");
+            args.Player.SendErrorMessage("Invalid syntax. Perhaps you can quote it?");
             return;
         }
 

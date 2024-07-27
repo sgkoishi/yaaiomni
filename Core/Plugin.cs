@@ -62,7 +62,7 @@ public partial class Plugin : TerrariaPlugin
         this.Detour(
             nameof(this.Detour_HasPermission),
             typeof(TSPlayer)
-                .GetMethod(nameof(TSPlayer.HasPermission), _bfany, new[] { typeof(string) }),
+                .GetMethod(nameof(TSPlayer.HasPermission), _bfany, [typeof(string)]),
             this.Detour_HasPermission);
         this.Detour(
             nameof(this.Detour_PlayerActive),

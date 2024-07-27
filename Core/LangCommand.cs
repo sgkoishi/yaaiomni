@@ -21,7 +21,7 @@ public partial class Plugin
 
         if (args.Parameters.Count == 0)
         {
-            args.Player.SendInfoMessage($"Current TShock Lang: {this._targetCulture ?? this._tscinfo.Invoke(null, new object[0])}");
+            args.Player.SendInfoMessage($"Current TShock Lang: {this._targetCulture ?? this._tscinfo.Invoke(null, [])}");
             args.Player.SendInfoMessage($"Current Game Lang: {LanguageManager.Instance.ActiveCulture.CultureInfo}");
             return;
         }
@@ -79,7 +79,7 @@ public partial class Plugin
             .GetProperty("TranslationsDirectory", BindingFlags.NonPublic | BindingFlags.Static)!
             .GetGetMethod(true)!;
         this._tshockI18n.GetField("C")!.SetValue(null, new Catalog("TShockAPI",
-            (string) tscdir.Invoke(null, new object[0])!, culture ?? (CultureInfo) this._tscinfo.Invoke(null, new object[0])!));
+            (string) tscdir.Invoke(null, [])!, culture ?? (CultureInfo) this._tscinfo.Invoke(null, [])!));
     }
 
     private void ResetGameLocale()
