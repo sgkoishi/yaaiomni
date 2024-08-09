@@ -134,8 +134,23 @@ public class Config
 
         public Optional<NameCollisionAction> NameCollision = Optional.Default(NameCollisionAction.Unhandled, true);
 
+        /// <summary>
+        /// A few experimental tile providers. Offering slightly better performance but uses more memory (same as vanilla).
+        /// </summary>
         public Optional<TileProviderOptions> TileProvider = Optional.Default(TileProviderOptions.AsIs, true);
 
+        /// <summary>
+        /// Allow extra large worlds. This only applies to the server.
+        /// Vanilla PC clients will crash when the world is too large, modded or PE clients works fine.
+        /// </summary>
+        public Optional<bool> ExtraLargeWorld = Optional.Default(true, true);
+
+        /// <summary>
+        /// Show command aliases in the help.
+        /// <para>
+        /// /broadcast (/bc), /whisper (/w), ...
+        /// </para>
+        /// </summary>
         public Optional<int> ShowCommandAlias = Optional.Default(0);
 
         /// <summary>
@@ -151,7 +166,7 @@ public class Config
         /// <summary>
         /// IPv6 Dual Stack Support
         /// </summary>
-        public Optional<bool> IPv6DualStack = Optional.Default(false);
+        public Optional<bool> IPv6DualStack = Optional.Default(true);
 
         public enum UpdateOptions
         {

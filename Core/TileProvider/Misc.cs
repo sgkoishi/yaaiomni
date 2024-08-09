@@ -1,5 +1,4 @@
-﻿using TerrariaApi.Server;
-using TShockAPI;
+﻿using TShockAPI;
 
 namespace Chireiden.TShock.Omni;
 
@@ -7,19 +6,44 @@ partial class Plugin
 {
     private void MMHook_TileProvider_ClearWorld(On.Terraria.WorldGen.orig_clearWorld orig)
     {
-        if (Terraria.Main.tile is ModFramework.DefaultCollection<Terraria.ITile> dc)
+        var rs = this.config.Enhancements.Value.ExtraLargeWorld.Value
+            && (Terraria.Main.maxTilesX > Terraria.Main.tile.Width || Terraria.Main.maxTilesY > Terraria.Main.tile.Height);
+        switch (Terraria.Main.tile)
         {
-            dc.Width = Terraria.Main.maxTilesX;
-            dc.Height = Terraria.Main.maxTilesY;
+            case ModFramework.DefaultCollection<Terraria.ITile>:
+                Terraria.Main.tile = rs ? Terraria.Main.tile : new ModFramework.DefaultCollection<Terraria.ITile>(Terraria.Main.maxTilesX, Terraria.Main.maxTilesY);
+                break;
+            case TerrariaApi.Server.ConstileationProvider:
+                Terraria.Main.tile = rs ? Terraria.Main.tile : new TerrariaApi.Server.ConstileationProvider();
+                break;
+            case TerrariaApi.Server.TileProvider:
+                Terraria.Main.tile = rs ? Terraria.Main.tile : new TerrariaApi.Server.TileProvider();
+                break;
+            case CheckedTypedCollection ctc:
+                ctc.Resize(Terraria.Main.maxTilesX + 1, Terraria.Main.maxTilesY + 1);
+                break;
+            case CheckedGenericCollection cgc:
+                cgc.Resize(Terraria.Main.maxTilesX + 1, Terraria.Main.maxTilesY + 1);
+                break;
+            default:
+            {
+                if (Terraria.Main.tile != null && rs)
+                {
+                    try
+                    {
+                        Terraria.Main.tile = (ModFramework.ICollection<Terraria.ITile>) Activator.CreateInstance(Terraria.Main.tile.GetType());
+                    }
+                    catch
+                    {
+                        TShockAPI.TShock.Log.ConsoleWarn($"Attempt to extend the tile provider because we need {Terraria.Main.maxTilesX}x{Terraria.Main.maxTilesY} but we only have {Terraria.Main.tile.Width}x{Terraria.Main.tile.Height}.");
+                        TShockAPI.TShock.Log.ConsoleWarn("Failed to extend the tile provider. The server will probably crash due to lack of array space.");
+                        // failed, keep original
+                    }
+                }
+                break;
+            }
         }
-        else if (Terraria.Main.tile is CheckedTypedCollection ctc)
-        {
-            ctc.Resize(Terraria.Main.maxTilesX, Terraria.Main.maxTilesY);
-        }
-        else if (Terraria.Main.tile is CheckedGenericCollection cgc)
-        {
-            cgc.Resize(Terraria.Main.maxTilesX, Terraria.Main.maxTilesY);
-        }
+        GC.Collect();
         orig();
     }
 
@@ -36,12 +60,12 @@ partial class Plugin
                 break;
             case "heaptile":
                 Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile,
-                    new TileProvider());
+                    new TerrariaApi.Server.TileProvider());
                 args.Player.SendSuccessMessage("Tile provider set to heaptile.");
                 break;
             case "constilation":
                 Terraria.Main.tile = Utils.CloneTileCollection(Terraria.Main.tile,
-                    new ConstileationProvider());
+                    new TerrariaApi.Server.ConstileationProvider());
                 args.Player.SendSuccessMessage("Tile provider set to constilation.");
                 break;
             case "checkedtyped":
