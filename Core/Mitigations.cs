@@ -336,6 +336,8 @@ public partial class Plugin
                 Terraria.WorldGen.TileFrame(ti, tj);
                 kt++;
             }
+
+            this._pendingKilled.Clear();
         }
     }
 
