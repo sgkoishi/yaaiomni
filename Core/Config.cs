@@ -772,6 +772,12 @@ public class Config
         /// </summary>
         public Optional<bool> ReloadILHook = Optional.Default(false);
 
+        /// <summary>
+        /// Break tile will be tracked and TileFrame-ed again after the KillTile.
+        /// This will trigger recursive tile break.
+        /// </summary>
+        public Optional<bool> RecursiveTileBreak = Optional.Default(false, true);
+
         public enum DisabledDamageAction
         {
             AsIs,

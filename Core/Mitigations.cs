@@ -324,6 +324,19 @@ public partial class Plugin
                 }
             }
         }
+
+        if (mitigation.RecursiveTileBreak)
+        {
+            var kt = 0;
+            while (kt < this._pendingKilled.Count)
+            {
+                var item = this._pendingKilled[kt];
+                var ti = (int) (item >> 32);
+                var tj = (int) item;
+                Terraria.WorldGen.TileFrame(ti, tj);
+                kt++;
+            }
+        }
     }
 
     private static readonly bool ShouldSuppressTitle = !System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)

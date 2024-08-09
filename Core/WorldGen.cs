@@ -143,4 +143,15 @@ public partial class Plugin
         orig(i, j, resetFrame, noBreak);
         this._frameCount.Value -= 1;
     }
+
+    private readonly List<ulong> _pendingKilled = new List<ulong>();
+    private void MMHook_WorldGen_KillTile(On.Terraria.WorldGen.orig_KillTile orig, int i, int j, bool fail, bool effectOnly, bool noItem)
+    {
+        var pos = (((ulong) i) << 32) | ((uint) j);
+        if (this.config.Mitigation.Value.RecursiveTileBreak.Value && !this._pendingKilled.Contains(pos))
+        {
+            this._pendingKilled.Add(pos);
+        }
+        orig(i, j, fail, effectOnly, noItem);
+    }
 }

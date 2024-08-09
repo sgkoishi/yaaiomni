@@ -309,6 +309,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.WorldGen.KillTile_GetItemDrops += this.MMHook_Mitigation_TileDropItem;
         On.Terraria.Initializers.ChatInitializer.Load += this.MMHook_Mitigation_I18nCommand;
         On.Terraria.WorldGen.nextCount += this.MMHook_Mitigation_WorldGenNextCount;
+        On.Terraria.WorldGen.KillTile += this.MMHook_WorldGen_KillTile;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_Ghost_SendBytes;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_DebugPacket_SendBytes;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Ping_GetData;
@@ -352,6 +353,7 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.WorldGen.KillTile_GetItemDrops -= this.MMHook_Mitigation_TileDropItem;
             On.Terraria.Initializers.ChatInitializer.Load -= this.MMHook_Mitigation_I18nCommand;
             On.Terraria.WorldGen.nextCount -= this.MMHook_Mitigation_WorldGenNextCount;
+            On.Terraria.WorldGen.KillTile -= this.MMHook_WorldGen_KillTile;
             OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_Ghost_SendBytes;
             OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_DebugPacket_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Mitigation_GetData;
