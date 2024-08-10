@@ -7,7 +7,7 @@ partial class Plugin
     private void MMHook_TileProvider_ClearWorld(On.Terraria.WorldGen.orig_clearWorld orig)
     {
         var rs = this.config.Enhancements.Value.ExtraLargeWorld.Value
-            && (Terraria.Main.maxTilesX > Terraria.Main.tile.Width || Terraria.Main.maxTilesY > Terraria.Main.tile.Height);
+            && (Terraria.Main.maxTilesX < Terraria.Main.tile.Width || Terraria.Main.maxTilesY < Terraria.Main.tile.Height);
         switch (Terraria.Main.tile)
         {
             case ModFramework.DefaultCollection<Terraria.ITile>:
