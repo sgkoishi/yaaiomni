@@ -144,30 +144,25 @@ public partial class Plugin
         this._frameCount.Value -= 1;
     }
 
-    private readonly List<ulong> _pendingKilled = new List<ulong>();
+    private readonly List<ulong> _pendingTileFrame = new List<ulong>();
     private void MMHook_WorldGen_KillTile(On.Terraria.WorldGen.orig_KillTile orig, int i, int j, bool fail, bool effectOnly, bool noItem)
     {
         var pos = (((ulong) i) << 32) | ((uint) j);
-        if (this.config.Mitigation.Value.RecursiveTileBreak.Value && !this._pendingKilled.Contains(pos))
+        if (this.config.Mitigation.Value.RecursiveTileBreak.Value && !this._pendingTileFrame.Contains(pos))
         {
-            this._pendingKilled.Add(pos);
+            this. _pendingTileFrame.Add(pos);
         }
         orig(i, j, fail, effectOnly, noItem);
     }
 
-    private readonly Dictionary<ulong, int> _pendingTileFrame = new Dictionary<ulong, int>();
     private void MMHook_WorldGen_TileFrame(On.Terraria.WorldGen.orig_TileFrame orig, int i, int j, bool resetFrame, bool noBreak)
     {
         var pos = (((ulong) i) << 32) | ((uint) j);
-        if (this.config.Mitigation.Value.RecursiveTileFrame.Value)
+        var type = Terraria.Main.tile[i, j].type;
+        orig.Invoke(i, j, resetFrame, noBreak);
+        if (type != Terraria.Main.tile[i, j].type && this.config.Mitigation.Value.RecursiveTileBreak.Value && !this._pendingTileFrame.Contains(pos))
         {
-            if (this._pendingTileFrame.TryGetValue(pos, out var frames) && frames > 2)
-            {
-                return;
-            }
-            this._pendingTileFrame[pos] = frames + 1;
-            Terraria.WorldGen.destroyObject = false;
-            orig(i, j, resetFrame, noBreak);
+            this._pendingTileFrame.Add(pos);
         }
     }
 }
