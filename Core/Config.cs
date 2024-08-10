@@ -778,6 +778,12 @@ public class Config
         /// </summary>
         public Optional<bool> RecursiveTileBreak = Optional.Default(false, true);
 
+        /// <summary>
+        /// TileFrame-ed tile will be tracked and TileFrame-ed again.
+        /// This will trigger recursive tile break.
+        /// </summary>
+        public Optional<bool> RecursiveTileFrame = Optional.Default(false, true);
+
         public enum DisabledDamageAction
         {
             AsIs,

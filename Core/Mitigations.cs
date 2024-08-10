@@ -340,6 +340,7 @@ public partial class Plugin
 
             this.Statistics.MitigationNewTileKillTriggered += this._pendingKilled.Count - count;
             this._pendingKilled.Clear();
+            this._pendingTileFrame.Clear();
         }
     }
 

@@ -154,4 +154,20 @@ public partial class Plugin
         }
         orig(i, j, fail, effectOnly, noItem);
     }
+
+    private readonly Dictionary<ulong, int> _pendingTileFrame = new Dictionary<ulong, int>();
+    private void MMHook_WorldGen_TileFrame(On.Terraria.WorldGen.orig_TileFrame orig, int i, int j, bool resetFrame, bool noBreak)
+    {
+        var pos = (((ulong) i) << 32) | ((uint) j);
+        if (this.config.Mitigation.Value.RecursiveTileFrame.Value)
+        {
+            if (this._pendingTileFrame.TryGetValue(pos, out var frames) && frames > 2)
+            {
+                return;
+            }
+            this._pendingTileFrame[pos] = frames + 1;
+            Terraria.WorldGen.destroyObject = false;
+            orig(i, j, resetFrame, noBreak);
+        }
+    }
 }
