@@ -328,15 +328,17 @@ public partial class Plugin
         if (mitigation.RecursiveTileBreak)
         {
             var kt = 0;
+            var count = this._pendingKilled.Count;
             while (kt < this._pendingKilled.Count)
             {
                 var item = this._pendingKilled[kt];
                 var ti = (int) (item >> 32);
                 var tj = (int) item;
-                Terraria.WorldGen.TileFrame(ti, tj);
+                Terraria.WorldGen.SquareTileFrame(ti, tj);
                 kt++;
             }
 
+            this.Statistics.MitigationNewTileKillTriggered += this._pendingKilled.Count - count;
             this._pendingKilled.Clear();
         }
     }
