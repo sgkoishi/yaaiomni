@@ -264,6 +264,17 @@ public partial class Plugin : TerrariaPlugin
                 }
             }
         }
+        if (this.config.Enhancements.Value.BanPattern)
+        {
+           if (!TShockAPI.DB.Identifier.Available.Any(i => i.Prefix == "namea:"))
+            {
+                TShockAPI.DB.Identifier.Register("namea:", "An identifier for Regex matching the character name (e.g. namea:^.{8,}$)");
+            }
+            if (!TShockAPI.DB.Identifier.Available.Any(i => i.Prefix == "ipa:"))
+            {
+                TShockAPI.DB.Identifier.Register("ipa:", "An identifier for IP address with subnet mask (e.g. ipa:1.2.3.4/24)");
+            }
+        }
     }
 
     private void OnReload(ReloadEventArgs? e)
