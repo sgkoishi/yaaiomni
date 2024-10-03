@@ -266,7 +266,7 @@ public partial class Plugin : TerrariaPlugin
         }
         if (this.config.Enhancements.Value.BanPattern)
         {
-           if (!TShockAPI.DB.Identifier.Available.Any(i => i.Prefix == "namea:"))
+            if (!TShockAPI.DB.Identifier.Available.Any(i => i.Prefix == "namea:"))
             {
                 TShockAPI.DB.Identifier.Register("namea:", "An identifier for Regex matching the character name (e.g. namea:^.{8,}$)");
             }
@@ -421,7 +421,10 @@ public partial class Plugin : TerrariaPlugin
         this.InitCommands();
         if (this.config.Enhancements.Value.IPv6DualStack)
         {
-            Terraria.Program.LaunchParameters.Add("-ip", System.Net.IPAddress.IPv6Any.ToString());
+            if (!Terraria.Program.LaunchParameters.TryAdd("-ip", System.Net.IPAddress.IPv6Any.ToString()))
+            {
+                TShockAPI.TShock.Log.Warn("Listening on existing address, IPv6 dual-stack disabled.");
+            }
         }
     }
 }

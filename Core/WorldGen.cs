@@ -150,7 +150,7 @@ public partial class Plugin
         var pos = (((ulong) i) << 32) | ((uint) j);
         if (this.config.Mitigation.Value.RecursiveTileBreak.Value && !this._pendingTileFrame.Contains(pos))
         {
-            this. _pendingTileFrame.Add(pos);
+            this._pendingTileFrame.Add(pos);
         }
         orig(i, j, fail, effectOnly, noItem);
     }
