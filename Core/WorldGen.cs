@@ -161,11 +161,12 @@ public partial class Plugin
         {
             return;
         }
+        var pos = (((ulong) i) << 32) | ((uint) j);
         var type = Terraria.Main.tile[i, j].type;
         orig.Invoke(i, j, resetFrame, noBreak);
         if (type != Terraria.Main.tile[i, j].type && this.config.Mitigation.Value.RecursiveTileBreak.Value && !this._pendingTileFrame.Contains(pos))
         {
-            this._pendingTileFrame.Add((((ulong) i) << 32) | ((uint) j));
+            this._pendingTileFrame.Add(pos);
         }
     }
 }
