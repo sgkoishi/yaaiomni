@@ -423,7 +423,7 @@ public partial class Plugin : TerrariaPlugin
         {
             if (!Terraria.Program.LaunchParameters.TryAdd("-ip", System.Net.IPAddress.IPv6Any.ToString()))
             {
-                TShockAPI.TShock.Log.Warn("Listening on existing address, IPv6 dual-stack disabled.");
+                TShockAPI.TShock.Log.Warn("Listening on existing address, attempts to enable IPv6 dual-stack without -ip.");
             }
         }
     }

@@ -157,12 +157,15 @@ public partial class Plugin
 
     private void MMHook_WorldGen_TileFrame(On.Terraria.WorldGen.orig_TileFrame orig, int i, int j, bool resetFrame, bool noBreak)
     {
-        var pos = (((ulong) i) << 32) | ((uint) j);
+        if (i <= 5 || j <= 5  || i >= Terraria.Main.maxTilesX - 5 || j >= Terraria.Main.maxTilesY - 5)
+        {
+            return;
+        }
         var type = Terraria.Main.tile[i, j].type;
         orig.Invoke(i, j, resetFrame, noBreak);
         if (type != Terraria.Main.tile[i, j].type && this.config.Mitigation.Value.RecursiveTileBreak.Value && !this._pendingTileFrame.Contains(pos))
         {
-            this._pendingTileFrame.Add(pos);
+            this._pendingTileFrame.Add((((ulong) i) << 32) | ((uint) j));
         }
     }
 }
