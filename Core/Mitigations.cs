@@ -574,6 +574,32 @@ public partial class Plugin
         Terraria.WorldGen.numTileCount = Terraria.WorldGen.maxTileCount;
     }
 
+    private void MMHook_Chest_ServerPlaceItem(On.Terraria.Chest.orig_ServerPlaceItem orig, int plr, int slot)
+    {
+        var mitigation = this.config.Mitigation.Value;
+        if (mitigation.DisableAllMitigation || !mitigation.IncrementalChestStack)
+        {
+            orig(plr, slot);
+            return;
+        }
+
+        if (slot >= Terraria.ID.PlayerItemSlotID.Inventory0)
+        {
+            return;
+        }
+
+        var player = Terraria.Main.player[plr];
+        var inv = player.inventory[slot];
+        var (type, stack) = (inv.type, inv.stack);
+        var newItem = Terraria.Chest.PutItemInNearbyChest(inv, player.Center, plr);
+        var newStack = newItem.stack;
+        if (newStack < stack)
+        {
+            player.inventory[slot] = newItem;
+            Terraria.NetMessage.TrySendData((int) PacketTypes.MassWireOperationPay, plr, number: type, number2: stack - newStack, number3: plr);
+        }
+    }
+
     private void GDHook_Mitigation_PlayerBuffUpdate(object? sender, TShockAPI.GetDataHandlers.PlayerBuffUpdateEventArgs args)
     {
         var currentPosition = args.Data.Position;

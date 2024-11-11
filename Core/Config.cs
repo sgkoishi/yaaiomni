@@ -778,6 +778,16 @@ public class Config
         /// </summary>
         public Optional<bool> RecursiveTileBreak = Optional.Default(false, true);
 
+        /// <summary>
+        /// Force QuickStackChests to sync inventory incrementally.
+        /// <para>
+        /// The new implementation will use MassWireOperationPay to consume items.
+        /// It will be harder to duplicate items using QuickStackChests, but only
+        /// the items from the inventory will be handled (void bag will be ignored).
+        /// </para>
+        /// </summary>
+        public Optional<bool> IncrementalChestStack = Optional.Default(true);
+
         public enum DisabledDamageAction
         {
             AsIs,

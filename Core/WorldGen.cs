@@ -73,7 +73,7 @@ public partial class Plugin
 
     private readonly AsyncLocal<int> _frameCount = new AsyncLocal<int>();
     private bool _worldgenHalting = false;
-    private readonly HashSet<ulong> _haltSource = new HashSet<ulong>();
+    private readonly HashSet<ulong> _haltSource = [];
     private int _dumpCounter;
 
     private void Detour_InspectTileFrame(Action<int, int, bool, bool> orig, int i, int j, bool resetFrame, bool noBreak)
@@ -139,12 +139,12 @@ public partial class Plugin
             }
         }
 
-        this._frameCount.Value += 1;
+        this._frameCount.Value++;
         orig(i, j, resetFrame, noBreak);
-        this._frameCount.Value -= 1;
+        this._frameCount.Value--;
     }
 
-    private readonly List<ulong> _pendingTileFrame = new List<ulong>();
+    private readonly List<ulong> _pendingTileFrame = [];
     private void MMHook_WorldGen_KillTile(On.Terraria.WorldGen.orig_KillTile orig, int i, int j, bool fail, bool effectOnly, bool noItem)
     {
         var pos = (((ulong) i) << 32) | ((uint) j);
