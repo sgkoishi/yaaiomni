@@ -786,7 +786,7 @@ public class Config
         /// the items from the inventory will be handled (void bag will be ignored).
         /// </para>
         /// </summary>
-        public Optional<bool> IncrementalChestStack = Optional.Default(true);
+        public Optional<bool> IncrementalChestStack = Optional.Default(false);
 
         public enum DisabledDamageAction
         {
