@@ -499,7 +499,7 @@ public static partial class Utils
         {
             return;
         }
-        TShockAPI.TShock.Groups.AddPermissions(group!.Name, perm.ToList());
+        TShockAPI.TShock.Groups.AddPermissions(group!.Name, [.. perm]);
     }
 
     public static void OnceFlag(string key, Action action)
@@ -514,14 +514,20 @@ public static partial class Utils
     public static void AssemblyMutex(TerrariaApi.Server.TerrariaPlugin plugin)
     {
         var asm = plugin.GetType().Assembly;
-        foreach (var ld in AppDomain.CurrentDomain.GetAssemblies())
+        var lds = ((List<TerrariaApi.Server.PluginContainer>) typeof(TerrariaApi.Server.ServerApi)
+            .GetField("plugins", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
+            .GetValue(null)!)!;
+
+        var dict = ((Dictionary<string, System.Reflection.Assembly>) typeof(TerrariaApi.Server.ServerApi)
+            .GetField("loadedAssemblies", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
+            .GetValue(null)!)
+            .ToDictionary(kvp => kvp.Value, kvp => kvp.Key)!;
+
+        foreach (var other in lds)
         {
-            if (ld.GetName().Name == asm.GetName().Name && ld != asm)
+            var ld = other.Plugin.GetType().Assembly;
+            if (ld.GetName().Name == asm.GetName().Name && other.Plugin != plugin)
             {
-                var dict = ((Dictionary<string, System.Reflection.Assembly>) typeof(TerrariaApi.Server.ServerApi)
-                    .GetField("loadedAssemblies", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
-                    .GetValue(null)!)
-                    .ToDictionary(kvp => kvp.Value, kvp => kvp.Key)!;
                 var em = $"Duplicate {plugin.Name} loaded:";
                 if (dict.TryGetValue(ld, out var fileNameWithoutExtension))
                 {
@@ -553,9 +559,9 @@ public static partial class Utils
         return args.Instance.Read<T>(args.ReadOffset + offset);
     }
 
-    public class ConsolePlayer : TSPlayer
+    public class ConsolePlayer(string name) : TSPlayer(name)
     {
-        public static ConsolePlayer Instance = new ConsolePlayer("Console");
+        public static readonly ConsolePlayer Instance = new ConsolePlayer("Console");
         private static readonly Dictionary<ConsoleColor, int> _consoleColorMap = new Dictionary<ConsoleColor, int>
         {
             [ConsoleColor.Red] = 0xFF0000,
@@ -576,10 +582,6 @@ public static partial class Utils
             [ConsoleColor.Black] = 0x000000,
         };
 
-        public ConsolePlayer(string name) : base(name)
-        {
-        }
-
         public override void SendMessage(string msg, byte red, byte green, byte blue)
         {
             Console.ForegroundColor = _consoleColorMap
@@ -595,17 +597,11 @@ public static partial class Utils
     }
 }
 
-public class Ring<T> : IEnumerable<T>
+public class Ring<T>(int length) : IEnumerable<T>
 {
-    internal T[] _data;
-    internal int _start;
-    internal int _length;
-    public Ring(int length)
-    {
-        this._data = new T[length];
-        this._start = 0;
-        this._length = 0;
-    }
+    internal T[] _data = new T[length];
+    internal int _start = 0;
+    internal int _length = 0;
 
     public T this[int index] => this._data[(index + this._start) % this._data.Length];
 
@@ -632,20 +628,14 @@ public class Ring<T> : IEnumerable<T>
         return new RingEnumerator(this);
     }
 
-    private class RingEnumerator : IEnumerator<T>
+    private class RingEnumerator(Ring<T> ring) : IEnumerator<T>
     {
-        private readonly Ring<T> _ring;
-        private int _index;
+        private readonly Ring<T> _ring = ring;
+        private int _index = -1;
 
         public T Current => this._ring[this._index];
 
         object? System.Collections.IEnumerator.Current => this._ring[this._index];
-
-        public RingEnumerator(Ring<T> ring)
-        {
-            this._ring = ring;
-            this._index = -1;
-        }
 
         public void Dispose()
         {

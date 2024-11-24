@@ -31,7 +31,7 @@ partial class Plugin
                 {
                     try
                     {
-                        Terraria.Main.tile = (ModFramework.ICollection<Terraria.ITile>) Activator.CreateInstance(Terraria.Main.tile.GetType());
+                        Terraria.Main.tile = (ModFramework.ICollection<Terraria.ITile>) Activator.CreateInstance(Terraria.Main.tile.GetType())!;
                     }
                     catch
                     {
