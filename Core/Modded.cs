@@ -72,8 +72,11 @@ public partial class Plugin
             return;
         }
 
+        var mitigation = this.config.Mitigation.Value;
+
         var whoAmI = args.Instance.whoAmI;
-        if (ModdedEarlyChatSpam(whoAmI, (PacketTypes) args.PacketId, this.AllowedPackets))
+        if (!mitigation.DisableAllMitigation && mitigation.AllowNonVanillaJoinState &&
+            ModdedEarlyChatSpam(whoAmI, (PacketTypes) args.PacketId, this.AllowedPackets))
         {
             this.Statistics.ModdedEarlyChatSpam++;
             TShockAPI.TShock.Log.ConsoleInfo($"Unusual packet {args.PacketId} detected at state {Terraria.Netplay.Clients[whoAmI].State} and disconnected. ({Terraria.Netplay.Clients[whoAmI].Socket.GetRemoteAddress()})");
@@ -86,7 +89,8 @@ public partial class Plugin
         {
             // This is actually not working since the client do not sync
             // Only sent when related info changed
-            if (ModdedFakeName(whoAmI, args.Instance.readBuffer.AsSpan(args.ReadOffset + 3, args.Length - 3)))
+            if (!mitigation.DisableAllMitigation && mitigation.AllowNonVanillaNameChange &&
+                ModdedFakeName(whoAmI, args.Instance.readBuffer.AsSpan(args.ReadOffset + 3, args.Length - 3)))
             {
                 Terraria.NetMessage.TrySendData((int) PacketTypes.Disconnect, whoAmI, -1, Terraria.Lang.mp[1].ToNetworkText());
                 this.Statistics.ModdedFakeName++;

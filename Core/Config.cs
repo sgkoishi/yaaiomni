@@ -788,6 +788,17 @@ public class Config
         /// </summary>
         public Optional<bool> IncrementalChestStack = Optional.Default(false);
 
+        /// <summary>
+        /// Allow non-vanilla name change. Commonly used by cheaters.
+        /// </summary>
+        public Optional<bool> AllowNonVanillaNameChange = Optional.Default(false, true);
+
+        /// <summary>
+        /// Allow invalid packets for join states. Used by both cheaters and
+        /// other valid non-vanilla purposes.
+        /// </summary>
+        public Optional<bool> AllowNonVanillaJoinState = Optional.Default(false, true);
+
         public enum DisabledDamageAction
         {
             AsIs,
@@ -880,11 +891,11 @@ public abstract class Optional
     }
 }
 
-public class Optional<T> : Optional, IEquatable<Optional<T>>
+public class Optional<T>(T value, bool hide = false) : Optional, IEquatable<Optional<T>>
 {
-    public bool IsDefault { private set; get; }
-    public bool HideWhenDefault { private set; get; }
-    internal T _defaultValue;
+    public bool IsDefault { private set; get; } = true;
+    public bool HideWhenDefault { private set; get; } = hide;
+    internal T _defaultValue = value;
     internal T? _value;
     public T Value
     {
@@ -939,13 +950,6 @@ public class Optional<T> : Optional, IEquatable<Optional<T>>
                 this.Value = t;
             }
         }
-    }
-
-    public Optional(T value, bool hide = false)
-    {
-        this.IsDefault = true;
-        this._defaultValue = value;
-        this.HideWhenDefault = hide;
     }
 
     public static implicit operator T(Optional<T> self) => self.Value;
