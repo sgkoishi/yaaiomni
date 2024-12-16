@@ -133,6 +133,13 @@ public partial class Plugin : TerrariaPlugin
                 .GetMethod(nameof(TShockAPI.Utils.GetRealIP), _bfany),
             this.Detour_RealIP_IPv6Support
         );
+        this.Detour(
+            nameof(this.Detour_Main_getWorldPathName),
+            typeof(Terraria.Main)
+                .GetProperty(nameof(Terraria.Main.worldPathName), _bfany)?
+                .GetMethod,
+            this.Detour_Main_getWorldPathName
+        );
 
         if (this.config.PrioritizedPacketHandle)
         {
@@ -323,6 +330,7 @@ public partial class Plugin : TerrariaPlugin
         On.Terraria.WorldGen.KillTile += this.MMHook_WorldGen_KillTile;
         On.Terraria.WorldGen.TileFrame += this.MMHook_WorldGen_TileFrame;
         On.Terraria.Chest.ServerPlaceItem += this.MMHook_Chest_ServerPlaceItem;
+        On.Terraria.RemoteClient.Reset += this.MMHook_RemoteClient_Reset;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_Ghost_SendBytes;
         OTAPI.Hooks.NetMessage.SendBytes += this.OTHook_DebugPacket_SendBytes;
         OTAPI.Hooks.MessageBuffer.GetData += this.OTHook_Ping_GetData;
@@ -369,6 +377,7 @@ public partial class Plugin : TerrariaPlugin
             On.Terraria.WorldGen.KillTile -= this.MMHook_WorldGen_KillTile;
             On.Terraria.WorldGen.TileFrame -= this.MMHook_WorldGen_TileFrame;
             On.Terraria.Chest.ServerPlaceItem -= this.MMHook_Chest_ServerPlaceItem;
+            On.Terraria.RemoteClient.Reset -= this.MMHook_RemoteClient_Reset;
             OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_Ghost_SendBytes;
             OTAPI.Hooks.NetMessage.SendBytes -= this.OTHook_DebugPacket_SendBytes;
             OTAPI.Hooks.MessageBuffer.GetData -= this.OTHook_Mitigation_GetData;

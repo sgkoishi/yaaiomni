@@ -619,4 +619,20 @@ public partial class Plugin
         var mitigation = this.config.Mitigation.Value;
         return (mitigation.DisableAllMitigation || !mitigation.LoadoutSwitchWithoutSSC) && orig(args);
     }
+
+    private string? Detour_Main_getWorldPathName(Func<string> _orig)
+    {
+        if (Terraria.Main.ActiveWorldFileData is null)
+        {
+            TShockAPI.TShock.Log.Error("Main.ActiveWorldFileData is null. This probably indicates your world is corrupted.");
+            return null;
+        }
+        return Terraria.Main.ActiveWorldFileData.Path;
+    }
+
+    private void MMHook_RemoteClient_Reset(On.Terraria.RemoteClient.orig_Reset orig, Terraria.RemoteClient self)
+    {
+        orig(self);
+        self.ClientUUID = "";
+    }
 }
