@@ -785,6 +785,7 @@ public class Config
         /// It will be harder to duplicate items using QuickStackChests, but only
         /// the items from the inventory will be handled (void bag will be ignored).
         /// </para>
+        /// This feature is known to be broken and will cause inventories being locked.
         /// </summary>
         public Optional<bool> IncrementalChestStack = Optional.Default(false);
 

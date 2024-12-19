@@ -460,7 +460,7 @@ public partial class Plugin
     private void MMHook_Mitigation_DoorDropItem(On.Terraria.WorldGen.orig_DropDoorItem orig, int x, int y, int doorStyle)
     {
         var mitigation = this.config.Mitigation.Value;
-        if (mitigation.DisableAllMitigation)
+        if (mitigation.DisableAllMitigation || !mitigation.OverflowWorldGenItemID)
         {
             return;
         }
@@ -468,7 +468,36 @@ public partial class Plugin
         if (doorStyle > TShockAPI.GetDataHandlers.MaxPlaceStyles[Terraria.ID.TileID.ClosedDoor])
         {
             // Can be used to spawn arbitrary items
-            TShockAPI.TShock.Log.ConsoleInfo($"Attempt to spawn item using glitched door style: {doorStyle}");
+            TShockAPI.TShock.Log.ConsoleWarn($"Attempt to spawn item using glitched door style: {doorStyle}.");
+
+            var tile = new Microsoft.Xna.Framework.Vector2(x * 16, y * 16);
+            var nearby = Terraria.Main.player
+                 .Where(p => p?.active == true)
+                 .Select(p => (p, Terraria.Utils.Distance(p.Center, tile)))
+                 .Where(p => p.Item2 < 16 * 30)
+                 .OrderBy(p => p.Item2)
+                 .ToList();
+
+            if (nearby.Count > 0)
+            {
+                TShockAPI.TShock.Log.ConsoleInfo($"Nearby players: {string.Join(Environment.NewLine, nearby.Select(p => $"{p.p.name} ({p.Item2 / 16:F1})"))}");
+            }
+
+            foreach (var t in Utils.CheckInvalidTiles(Terraria.Main.tile, x, y, 10))
+            {
+                t.ClearEverything();
+            }
+
+            foreach (var p in Terraria.Main.player)
+            {
+                if (p?.active != true)
+                {
+                    continue;
+                }
+
+                Terraria.NetMessage.SendTileSquare(p.whoAmI, x, y, 10, 10, Terraria.ID.TileChangeType.None);
+            }
+
             return;
         }
 
@@ -494,7 +523,22 @@ public partial class Plugin
             var style = tileCache.frameY / 22;
             if (style > TShockAPI.GetDataHandlers.MaxPlaceStyles[Terraria.ID.TileID.Torches])
             {
-                TShockAPI.TShock.Log.ConsoleInfo($"Attempt to spawn item using glitched torch style: {style}");
+                TShockAPI.TShock.Log.ConsoleWarn($"Attempt to spawn item using glitched torch style: {style}");
+
+                var tile = new Microsoft.Xna.Framework.Vector2(x * 16, y * 16);
+                var nearby = Terraria.Main.player
+                     .Where(p => p?.active == true)
+                     .Select(p => (p, Terraria.Utils.Distance(p.Center, tile)))
+                     .Where(p => p.Item2 < 16 * 30)
+                     .OrderBy(p => p.Item2)
+                     .ToList();
+
+                if (nearby.Count > 0)
+                {
+                    TShockAPI.TShock.Log.ConsoleInfo($"Nearby players: {string.Join(Environment.NewLine, nearby.Select(p => $"{p.p.name} ({p.Item2 / 16:F1})"))}");
+                }
+                tileCache.ClearEverything();
+
                 return;
             }
         }

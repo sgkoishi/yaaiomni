@@ -559,6 +559,40 @@ public static partial class Utils
         return args.Instance.Read<T>(args.ReadOffset + offset);
     }
 
+    public static List<Terraria.ITile> CheckInvalidTiles(TileCollection tiles, int x, int y, int r)
+    {
+        var result = new List<Terraria.ITile>();
+        for (var i = x - r; i <= x + r; i++)
+        {
+            if (i < 0 || i >= Terraria.Main.maxTilesX)
+            {
+                continue;
+            }
+            for (var j = y - r; j <= y + r; j++)
+            {
+                if (j < 0 || j >= Terraria.Main.maxTilesY)
+                {
+                    continue;
+                }
+                if (!TileValid(tiles[i, j]))
+                {
+                    result.Add(tiles[i, j]);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static bool TileValid(Terraria.ITile tile)
+    {
+        return tile.type switch
+        {
+            Terraria.ID.TileID.OpenDoor => TShockAPI.GetDataHandlers.MaxPlaceStyles[tile.type] < (tile.frameY / 54) + (tile.frameX / 72 * 36),
+            Terraria.ID.TileID.ClosedDoor => TShockAPI.GetDataHandlers.MaxPlaceStyles[tile.type] < (tile.frameY / 54) + (tile.frameX / 54 * 36),
+            _ => true
+        };
+    }
+
     public class ConsolePlayer(string name) : TSPlayer(name)
     {
         public static readonly ConsolePlayer Instance = new ConsolePlayer("Console");
