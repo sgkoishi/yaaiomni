@@ -6,7 +6,7 @@ namespace Chireiden.TShock.Omni;
 
 public partial class Plugin
 {
-    private readonly ConditionalWeakTable<TShockAPI.TSPlayer, AttachedData> _playerData = new ConditionalWeakTable<TShockAPI.TSPlayer, AttachedData>();
+    private readonly ConditionalWeakTable<TShockAPI.TSPlayer, AttachedData> _playerData = [];
 
     public AttachedData? this[TShockAPI.TSPlayer player]
     {
@@ -62,7 +62,7 @@ public class AttachedData
         this.Player = player;
         this.PermissionHistory = new Ring<PermissionCheckHistory>(logCount);
         this.RecentPings = Terraria.Main.item.Select(_ => new PendingAck()).ToArray();
-        this.DelayCommands = new List<DelayCommand>();
+        this.DelayCommands = [];
         this.ChatSpamRestrict = chatLimiter.Select(lc => (Limiter) lc).ToArray();
     }
 

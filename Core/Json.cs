@@ -7,16 +7,15 @@ using static Chireiden.TShock.Omni.Config.DebugPacketSettings;
 
 namespace Chireiden.TShock.Omni.Json;
 
-
 public static class JsonUtils
 {
-    private static readonly List<JsonConverter> _jsonconverters = new List<JsonConverter>
-    {
+    private static readonly List<JsonConverter> _jsonconverters =
+    [
         new OptionalConverter(),
         new LimiterConverter(),
         new StringEnumConverter(),
         new PacketFilterConverter(),
-    };
+    ];
 
     public static T DeserializeConfig<T>(string value)
     {

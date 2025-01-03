@@ -116,7 +116,6 @@ public partial class Plugin
         ///   </item>
         /// </list>
         /// </summary>
-
         MaxPlayers,
 
         /// <summary>
@@ -153,7 +152,6 @@ public partial class Plugin
         /// </list>
         /// </summary>
         Port,
-
 
         /// <summary>
         /// Order:

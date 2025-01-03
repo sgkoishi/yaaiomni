@@ -31,10 +31,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TShock" Version="5.2.0">
+    <PackageReference Include="TShock" Version="5.2.1">
       <ExcludeAssets>ContentFiles</ExcludeAssets>
     </PackageReference>
-    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-hvm9-wc8j-mgrc" />
     <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 

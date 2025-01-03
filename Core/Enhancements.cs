@@ -99,7 +99,7 @@ public partial class Plugin
     }
 
     internal Dictionary<string, string> _localizedCommandsMap = [];
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<TShockAPI.Command, List<string>> _addedAlias = new();
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<TShockAPI.Command, List<string>> _addedAlias = [];
     private string Detour_HelpAliases(Func<object, TShockAPI.Command, string> orig, object _instance, TShockAPI.Command command)
     {
         var ac = this.config.Enhancements.Value.ShowCommandAlias.Value;

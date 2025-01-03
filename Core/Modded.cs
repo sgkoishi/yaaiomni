@@ -2,7 +2,7 @@
 
 public partial class Plugin
 {
-    private readonly HashSet<PacketTypes> AllowedPackets = new HashSet<PacketTypes>();
+    private readonly HashSet<PacketTypes> AllowedPackets = [];
     private void OTHook_Modded_GetData(object? sender, OTAPI.Hooks.MessageBuffer.GetDataEventArgs args)
     {
         static bool ModdedEarlyChatSpam(int whoAmI, PacketTypes packetId, HashSet<PacketTypes> allowedPackets)

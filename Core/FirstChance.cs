@@ -6,7 +6,7 @@ namespace Chireiden.TShock.Omni;
 public partial class Plugin
 {
     private readonly ThreadLocal<int> inFirstChance = new ThreadLocal<int>(() => 0);
-    private readonly HashSet<string> exceptions = new HashSet<string>();
+    private readonly HashSet<string> exceptions = [];
 
     private void FirstChanceExceptionHandler(object? sender, FirstChanceExceptionEventArgs args)
     {

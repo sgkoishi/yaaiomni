@@ -28,6 +28,12 @@ public partial class Plugin : TerrariaPlugin
         Utils.AssemblyMutex(this);
         AppDomain.CurrentDomain.AssemblyResolve += this.AssemblyResolveHandler;
         AppDomain.CurrentDomain.FirstChanceException += this.FirstChanceExceptionHandler;
+        var pa = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
+        if (pa is not System.Runtime.InteropServices.Architecture.X64 and not System.Runtime.InteropServices.Architecture.X86)
+        {
+            Console.WriteLine($"TShock is running under {pa}, some features may not work.");
+        }
+
         this.Order = -1_000_000;
         this.ReadConfig(Utils.ConsolePlayer.Instance, true);
 

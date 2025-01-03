@@ -9,7 +9,7 @@ public partial class Plugin
     internal class ConnectionStore
     {
         public ConcurrentDictionary<string, Connection> Connections { get; } = new ConcurrentDictionary<string, Connection>();
-        public ConditionalWeakTable<Terraria.Net.Sockets.ISocket, AttachedRawData> AttachedData { get; } = new ConditionalWeakTable<Terraria.Net.Sockets.ISocket, AttachedRawData>();
+        public ConditionalWeakTable<Terraria.Net.Sockets.ISocket, AttachedRawData> AttachedData { get; } = [];
 
         internal class Connection
         {
