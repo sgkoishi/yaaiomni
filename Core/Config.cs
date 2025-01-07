@@ -675,7 +675,7 @@ public class Config
         /// This will try to stop them.
         /// </para>
         /// </summary>
-        public Optional<bool> OverflowWorldGenItemID = Optional.Default(false);
+        public Optional<bool> OverflowWorldGenItemID = Optional.Default(true);
 
         /// <summary>
         /// <para>

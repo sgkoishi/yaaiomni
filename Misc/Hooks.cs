@@ -5,7 +5,7 @@ namespace Chireiden.TShock.Omni.Misc;
 
 partial class Plugin
 {
-    private readonly Dictionary<string, IDetour> _detours = new();
+    private readonly Dictionary<string, Hook> _detours = new();
     internal void Detour(string name, MethodBase? from, Delegate to)
     {
         if (from is null)
@@ -18,7 +18,7 @@ partial class Plugin
         }
     }
 
-    private readonly Dictionary<string, IDetour> _manipulators = new();
+    private readonly Dictionary<string, ILHook> _manipulators = new();
     internal void ILHook(string name, MethodBase? from, MonoMod.Cil.ILContext.Manipulator to)
     {
         if (from is null)
