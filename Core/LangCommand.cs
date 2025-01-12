@@ -96,7 +96,6 @@ public partial class Plugin
         if (Utils.TryParseGameCulture(CultureInfo.CurrentUICulture.ToString(), out var result, true))
         {
             LanguageManager.Instance.SetLanguage(result);
-            CultureInfo.CurrentUICulture = Utils.CultureRedirect(CultureInfo.CurrentUICulture);
             Console.WriteLine($"Current culture set to {CultureInfo.CurrentUICulture}.");
         }
         else

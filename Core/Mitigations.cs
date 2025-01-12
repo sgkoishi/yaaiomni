@@ -679,4 +679,9 @@ public partial class Plugin
         orig(self);
         self.ClientUUID = "";
     }
+
+    private void RedirectLanguage(Terraria.Localization.LanguageManager languageManager)
+    {
+        System.Globalization.CultureInfo.CurrentUICulture = Utils.CultureRedirect(System.Globalization.CultureInfo.CurrentUICulture);
+    }
 }
