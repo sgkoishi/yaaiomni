@@ -470,6 +470,18 @@ public static partial class Utils
         return p.Any(player.HasPermission);
     }
 
+    public static void ShowInfo(string value)
+    {
+        if (TShockAPI.TShock.Log != null)
+        {
+            TShockAPI.TShock.Log.ConsoleInfo(value);
+        }
+        else
+        {
+            Console.WriteLine(value);
+        }
+    }
+
     public static void ShowError(string value)
     {
         if (TShockAPI.TShock.Log != null)

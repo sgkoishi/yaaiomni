@@ -21,7 +21,18 @@ public partial class Plugin
                 return data;
             }
             data = new AttachedData(player, this.config.Permission.Value.Log.Value.LogCount, this.config.Mitigation.Value.ChatSpamRestrict);
-            this._playerData.Add(player, data);
+            try
+            {
+                this._playerData.Add(player, data);
+            }
+            // for random concurrent access
+            catch (ArgumentException)
+            {
+                if (this._playerData.TryGetValue(player, out var v))
+                {
+                    return v;
+                }
+            }
             return data;
         }
     }

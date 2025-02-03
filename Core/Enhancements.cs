@@ -183,11 +183,15 @@ public partial class Plugin
             try
             {
                 listener.Server.DualMode = true;
-                TShockAPI.TShock.Log.ConsoleInfo("Dual stack enabled.");
+                TShockAPI.TShock.Log.ConsoleInfo("IPv6 dual stack enabled.");
+            }
+            catch (NotSupportedException)
+            {
+                Utils.ShowInfo($"Failed to enable IPv6 dual stack on {listener.LocalEndpoint}: not supported.");
             }
             catch (Exception e)
             {
-                Utils.ShowError($"Failed to enable dual stack on {listener.LocalEndpoint}: {e}");
+                Utils.ShowError($"Failed to enable IPv6 dual stack on {listener.LocalEndpoint}: {e}");
             }
         }
         orig(listener, backlog);

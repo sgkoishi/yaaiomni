@@ -19,7 +19,7 @@
     <AssemblyTitle>$(PackageProjectUrl)</AssemblyTitle>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageType>TShockPlugin</PackageType>
+    <PackageType>Dependency,TShockPlugin</PackageType>
     <Copyright>Copyright (c) Chireiden 2023</Copyright>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <!-- https://github.com/Pryaxis/TShock/issues/2895 -->
