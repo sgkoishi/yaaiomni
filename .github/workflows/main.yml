@@ -12,13 +12,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
         with:
           fetch-depth: 0
           submodules: 'recursive'
 
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@main
         with:
           dotnet-version: |
             6.x
@@ -33,7 +33,7 @@ jobs:
           Copy-Item LICENSE,README.md Artifact
 
       - name: CI Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@main
         with:
           name: Plugin
           path: |
@@ -50,7 +50,7 @@ jobs:
           Compress-Archive -Path Artifact Artifact.zip
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
           prerelease: true

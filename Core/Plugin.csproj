@@ -19,7 +19,7 @@
     <AssemblyTitle>$(PackageProjectUrl)</AssemblyTitle>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageType>Dependency,TShockPlugin</PackageType>
+    <PackageType>Dependency;TShockPlugin</PackageType>
     <Copyright>Copyright (c) Chireiden 2023</Copyright>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <!-- https://github.com/Pryaxis/TShock/issues/2895 -->
@@ -31,7 +31,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TShock" Version="5.2.1">
+    <PackageReference Include="TShock" Version="5.2.2">
       <ExcludeAssets>ContentFiles</ExcludeAssets>
     </PackageReference>
     <None Include="../README.md" Pack="true" PackagePath="\" />

@@ -20,21 +20,20 @@ public partial class Plugin
         }
     }
 
-    private async Task Detour_UpdateCheckAsync(Func<TShockAPI.UpdateManager, object, Task> orig, TShockAPI.UpdateManager um, object state)
+    private Task Detour_UpdateCheckAsync(Func<TShockAPI.UpdateManager, object, Task> orig, TShockAPI.UpdateManager um, object state)
     {
         var flag = this.config.Enhancements.Value.SuppressUpdate.Value;
         if (flag == Config.EnhancementsSettings.UpdateOptions.Disabled)
         {
-            return;
+            return Task.CompletedTask;
         }
         try
         {
-            await orig(um, state);
-            return;
+            return orig(um, state);
         }
         catch when (flag is Config.EnhancementsSettings.UpdateOptions.Silent)
         {
-            return;
+            return Task.CompletedTask;
         }
     }
 
