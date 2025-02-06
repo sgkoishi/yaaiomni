@@ -211,13 +211,18 @@ internal static class Socket
 
         public override void AsyncSend(byte[] data, int offset, int size, SocketSendCallback callback, object? state = null)
         {
+            var cts = new CancellationTokenSource(10000);
             callback(state);
             try
             {
-                this._connection.GetStream().WriteAsync(data, offset, size);
+                this._connection.GetStream().WriteAsync(data, offset, size, cts.Token);
             }
             catch
             {
+            }
+            finally
+            {
+                cts.Dispose();
             }
         }
 
@@ -254,11 +259,12 @@ internal static class Socket
 
         public override async void AsyncSend(byte[] data, int offset, int size, SocketSendCallback callback, object? state = null)
         {
+            var cts = new CancellationTokenSource(10000);
+            var buffer = ArrayPool<byte>.Shared.Rent(size);
             try
             {
                 // Netplay.KickClient use a static shared buffer, might be better to copy it before use
                 // ArrayPool sounds smarter than vanilla's Net.LegacyNetBufferPool
-                var buffer = ArrayPool<byte>.Shared.Rent(size);
                 Buffer.BlockCopy(data, offset, buffer, 0, size);
                 if (this.EnforceMessageSize)
                 {
@@ -271,19 +277,23 @@ internal static class Socket
                         }
                         else
                         {
-                            await this._connection.GetStream().WriteAsync(buffer.AsMemory(0, size));
+                            await this._connection.GetStream().WriteAsync(buffer.AsMemory(0, size), cts.Token);
                         }
                     }
                 }
                 else
                 {
-                    await this._connection.GetStream().WriteAsync(buffer.AsMemory(0, size));
+                    await this._connection.GetStream().WriteAsync(buffer.AsMemory(0, size), cts.Token);
                 }
                 callback(state);
-                ArrayPool<byte>.Shared.Return(buffer);
             }
             catch
             {
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+                cts.Dispose();
             }
         }
 
